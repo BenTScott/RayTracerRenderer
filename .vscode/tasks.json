@@ -4,16 +4,21 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build file1.cpp",
+            "label": "build proj",
             "type": "shell",
-            "command": "g++",
-            "args": [
-                "-g", "file1.cpp"
-            ],
+            "command": "mingw32-make",
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "mingw32-make",
+            "args": [
+                "clean"
+            ]
         }
     ]
 }

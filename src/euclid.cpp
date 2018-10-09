@@ -1,4 +1,5 @@
 #include <iostream>
+#include "box.h"
 
 using namespace std;
 
@@ -41,4 +42,8 @@ int main()
 
     cout << "The highest common factor is " << hcf(n, m) << endl;
     cout << "The highest common factor is " << iter_hcf(n, m) << endl;
+
+    box box(2);
+    cout << box.value << endl;
+    cout << box.double_value() << endl;
 };
