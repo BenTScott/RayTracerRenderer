@@ -5,7 +5,8 @@ BUILDDIR := build
 INCLUDE := -I include
 LIB := -L lib
 BINDIR := bin
-TARGET := $(BINDIR)/main.exe
+TARGET := $(BINDIR)\main.exe
+
 SOURCES := $(addprefix $(SRCDIR)/,$(shell dir /B $(SRCDIR)\*.cpp))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.cpp=.o))
 
@@ -15,17 +16,16 @@ OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.cpp=.o))
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CC) $^ -o $(TARGET) $(LIB)
+	$(CC) $^ -g -o $(TARGET) $(LIB)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CC) $(CFLAGS) $(INCLUDE) -c -o $@ $<
+	$(CC) $(CFLAGS) $(INCLUDE) -c -g -o $@ $<
 
 clean:
-	del /s /q $(BINDIR) $(BUILDDIR)
+	del /s /q "$(TARGET)" $(BUILDDIR)
 
 run: all
-	./$(TARGET
+	./$(TARGET)
 
 debug:
-	echo $(SOURCES)
 	echo $(OBJECTS)

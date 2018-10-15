@@ -19,6 +19,14 @@
             "args": [
                 "clean"
             ]
+        },
+        {
+            "label": "run",
+            "type": "shell",
+            "command": "mingw32-make",
+            "args": [
+                "run"
+            ]
         }
     ]
 }

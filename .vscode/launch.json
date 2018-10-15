@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/bin/main.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/src",
             "environment": [],
             "externalConsole": true,
             "MIMode": "gdb",
@@ -22,7 +22,10 @@
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }
-            ]
+            ],
+            "logging": {
+                "exceptions" : true
+            }
         }
     ]
 }
