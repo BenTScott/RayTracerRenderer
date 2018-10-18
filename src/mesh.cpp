@@ -7,6 +7,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include "vector.h"
 #include "mesh.h"
 #include "matrix.h"
 
@@ -139,9 +140,8 @@ void Mesh::UpdateVertices(Matrix<4> &transformation_mat)
 {
     for (vector<Vertex>::iterator vertex_ptr = vertices.begin(); vertex_ptr < vertices.end(); vertex_ptr++)
     {
-        double *new_pos = transformation_mat * (vertex_ptr->pos);
+        Vector<4> new_pos = transformation_mat * (vertex_ptr->pos);
         vertex_ptr->Update_Position(new_pos);
-        delete new_pos;
     }
 }
 

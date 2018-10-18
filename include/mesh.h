@@ -3,6 +3,7 @@
 #include "vertex.h"
 #include "face.h"
 #include "matrix.h"
+#include "vector.h"
 
 using namespace std;
 
@@ -13,7 +14,7 @@ using namespace std;
 class Mesh
 {
 public:
-  Mesh() : transformation_queue(1) {};
+  Mesh() : transformation_queue(1){};
 
   ~Mesh(){};
 

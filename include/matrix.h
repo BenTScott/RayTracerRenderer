@@ -1,9 +1,10 @@
+#ifndef INCLUDE_MATRIX_H_
+#define INCLUDE_MATRIX_H_
+
 #include <cstddef>
 #include <iostream>
 #include <math.h>
-
-#ifndef INCLUDE_MATRIX_H_
-#define INCLUDE_MATRIX_H_
+#include <vector.h>
 
 template <std::size_t N>
 class Matrix
@@ -21,12 +22,12 @@ class Matrix
         InitialiseScalar(0);
     };
 
-    Matrix(double scalar)
+    Matrix(const double scalar)
     {
         InitialiseScalar(scalar);
     };
 
-    Matrix(double n[N][N])
+    Matrix(const double n[N][N])
     {
         for (std::size_t i = 0; i < N; i++)
         {
@@ -72,6 +73,23 @@ class Matrix
     double *operator*(const double (&B)[N])
     {
         double *C = new double[N];
+
+        for (std::size_t i = 0; i < N; i++)
+        {
+            double sum = 0;
+            for (std::size_t j = 0; j < N; j++)
+            {
+                sum += values[j][i] * B[j];
+            }
+            C[i] = sum;
+        }
+
+        return C;
+    };
+
+    Vector<N> operator*(const Vector<N> &B)
+    {
+        Vector<N> C;
 
         for (std::size_t i = 0; i < N; i++)
         {

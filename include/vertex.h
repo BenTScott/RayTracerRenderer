@@ -1,6 +1,7 @@
 #include <list>
 #include <iterator>
 #include <algorithm>
+#include "vector.h"
 
 class Face;
 
@@ -11,11 +12,16 @@ class Vertex
 {
 public:
   Vertex(){};
-  Vertex(double x, double y, double z) : pos{x, y, z, 1} {};
+  Vertex(double x, double y, double z) {
+    pos[0] = x;
+    pos[1] = y;
+    pos[2] = z;
+    pos[3] = 1;
+  };
 
   ~Vertex(){};
 
-  void Update_Position(double new_pos[4])
+  void Update_Position(Vector<4> new_pos)
   {
     for (int i = 0; i < 3; i++)
     {
@@ -23,7 +29,7 @@ public:
     }
   }
 
-  double pos[4];
+  Vector<4> pos;
   std::list<Face *> faces;
 };
 
