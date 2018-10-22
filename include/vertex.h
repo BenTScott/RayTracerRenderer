@@ -21,7 +21,7 @@ public:
 
   ~Vertex(){};
 
-  void Update_Position(Vector<4> new_pos)
+  void Update_Position(lin_alg::Vector<4> new_pos)
   {
     for (int i = 0; i < 3; i++)
     {
@@ -29,7 +29,7 @@ public:
     }
   }
 
-  Vector<4> pos;
+  lin_alg::Vector<4> pos;
   std::list<Face *> faces;
 };
 

@@ -6,6 +6,9 @@
 #include <math.h>
 #include <vector.h>
 
+namespace lin_alg
+{
+
 template <std::size_t N>
 class Matrix
 {
@@ -119,5 +122,7 @@ class Matrix
     double values[N][N];
     void InitialiseScalar(double scalar);
 };
+
+} // namespace lin_alg
 
 #endif

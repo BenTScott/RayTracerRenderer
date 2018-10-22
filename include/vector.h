@@ -4,6 +4,9 @@
 #include <cstddef>
 #include <math.h>
 
+namespace lin_alg
+{
+
 template <std::size_t N>
 class Vector
 {
@@ -54,5 +57,7 @@ class Vector
 
     double values[N];
 };
+
+} // namespace lin_alg
 
 #endif

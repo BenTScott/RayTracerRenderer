@@ -15,21 +15,21 @@
 // TODO: Fix obj reading for face lines
 void Mesh::LoadObjectModel(const char *filename)
 {
-    ifstream in(filename, ifstream::in);
+    std::ifstream in(filename, std::ifstream::in);
     if (!in)
     {
-        cerr << "Cannot open " << filename << "\n";
+        std::cerr << "Cannot open " << filename << "\n";
         exit(1);
     }
 
-    string line;
+    std::string line;
 
     while (getline(in, line))
     {
         // check for vertex
         if (line.substr(0, 2) == "v ")
         {
-            istringstream v(line.substr(2));
+            std::istringstream v(line.substr(2));
             double x, y, z;
             v >> x;
             v >> y;
@@ -39,7 +39,7 @@ void Mesh::LoadObjectModel(const char *filename)
         // check for face
         else if (line.substr(0, 2) == "f ")
         {
-            istringstream f(line.substr(2));
+            std::istringstream f(line.substr(2));
             int v1, v2, v3;
             f >> v1;
             f >> v2;
@@ -57,13 +57,13 @@ void Mesh::LoadObjectModel(const char *filename)
 
 void Mesh::ExportObjectModel(const char *filename)
 {
-    ifstream in(filename, ifstream::in);
+    std::ifstream in(filename, std::ifstream::in);
 
     int startingVertexIndex = 1;
 
     if (in.good())
     {
-        string line;
+        std::string line;
         while (getline(in, line))
         {
             // check for vertex
@@ -81,7 +81,7 @@ void Mesh::ExportObjectModel(const char *filename)
 
 void Mesh::WriteToFile(const char *filename, const int startingVertexIndex)
 {
-    ofstream out(filename, ofstream::out | ofstream::app);
+    std::ofstream out(filename, std::ofstream::out | std::ofstream::app);
 
     if (startingVertexIndex > 1)
     {
@@ -90,7 +90,7 @@ void Mesh::WriteToFile(const char *filename, const int startingVertexIndex)
 
     out << std::fixed << std::setprecision(4);
 
-    for (vector<Vertex>::iterator vertex_ptr = vertices.begin(); vertex_ptr < vertices.end(); vertex_ptr++)
+    for (std::vector<Vertex>::iterator vertex_ptr = vertices.begin(); vertex_ptr < vertices.end(); vertex_ptr++)
     {
         out << "v "
             << vertex_ptr->pos[0] << " "
@@ -99,10 +99,10 @@ void Mesh::WriteToFile(const char *filename, const int startingVertexIndex)
             << vertex_ptr->pos[3] << "\n";
     }
 
-    for (vector<Face>::iterator face_ptr = faces.begin(); face_ptr < faces.end(); face_ptr++)
+    for (std::vector<Face>::iterator face_ptr = faces.begin(); face_ptr < faces.end(); face_ptr++)
     {
         int indexarray[3];
-        for (vector<Vertex>::iterator vertex_ptr = vertices.begin(); vertex_ptr < vertices.end(); vertex_ptr++)
+        for (std::vector<Vertex>::iterator vertex_ptr = vertices.begin(); vertex_ptr < vertices.end(); vertex_ptr++)
         {
             for (int i = 0; i < 3; ++i)
             {
@@ -124,41 +124,41 @@ void Mesh::WriteToFile(const char *filename, const int startingVertexIndex)
 
 void Mesh::Translate(double x, double y, double z)
 {
-    std::unique_ptr<Matrix<4>> trans_matrix = Matrix<4>::HomoTransMatrix4D(x, y, z);
+    std::unique_ptr<lin_alg::Matrix<4>> trans_matrix = lin_alg::Matrix<4>::HomoTransMatrix4D(x, y, z);
 
     UpdateVertices(*trans_matrix);
 }
 
-void Mesh::Rotate(Matrix<4>::Axis3D a, double angle)
+void Mesh::Rotate(lin_alg::Matrix<4>::Axis3D a, double angle)
 {
-    std::unique_ptr<Matrix<4>> rot_matrix = Matrix<4>::HomoRotMatix4D(a, angle);
+    std::unique_ptr<lin_alg::Matrix<4>> rot_matrix = lin_alg::Matrix<4>::HomoRotMatix4D(a, angle);
 
     UpdateVertices(*rot_matrix);
 }
 
-void Mesh::UpdateVertices(Matrix<4> &transformation_mat)
+void Mesh::UpdateVertices(lin_alg::Matrix<4> &transformation_mat)
 {
-    for (vector<Vertex>::iterator vertex_ptr = vertices.begin(); vertex_ptr < vertices.end(); vertex_ptr++)
+    for (std::vector<Vertex>::iterator vertex_ptr = vertices.begin(); vertex_ptr < vertices.end(); vertex_ptr++)
     {
-        Vector<4> new_pos = transformation_mat * (vertex_ptr->pos);
+        lin_alg::Vector<4> new_pos = transformation_mat * (vertex_ptr->pos);
         vertex_ptr->Update_Position(new_pos);
     }
 }
 
-void Mesh::AddRotation(Matrix<4>::Axis3D a, double angle)
+void Mesh::AddRotation(lin_alg::Matrix<4>::Axis3D a, double angle)
 {
-    std::unique_ptr<Matrix<4>> rot_matrix = Matrix<4>::HomoRotMatix4D(a, angle);
+    std::unique_ptr<lin_alg::Matrix<4>> rot_matrix = lin_alg::Matrix<4>::HomoRotMatix4D(a, angle);
 
-    Matrix<4> product = *rot_matrix * transformation_queue;
+    lin_alg::Matrix<4> product = *rot_matrix * transformation_queue;
 
     transformation_queue = product;
 }
 
 void Mesh::AddTranslation(double x, double y, double z)
 {
-    std::unique_ptr<Matrix<4>> trans_matrix = Matrix<4>::HomoTransMatrix4D(x, y, z);
+    std::unique_ptr<lin_alg::Matrix<4>> trans_matrix = lin_alg::Matrix<4>::HomoTransMatrix4D(x, y, z);
 
-    Matrix<4> product = *trans_matrix * transformation_queue;
+    lin_alg::Matrix<4> product = *trans_matrix * transformation_queue;
 
     transformation_queue = product;
 }

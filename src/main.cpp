@@ -8,11 +8,11 @@ int main()
 
     mesh.ExportObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\bin\\cubenew.obj");
 
-    mesh.AddRotation(Matrix<4>::Axis3D::x, 45);
+    mesh.AddRotation(lin_alg::Matrix<4>::Axis3D::x, 45);
 
     mesh.AddTranslation(0.5, sqrt(2)/2, 0);
 
-    mesh.AddRotation(Matrix<4>::Axis3D::z, -55);
+    mesh.AddRotation(lin_alg::Matrix<4>::Axis3D::z, -55);
 
     mesh.AddTranslation(1, -1, 0);
 

@@ -1,7 +1,7 @@
 #include "vector.h"
 
 template <std::size_t N>
-double Vector<N>::Magnitude() const
+double lin_alg::Vector<N>::Magnitude() const
 {
     double sum = 0;
     for (std::size_t i = 0; i < N; ++i)
@@ -13,7 +13,7 @@ double Vector<N>::Magnitude() const
 };
 
 template <std::size_t N>
-void Vector<N>::Normalise()
+void lin_alg::Vector<N>::Normalise()
 {
     double magnitude = this.Magnitude();
 
@@ -24,7 +24,7 @@ void Vector<N>::Normalise()
 };
 
 template <std::size_t N>
-double Vector<N>::DotProduct(const Vector<N> &vector) const
+double lin_alg::Vector<N>::DotProduct(const Vector<N> &vector) const
 {
     double sum = 0;
 
@@ -37,7 +37,7 @@ double Vector<N>::DotProduct(const Vector<N> &vector) const
 }
 
 template <>
-Vector<4> Vector<4>::CrossProduct(const Vector<4> &vector) const
+lin_alg::Vector<4> lin_alg::Vector<4>::CrossProduct(const Vector<4> &vector) const
 {
     double x = values[1]*vector[2] - values[2]*vector[1];
     double y = values[2]*vector[0] - values[0]*vector[2];
@@ -48,7 +48,7 @@ Vector<4> Vector<4>::CrossProduct(const Vector<4> &vector) const
 }
 
 template <>
-Vector<3> Vector<3>::CrossProduct(const Vector<3> &vector) const
+lin_alg::Vector<3> lin_alg::Vector<3>::CrossProduct(const Vector<3> &vector) const
 {
     double x = values[1]*vector[2] - values[2]*vector[1];
     double y = values[2]*vector[0] - values[0]*vector[2];

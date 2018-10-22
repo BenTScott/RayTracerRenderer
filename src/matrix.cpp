@@ -4,7 +4,7 @@
 #include "matrix.h"
 
 template <std::size_t N>
-void Matrix<N>::InitialiseScalar(double scalar)
+void lin_alg::Matrix<N>::InitialiseScalar(double scalar)
 {
     for (std::size_t j = 0; j < N; ++j)
     {
@@ -23,7 +23,7 @@ void Matrix<N>::InitialiseScalar(double scalar)
 };
 
 template <std::size_t N>
-Matrix<N>::Matrix(const Matrix<N> &obj)
+lin_alg::Matrix<N>::Matrix(const Matrix<N> &obj)
 {
     for (std::size_t i = 0; i < N; ++i)
     {
@@ -35,7 +35,7 @@ Matrix<N>::Matrix(const Matrix<N> &obj)
 };
 
 template <std::size_t N>
-std::unique_ptr<Matrix<4>> Matrix<N>::HomoRotMatix4D(Axis3D axis, double angle)
+std::unique_ptr<lin_alg::Matrix<4>> lin_alg::Matrix<N>::HomoRotMatix4D(Axis3D axis, double angle)
 {
     double cos_angle = cos(angle * M_PI / 180);
     double sin_angle = sin(angle * M_PI / 180);
@@ -73,7 +73,7 @@ std::unique_ptr<Matrix<4>> Matrix<N>::HomoRotMatix4D(Axis3D axis, double angle)
 };
 
 template <std::size_t N>
-std::unique_ptr<Matrix<4>> Matrix<N>::HomoTransMatrix4D(double x, double y, double z)
+std::unique_ptr<lin_alg::Matrix<4>> lin_alg::Matrix<N>::HomoTransMatrix4D(double x, double y, double z)
 {
     //Initialise indentity matrix
     std::unique_ptr<Matrix<4>> translation_mat(new Matrix<4>(1));
@@ -86,15 +86,15 @@ std::unique_ptr<Matrix<4>> Matrix<N>::HomoTransMatrix4D(double x, double y, doub
 };
 
 template <std::size_t N>
-const double &Matrix<N>::operator()(int j, int k) const
+const double &lin_alg::Matrix<N>::operator()(int j, int k) const
 {
     return values[j][k];
 };
 
 template <std::size_t N>
-double &Matrix<N>::operator()(int j, int k)
+double &lin_alg::Matrix<N>::operator()(int j, int k)
 {
     return values[j][k];
 };
 
-template class Matrix<4>;
+template class lin_alg::Matrix<4>;
