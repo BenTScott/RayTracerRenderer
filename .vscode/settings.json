@@ -35,6 +35,11 @@
         "deque": "cpp",
         "ctime": "cpp",
         "iomanip": "cpp",
-        "memory": "cpp"
-    }
+        "memory": "cpp",
+        "chrono": "cpp",
+        "csetjmp": "cpp",
+        "cstring": "cpp",
+        "ratio": "cpp"
+    },
+    "C_Cpp.intelliSenseEngineFallback": "Disabled"
 }

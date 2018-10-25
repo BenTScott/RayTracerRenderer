@@ -1,8 +1,8 @@
-#include <list>
-#include "vertex.h"
-
 #ifndef INCLUDE_FACE_H_
 #define INCLUDE_FACE_H_
+
+#include <list>
+#include "vertex.h"
 
 class Face
 {

@@ -1,14 +1,16 @@
 #ifndef INCLUDE_MESH_H_
 #define INCLUDE_MESH_H_
+
 #include <vector>
 #include <memory>
 #include "vertex.h"
 #include "face.h"
 #include "matrix.h"
 #include "vector.h"
+#include "sceneobject.h"
 
 // Implements Face-Vertex Mesh model
-class Mesh
+class Mesh : public virtual SceneObject
 {
 public:
   Mesh() : transformation_queue(1){};
@@ -26,6 +28,11 @@ public:
   {
     UpdateVertices(transformation_queue);
     transformation_queue = lin_alg::Matrix<4>(1);
+  };
+
+  virtual bool Intersect(Ray ray, double &out_t) override
+  {
+    return true;
   };
   
   std::vector<Vertex> vertices;
