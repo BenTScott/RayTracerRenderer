@@ -44,8 +44,7 @@ lin_alg::Vector<4> lin_alg::Vector<N>::CrossProduct(const Vector<4> &rhs, const 
     double x = rhs[1] * lhs[2] - rhs[2] * lhs[1];
     double y = rhs[2] * lhs[0] - rhs[0] * lhs[2];
     double z = rhs[0] * lhs[1] - rhs[1] * lhs[0];
-    double array[] = {x, y, z, 1};
-    Vector<4> result(array);
+    Vector<4> result({x, y, z, 1});
     return result;
 };
 
@@ -55,8 +54,7 @@ lin_alg::Vector<3> lin_alg::Vector<N>::CrossProduct(const Vector<3> &rhs, const 
     double x = rhs[1] * lhs[2] - rhs[2] * lhs[1];
     double y = rhs[2] * lhs[0] - rhs[0] * lhs[2];
     double z = rhs[0] * lhs[1] - rhs[1] * lhs[0];
-    double array[] = {x, y, z};
-    Vector<3> result(array);
+    Vector<3> result({x, y, z});
     return result;
 };
 

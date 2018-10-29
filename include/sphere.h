@@ -5,7 +5,7 @@
 #include "vector.h"
 #include "sceneobject.h"
 
-class Sphere : virtual public SceneObject
+class Sphere : public SceneObject
 {
 public:
   Sphere() : centre(), radius(), colour(){};
@@ -19,7 +19,7 @@ public:
 
   ~Sphere(){};
 
-  virtual bool Intersect(Ray ray, double &out_t) override
+  virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override
   {
     lin_alg::Vector<3> local_ray_start = ray.init_position - centre.GetAsVector3();
 
@@ -31,12 +31,20 @@ public:
 
     if (discriminant <= 0)
     {
-      return false;
+      return nullptr;
     }
 
-    out_t = (-b + sqrt(discriminant))/2;
+    double t1 = (-b + sqrt(discriminant))/2.0;
+    double t2 = (-b - sqrt(discriminant))/2.0;
 
-    return true;
+    if (t1 < 0 && t2 < 0)
+    {
+      return nullptr;
+    }
+
+    std::shared_ptr<RayIntersect> intersect(new RayIntersect(t1 < t2 && t1 > 0 ? t1 : t2, colour, this));
+
+    return intersect;
   };
 
   lin_alg::Vector<4> centre;

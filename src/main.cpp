@@ -4,6 +4,7 @@
 #include "sphere.h"
 #include "camera.h"
 #include "scene.h"
+#include "boundingsphere.h"
 
 // void encodeOneStep(const char *filename, std::vector<unsigned char> &image, unsigned width, unsigned height)
 // {
@@ -17,43 +18,9 @@
 
 int main()
 {
-    // // Mesh mesh;
-    // // mesh.LoadObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\bin\\cube.obj");
-
-    // // mesh.ExportObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\bin\\cubenew.obj");
-
-    // // mesh.AddRotation(lin_alg::Matrix<4>::Axis3D::x, 45);
-
-    // // mesh.AddTranslation(0.5, sqrt(2)/2, 0);
-
-    // // mesh.AddRotation(lin_alg::Matrix<4>::Axis3D::z, -55);
-
-    // // mesh.AddTranslation(1, -1, 0);
-
-    // // mesh.ExecuteTransformation();
-
-    // // mesh.ExportObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\bin\\cubenew.obj");
-
     const char *filename = ("C:\\Users\\benty\\Documents\\Projects\\C++\\bin\\render.png");
 
-    // //generate some image
-    // unsigned width = 512, height = 512;
-    // std::vector<unsigned char> image;
-    // image.resize(width * height * 4);
-    // for (unsigned y = 0; y < height; y++)
-    //     for (unsigned x = 0; x < width; x++)
-    //     {
-    //         image[4 * width * y + 4 * x + 0] = 255;
-    //         image[4 * width * y + 4 * x + 1] = 255;
-    //         image[4 * width * y + 4 * x + 2] = 0;
-    //         image[4 * width * y + 4 * x + 3] = 255 - ((double)(x + y)/(width+height))*255.0;
-    //     }
-
-    // encodeOneStep(filename, image, width, height);
-
-    lin_alg::Vector<4> pos({-1, 0, -3, 1});
-    lin_alg::Vector<3> col({1, 0, 0});
-    Sphere *sphere = new Sphere(pos, 1, col);
+    Sphere *sphere = new Sphere({-0.3, 1, -3.7, 1}, 1, {0.7, 0.2, 0.1});
     
     lin_alg::Vector<3> cam_up({0, 1, 0});
     lin_alg::Vector<3> cam_forward({0, 0, -1});
@@ -62,8 +29,30 @@ int main()
     Camera cam(cam_up, cam_forward, cam_focal, 1);
 
     cam.InitialiseScreenSize(2, 2);
-    
-    Scene scene(cam);
+
+    Sphere *sphere2 = new Sphere({1.5, 1, -4, 1}, 2, {0.4, 0.9, 0});
+
+    Sphere *sphere3 = new Sphere({-3.5, 3, -4, 1}, 0.5, {0.4, 0, 0.6});
+
+    Mesh* mesh = new Mesh();
+
+    mesh->LoadObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\bin\\cube.obj");
+
+    mesh->AddTranslation(-1.5, -2, -4);
+
+    mesh->ExecuteTransformation();
+
+    mesh->SetColour({0.4, 0.4, 0.4});
+
+    BoundingSphere* bound = new BoundingSphere(mesh);
+
+    Scene scene(cam, {0, 0, 0});
     scene.AddObject(sphere);
-    scene.Render(filename, 512, 512);
+    scene.AddObject(sphere2);
+    scene.AddObject(sphere3);
+    scene.AddObject(bound);
+
+
+
+    scene.Render(filename, 10000, 10000);
 };

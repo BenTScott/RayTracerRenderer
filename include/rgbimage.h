@@ -24,8 +24,6 @@ class RGBImage
 
     ~RGBImage(){};
 
-    //const lin_alg::Vector<3> &operator()(unsigned i, unsigned j) const;
-
     void SetPixel(unsigned x, unsigned y, lin_alg::Vector<3> colour);
 
     void Encode(const char *filename);

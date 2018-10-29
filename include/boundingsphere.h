@@ -9,7 +9,7 @@ class BoundingSphere : public Sphere
 public:
   BoundingSphere(Mesh *contained_mesh);
 
-  virtual bool Intersect(Ray ray, double &out_t) override;
+  virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override;
 
   Mesh *contained_mesh;
 private:

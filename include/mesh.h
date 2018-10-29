@@ -24,16 +24,15 @@ public:
   void AddRotation(lin_alg::Matrix<4>::Axis3D a, double angle);
   void AddTranslation(double x, double y, double z);
 
+  void SetColour(lin_alg::Vector<3> colour);
+
   void ExecuteTransformation()
   {
     UpdateVertices(transformation_queue);
     transformation_queue = lin_alg::Matrix<4>(1);
   };
 
-  virtual bool Intersect(Ray ray, double &out_t) override
-  {
-    return true;
-  };
+  virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override;
   
   std::vector<Vertex> vertices;
   std::vector<Face> faces;

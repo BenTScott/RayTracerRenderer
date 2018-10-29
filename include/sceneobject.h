@@ -3,15 +3,16 @@
 
 #include <memory>
 #include "ray.h"
+#include "rayintersect.h"
 
 class SceneObject
 {
   public:
     SceneObject(){};
 
-    ~SceneObject(){};
+    virtual ~SceneObject(){};
 
-    virtual bool Intersect(Ray ray, double &out_t) = 0;
+    virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) = 0;
 };
 
 #endif
