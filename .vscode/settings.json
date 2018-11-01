@@ -39,7 +39,11 @@
         "chrono": "cpp",
         "csetjmp": "cpp",
         "cstring": "cpp",
-        "ratio": "cpp"
+        "ratio": "cpp",
+        "bitset": "cpp",
+        "optional": "cpp",
+        "string_view": "cpp",
+        "numeric": "cpp"
     },
     "C_Cpp.intelliSenseEngineFallback": "Disabled"
 }

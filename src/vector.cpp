@@ -38,8 +38,7 @@ double lin_alg::Vector<N>::DotProduct(const lin_alg::Vector<N> &vector) const
     return sum;
 };
 
-template <std::size_t N>
-lin_alg::Vector<4> lin_alg::Vector<N>::CrossProduct(const Vector<4> &rhs, const Vector<4> &lhs)
+lin_alg::Vector<4> lin_alg::CrossProduct(const Vector<4> &rhs, const Vector<4> &lhs)
 {
     double x = rhs[1] * lhs[2] - rhs[2] * lhs[1];
     double y = rhs[2] * lhs[0] - rhs[0] * lhs[2];
@@ -48,8 +47,7 @@ lin_alg::Vector<4> lin_alg::Vector<N>::CrossProduct(const Vector<4> &rhs, const 
     return result;
 };
 
-template <std::size_t N>
-lin_alg::Vector<3> lin_alg::Vector<N>::CrossProduct(const Vector<3> &rhs, const Vector<3> &lhs)
+lin_alg::Vector<3> lin_alg::CrossProduct(const Vector<3> &rhs, const Vector<3> &lhs)
 {
     double x = rhs[1] * lhs[2] - rhs[2] * lhs[1];
     double y = rhs[2] * lhs[0] - rhs[0] * lhs[2];
@@ -84,3 +82,4 @@ lin_alg::Vector<3> lin_alg::Vector<N>::GetAsVector3()
 
 template class lin_alg::Vector<4>;
 template class lin_alg::Vector<3>;
+template class lin_alg::Vector<2>;

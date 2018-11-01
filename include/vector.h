@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <iterator>
 #include <assert.h>
+#include <sstream>
 
 namespace lin_alg
 {
@@ -55,6 +56,27 @@ class Vector
         return values[i];
     };
 
+    bool operator==(const Vector<N> &rhs) const
+    {
+        bool equal = true;
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            equal = equal && values[i] == rhs[i];
+
+            if (!equal)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool operator!=(const Vector<N> &rhs) const
+    {
+        return !(*this == rhs);
+    }
+
     Vector<N> &operator+=(const Vector<N> &rhs)
     {
         for (std::size_t i = 0; i < N; ++i)
@@ -101,10 +123,6 @@ class Vector
 
     double DotProduct(const Vector<N> &vector) const;
 
-    static Vector<3> CrossProduct(const Vector<3> &rhs, const Vector<3> &lhs);
-
-    static Vector<4> CrossProduct(const Vector<4> &rhs, const Vector<4> &lhs);
-
     Vector<3> GetAsVector3();
 
     Vector<N> Scale(double scalar)
@@ -116,7 +134,7 @@ class Vector
         }
         return result;
     }
-
+    
   private:
     void Intialise()
     {
@@ -128,6 +146,10 @@ class Vector
 
     double values[N];
 };
+
+extern Vector<3> CrossProduct(const Vector<3> &rhs, const Vector<3> &lhs);
+
+extern Vector<4> CrossProduct(const Vector<4> &rhs, const Vector<4> &lhs);
 
 } // namespace lin_alg
 

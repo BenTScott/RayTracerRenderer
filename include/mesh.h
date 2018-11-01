@@ -18,10 +18,10 @@ public:
   ~Mesh(){};
 
   void LoadObjectModel(const char *filename);
-  void ExportObjectModel(const char *filename);
+  void ExportObjectModel(const char *filename, bool overwrite = false);
   void Translate(double x, double y, double z);
-  void Rotate(lin_alg::Matrix<4>::Axis3D a, double angle);
-  void AddRotation(lin_alg::Matrix<4>::Axis3D a, double angle);
+  void Rotate(lin_alg::Axis3D a, double angle);
+  void AddRotation(lin_alg::Axis3D a, double angle);
   void AddTranslation(double x, double y, double z);
 
   void SetColour(lin_alg::Vector<3> colour);
@@ -39,7 +39,7 @@ public:
 
 private:
   void UpdateVertices(lin_alg::Matrix<4> &transformation_mat);
-  void WriteToFile(const char *filename, const int startingVertexIndex);
+  void WriteToFile(const char *filename, const int startingVertexIndex, bool overwrite = false);
   lin_alg::Matrix<4> transformation_queue;
 };
 

@@ -2,6 +2,7 @@
 #include <iterator>
 #include <algorithm>
 #include "vector.h"
+#include "matrix.h"
 
 class Face;
 
@@ -12,7 +13,8 @@ class Vertex
 {
 public:
   Vertex(){};
-  Vertex(double x, double y, double z) {
+  Vertex(double x, double y, double z)
+  {
     pos[0] = x;
     pos[1] = y;
     pos[2] = z;
@@ -27,7 +29,12 @@ public:
     {
       pos[i] = new_pos[i];
     }
-  }
+  };
+
+  void Transform(lin_alg::Matrix<4> transformation_matrix)
+  {
+    pos = transformation_matrix * pos;
+  };
 
   lin_alg::Vector<4> pos;
   std::list<Face *> faces;

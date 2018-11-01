@@ -35,7 +35,19 @@ lin_alg::Matrix<N>::Matrix(const Matrix<N> &obj)
 };
 
 template <std::size_t N>
-std::unique_ptr<lin_alg::Matrix<4>> lin_alg::Matrix<N>::HomoRotMatix4D(Axis3D axis, double angle)
+const double &lin_alg::Matrix<N>::operator()(int j, int k) const
+{
+    return values[j][k];
+};
+
+template <std::size_t N>
+double &lin_alg::Matrix<N>::operator()(int j, int k)
+{
+    return values[j][k];
+};
+
+
+std::unique_ptr<lin_alg::Matrix<4>> lin_alg::HomoRotMatix4D(Axis3D axis, double angle)
 {
     double cos_angle = cos(angle * M_PI / 180);
     double sin_angle = sin(angle * M_PI / 180);
@@ -44,7 +56,7 @@ std::unique_ptr<lin_alg::Matrix<4>> lin_alg::Matrix<N>::HomoRotMatix4D(Axis3D ax
 
     (*rotation_mat)(3, 3) = 1;
 
-    if (axis == Axis3D::x)
+    if (axis == lin_alg::Axis3D::x)
     {
         (*rotation_mat)(0, 0) = 1;
         (*rotation_mat)(1, 1) = cos_angle;
@@ -52,7 +64,7 @@ std::unique_ptr<lin_alg::Matrix<4>> lin_alg::Matrix<N>::HomoRotMatix4D(Axis3D ax
         (*rotation_mat)(2, 1) = -sin_angle;
         (*rotation_mat)(2, 2) = cos_angle;
     }
-    else if (axis == Axis3D::y)
+    else if (axis == lin_alg::Axis3D::y)
     {
         (*rotation_mat)(0, 0) = cos_angle;
         (*rotation_mat)(0, 2) = -sin_angle;
@@ -72,8 +84,7 @@ std::unique_ptr<lin_alg::Matrix<4>> lin_alg::Matrix<N>::HomoRotMatix4D(Axis3D ax
     return rotation_mat;
 };
 
-template <std::size_t N>
-std::unique_ptr<lin_alg::Matrix<4>> lin_alg::Matrix<N>::HomoTransMatrix4D(double x, double y, double z)
+std::unique_ptr<lin_alg::Matrix<4>> lin_alg::HomoTransMatrix4D(double x, double y, double z)
 {
     //Initialise indentity matrix
     std::unique_ptr<Matrix<4>> translation_mat(new Matrix<4>(1));
@@ -85,16 +96,5 @@ std::unique_ptr<lin_alg::Matrix<4>> lin_alg::Matrix<N>::HomoTransMatrix4D(double
     return translation_mat;
 };
 
-template <std::size_t N>
-const double &lin_alg::Matrix<N>::operator()(int j, int k) const
-{
-    return values[j][k];
-};
-
-template <std::size_t N>
-double &lin_alg::Matrix<N>::operator()(int j, int k)
-{
-    return values[j][k];
-};
-
 template class lin_alg::Matrix<4>;
+template class lin_alg::Matrix<2>;

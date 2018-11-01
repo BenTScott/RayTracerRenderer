@@ -12,6 +12,8 @@
 #include "matrix.h"
 #include "plane.h"
 
+using namespace lin_alg;
+
 // Adapted from https://stackoverflow.com/a/21153233
 // TODO: Fix obj reading for face lines
 void Mesh::LoadObjectModel(const char *filename)
@@ -56,8 +58,13 @@ void Mesh::LoadObjectModel(const char *filename)
     in.close();
 };
 
-void Mesh::ExportObjectModel(const char *filename)
+void Mesh::ExportObjectModel(const char *filename, bool overwrite)
 {
+    if (overwrite)
+    {
+        return WriteToFile(filename, 1, true);
+    };
+
     std::ifstream in(filename, std::ifstream::in);
 
     int startingVertexIndex = 1;
@@ -80,9 +87,20 @@ void Mesh::ExportObjectModel(const char *filename)
     WriteToFile(filename, startingVertexIndex);
 }
 
-void Mesh::WriteToFile(const char *filename, const int startingVertexIndex)
+void Mesh::WriteToFile(const char *filename, const int startingVertexIndex, bool overwrite)
 {
-    std::ofstream out(filename, std::ofstream::out | std::ofstream::app);
+    std::_Ios_Openmode openmode = std::ofstream::out;
+
+    if (!overwrite)
+    {
+        openmode = openmode | std::ofstream::app;
+    }
+    else
+    {
+        openmode = openmode | std::ofstream::trunc;
+    }
+
+    std::ofstream out(filename, openmode);
 
     if (startingVertexIndex > 1)
     {
@@ -125,41 +143,41 @@ void Mesh::WriteToFile(const char *filename, const int startingVertexIndex)
 
 void Mesh::Translate(double x, double y, double z)
 {
-    std::unique_ptr<lin_alg::Matrix<4>> trans_matrix = lin_alg::Matrix<4>::HomoTransMatrix4D(x, y, z);
+    std::unique_ptr<Matrix<4>> trans_matrix = HomoTransMatrix4D(x, y, z);
 
     UpdateVertices(*trans_matrix);
 }
 
-void Mesh::Rotate(lin_alg::Matrix<4>::Axis3D a, double angle)
+void Mesh::Rotate(Axis3D a, double angle)
 {
-    std::unique_ptr<lin_alg::Matrix<4>> rot_matrix = lin_alg::Matrix<4>::HomoRotMatix4D(a, angle);
+    std::unique_ptr<Matrix<4>> rot_matrix = HomoRotMatix4D(a, angle);
 
     UpdateVertices(*rot_matrix);
 }
 
-void Mesh::UpdateVertices(lin_alg::Matrix<4> &transformation_mat)
+void Mesh::UpdateVertices(Matrix<4> &transformation_mat)
 {
     for (std::vector<Vertex>::iterator vertex_ptr = vertices.begin(); vertex_ptr < vertices.end(); vertex_ptr++)
     {
-        lin_alg::Vector<4> new_pos = transformation_mat * (vertex_ptr->pos);
+        Vector<4> new_pos = transformation_mat * (vertex_ptr->pos);
         vertex_ptr->Update_Position(new_pos);
     }
 }
 
-void Mesh::AddRotation(lin_alg::Matrix<4>::Axis3D a, double angle)
+void Mesh::AddRotation(Axis3D a, double angle)
 {
-    std::unique_ptr<lin_alg::Matrix<4>> rot_matrix = lin_alg::Matrix<4>::HomoRotMatix4D(a, angle);
+    std::unique_ptr<Matrix<4>> rot_matrix = HomoRotMatix4D(a, angle);
 
-    lin_alg::Matrix<4> product = *rot_matrix * transformation_queue;
+    Matrix<4> product = *rot_matrix * transformation_queue;
 
     transformation_queue = product;
 }
 
 void Mesh::AddTranslation(double x, double y, double z)
 {
-    std::unique_ptr<lin_alg::Matrix<4>> trans_matrix = lin_alg::Matrix<4>::HomoTransMatrix4D(x, y, z);
+    std::unique_ptr<Matrix<4>> trans_matrix = HomoTransMatrix4D(x, y, z);
 
-    lin_alg::Matrix<4> product = *trans_matrix * transformation_queue;
+    Matrix<4> product = *trans_matrix * transformation_queue;
 
     transformation_queue = product;
 }
@@ -167,7 +185,7 @@ void Mesh::AddTranslation(double x, double y, double z)
 std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
 {
     double t = INFINITY;
-    lin_alg::Vector<3> colour;
+    Vector<3> colour;
     for (std::vector<Face>::iterator face_iterator = faces.begin(); face_iterator < faces.end(); face_iterator++)
     {
         Plane face_plane(face_iterator->normal, face_iterator->vertices[0]->pos.GetAsVector3());
@@ -182,25 +200,21 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
 
         auto intersect_pos = ray.init_position + ray.direction.Scale(face_intersect->t);
 
-        lin_alg::Vector<3> vertex_0 = face_iterator->vertices[0]->pos.GetAsVector3();
-        lin_alg::Vector<3> vertex_1 = face_iterator->vertices[1]->pos.GetAsVector3();
-        lin_alg::Vector<3> vertex_2 = face_iterator->vertices[2]->pos.GetAsVector3();
+        Vector<3> vertex_0 = face_iterator->vertices[0]->pos.GetAsVector3();
+        Vector<3> vertex_1 = face_iterator->vertices[1]->pos.GetAsVector3();
+        Vector<3> vertex_2 = face_iterator->vertices[2]->pos.GetAsVector3();
 
         // Get vectors between face verticies
-        lin_alg::Vector<3> vector1 = vertex_1 - vertex_0;
-        lin_alg::Vector<3> vector2 = vertex_2 - vertex_1;
-        lin_alg::Vector<3> vector3 = vertex_0 - vertex_2;
+        Vector<3> vector1 = vertex_1 - vertex_0;
+        Vector<3> vector2 = vertex_2 - vertex_1;
+        Vector<3> vector3 = vertex_0 - vertex_2;
 
-        auto diff1 = intersect_pos - vertex_0;
-        auto diff2 = intersect_pos - vertex_1;
-        auto diff3 = intersect_pos - vertex_2;
-
-        lin_alg::Vector<3> norm1 = lin_alg::Vector<3>::CrossProduct(intersect_pos - vertex_0, vector1);
-        lin_alg::Vector<3> norm2 = lin_alg::Vector<3>::CrossProduct(intersect_pos - vertex_1, vector2);
-        lin_alg::Vector<3> norm3 = lin_alg::Vector<3>::CrossProduct(intersect_pos - vertex_2, vector3);
+        Vector<3> norm1 = CrossProduct(intersect_pos - vertex_0, vector1);
+        Vector<3> norm2 = CrossProduct(intersect_pos - vertex_1, vector2);
+        Vector<3> norm3 = CrossProduct(intersect_pos - vertex_2, vector3);
 
         // TODO check if another dot prod is needed
-        if (norm1.DotProduct(norm2) > 0 && norm1.DotProduct(norm3) > 0 && norm2.DotProduct(norm3) > 0)
+        if (norm1.DotProduct(norm2) >= 0 && norm1.DotProduct(norm3) >= 0 && norm2.DotProduct(norm3) >= 0)
         {
             t = face_intersect->t;
             colour = face_iterator->colour;
@@ -216,7 +230,7 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
     return intersect;
 }
 
-void Mesh::SetColour(lin_alg::Vector<3> colour)
+void Mesh::SetColour(Vector<3> colour)
 {
     for (std::vector<Face>::iterator face_iterator = faces.begin(); face_iterator < faces.end(); face_iterator++)
     {

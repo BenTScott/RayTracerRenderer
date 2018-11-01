@@ -5,6 +5,7 @@
 #include <iostream>
 #include <math.h>
 #include <vector.h>
+#include <memory>
 
 namespace lin_alg
 {
@@ -13,13 +14,6 @@ template <std::size_t N>
 class Matrix
 {
   public:
-    enum Axis3D
-    {
-        x,
-        y,
-        z
-    };
-
     Matrix()
     {
         InitialiseScalar(0);
@@ -49,9 +43,29 @@ class Matrix
 
     double &operator()(int i, int j);
 
-    static std::unique_ptr<Matrix<4>> HomoRotMatix4D(Axis3D axis, double angle);
+    bool operator==(const Matrix<N> &B) const
+    {
+        bool equal = true;
+        for (std::size_t i = 0; i < N; i++)
+        {
+            for (std::size_t j = 0; j < N; j++)
+            {
+                equal = equal && values[i][j] == B(i, j);
 
-    static std::unique_ptr<Matrix<4>> HomoTransMatrix4D(double x, double y, double z);
+                if (!equal)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    };
+
+    bool operator!=(const Matrix<N> &B) const
+    {
+        return !(*this == B);
+    };
 
     Matrix<N> operator*(const Matrix<N> &B)
     {
@@ -122,6 +136,17 @@ class Matrix
     double values[N][N];
     void InitialiseScalar(double scalar);
 };
+
+enum Axis3D
+{
+    x,
+    y,
+    z
+};
+
+extern std::unique_ptr<Matrix<4>> HomoRotMatix4D(Axis3D axis, double angle);
+
+extern std::unique_ptr<Matrix<4>> HomoTransMatrix4D(double x, double y, double z);
 
 } // namespace lin_alg
 

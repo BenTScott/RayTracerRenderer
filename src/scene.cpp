@@ -38,7 +38,6 @@ void Scene::Render(const char *filename, unsigned resolution_height, unsigned re
                 };
             }
 
-            // look at 23/21
             image.SetPixel(i, j, colour);
         }
     }

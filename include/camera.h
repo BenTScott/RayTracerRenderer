@@ -13,7 +13,7 @@ public:
   {
     Camera::camera_forward.Normalise();
     Camera::camera_up.Normalise();
-    camera_right = lin_alg::Vector<3>::CrossProduct(camera_up, camera_forward);
+    camera_right = lin_alg::CrossProduct(camera_up, camera_forward);
     screen_width = 1;
     screen_height = 1;
     resolution_width = 100;
