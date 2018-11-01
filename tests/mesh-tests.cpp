@@ -4,7 +4,7 @@
 TEST_CASE("Can load obj file")
 {
     Mesh mesh;
-    mesh.LoadObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\tests\\test_data\\testmesh.obj");
+    mesh.LoadObjectModel(".\\tests\\test_data\\testmesh.obj");
     
     lin_alg::Vector<4> expected_v1({1, 0, 0, 1});
     lin_alg::Vector<4> expected_v2({-1, 0, 0, 1});
@@ -26,11 +26,11 @@ TEST_CASE("Can export obj file")
 {
     // Values should be preserved in the export
     Mesh mesh1;
-    mesh1.LoadObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\tests\\test_data\\testmesh.obj");
-    mesh1.ExportObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\tests\\test_data\\exporttestmesh.obj", true);
+    mesh1.LoadObjectModel(".\\tests\\test_data\\testmesh.obj");
+    mesh1.ExportObjectModel(".\\tests\\test_data\\exporttestmesh.obj", true);
     
     Mesh mesh;
-    mesh.LoadObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\tests\\test_data\\exporttestmesh.obj");
+    mesh.LoadObjectModel(".\\tests\\test_data\\exporttestmesh.obj");
 
     lin_alg::Vector<4> expected_v1({1, 0, 0, 1});
     lin_alg::Vector<4> expected_v2({-1, 0, 0, 1});
@@ -51,7 +51,7 @@ TEST_CASE("Can export obj file")
 TEST_CASE("Can translate mesh")
 {
     Mesh mesh;
-    mesh.LoadObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\tests\\test_data\\testmesh.obj");
+    mesh.LoadObjectModel(".\\tests\\test_data\\testmesh.obj");
     
     lin_alg::Vector<4> expected_v1({2, 2, 3, 1});
     lin_alg::Vector<4> expected_v2({0, 2, 3, 1});
@@ -67,7 +67,7 @@ TEST_CASE("Can translate mesh")
 TEST_CASE("Can rotate mesh")
 {
     Mesh mesh;
-    mesh.LoadObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\tests\\test_data\\testmesh.obj");
+    mesh.LoadObjectModel(".\\tests\\test_data\\testmesh.obj");
     
     lin_alg::Vector<4> expected_v1({1, 0, 0, 1});
     lin_alg::Vector<4> expected_v2({-1, 0, 0, 1});
@@ -82,7 +82,7 @@ TEST_CASE("Can rotate mesh")
 TEST_CASE("Can set colour")
 {
     Mesh mesh;
-    mesh.LoadObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\tests\\test_data\\testmesh.obj");
+    mesh.LoadObjectModel(".\\tests\\test_data\\testmesh.obj");
 
     lin_alg::Vector<3> colour({1,1,1});
 

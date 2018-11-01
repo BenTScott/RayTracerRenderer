@@ -15,7 +15,6 @@
 using namespace lin_alg;
 
 // Adapted from https://stackoverflow.com/a/21153233
-// TODO: Fix obj reading for face lines
 void Mesh::LoadObjectModel(const char *filename)
 {
     std::ifstream in(filename, std::ifstream::in);

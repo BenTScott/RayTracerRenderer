@@ -8,8 +8,8 @@
 
 int main()
 {
-    const char *filename = ("C:\\Users\\benty\\Documents\\Projects\\C++\\bin\\render.png");
-    
+    std::cout << "Rendering first image..." << std::endl;
+
     lin_alg::Vector<3> cam_up({0, 1, 0});
     lin_alg::Vector<3> cam_forward({0, 0, -1});
     lin_alg::Vector<3> cam_focal({0, 0, 1});
@@ -18,17 +18,28 @@ int main()
 
     cam.InitialiseScreenSize(2, 2);
 
-    Sphere *sphere = new Sphere({1.5, 1, -4, 1}, 2, {0.1, 0.7, 0.1});
+    Scene scene1(cam, {0.2, 0.2, 0.2});
 
-    Mesh* mesh = new Mesh();
+    Sphere *sphere1 = new Sphere({0.75, 0.5, -4, 1}, 2.75, {0.1, 1, 0});
 
-    mesh->LoadObjectModel("C:\\Users\\benty\\Documents\\Projects\\C++\\bin\\cube.obj");
+    scene1.AddObject(sphere1);
+
+    const char *filename1 = (".\\out\\render1.png");
+    scene1.Render(filename1, 5000, 5000);
+
+    std::cout << "Rendering second image..." << std::endl;
+
+    Sphere *sphere2 = new Sphere({1.5, 1, -4, 1}, 2, {0.1, 0.7, 0.1});
+
+    Mesh *mesh = new Mesh();
+
+    mesh->LoadObjectModel(".\\data\\cube.obj");
 
     mesh->AddTranslation(-1.5, -1.5, -2);
 
     mesh->ExecuteTransformation();
 
-    mesh->faces[2].colour = {0, 0, 1};    
+    mesh->faces[2].colour = {0, 0, 1};
     mesh->faces[3].colour = {0, 0, 1};
 
     mesh->faces[4].colour = {0, 1, 0};
@@ -37,11 +48,12 @@ int main()
     mesh->faces[10].colour = {1, 0, 0};
     mesh->faces[11].colour = {1, 0, 0};
 
-    BoundingSphere* bound = new BoundingSphere(mesh);
+    BoundingSphere *bound = new BoundingSphere(mesh);
 
-    Scene scene(cam, {0.2, 0.2, 0.2});
-    scene.AddObject(sphere);
-    scene.AddObject(bound);
-    
-    scene.Render(filename, 2000, 2000);
+    Scene scene2(cam, {0.2, 0.2, 0.2});
+    scene2.AddObject(sphere2);
+    scene2.AddObject(bound);
+
+    const char *filename2 = (".\\out\\render2.png");
+    scene2.Render(filename2, 5000, 5000);
 };
