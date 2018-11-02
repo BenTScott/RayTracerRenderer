@@ -19,9 +19,11 @@ TESTS := $(addprefix $(TESTDIR)/,$(shell dir /B $(TESTDIR)\*.cpp))
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
+	$(shell if not exist "bin" mkdir bin)
 	$(CC) $^ -g -o $(TARGET)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
+	$(shell if not exist "build" mkdir build)
 	$(CC) $(CFLAGS) $(INCLUDE) -c -g -o $@ $<
 
 clean:
