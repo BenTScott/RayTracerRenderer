@@ -1,4 +1,3 @@
 bin/*
 build/*
-.vscode/*
-Notes.md
+tests/catch2/tests-main.o

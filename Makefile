@@ -25,14 +25,18 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CC) $(CFLAGS) $(INCLUDE) -c -g -o $@ $<
 
 clean:
-	del /s /q "$(TARGET)" "$(TESTSTARGET)" $(BUILDDIR)
+	del /s /q "$(TARGET)" "$(TESTSTARGET)" $(BUILDDIR) "$(TESTDIR)\catch2\tests-main.o"
 
 run: all
 	./$(TARGET)
 
 .PHONY: tests
-tests: $(filter-out $(BUILDDIR)/main.o, $(OBJECTS))
-	$(CC) $(TESTDIR)/catch2/tests-main.o $^ $(TESTS) $(INCLUDE) -o $(TESTSTARGET)
+tests: $(TESTDIR)\catch2\tests-main.o $(filter-out $(BUILDDIR)/main.o, $(OBJECTS))
+	$(CC) $(CFLAGS) $^ $(TESTS) $(INCLUDE) -o $(TESTSTARGET)
+	./$(TESTSTARGET)
+
+$(TESTDIR)\catch2\tests-main.o:
+	$(CC) $(CFLAGS) $(TESTDIR)\catch2\tests-main.cpp -I tests\catch2 -c -o $@
 
 debug:
 	echo $(OBJECTS)

@@ -28,5 +28,13 @@
                 "run"
             ]
         }
+        {
+            "label": "runTests",
+            "type": "shell",
+            "command": "mingw32-make",
+            "args": [
+                "tests"
+            ]
+        }
     ]
 }
