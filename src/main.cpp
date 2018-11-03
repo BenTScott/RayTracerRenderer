@@ -41,8 +41,8 @@ int main()
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
-    DirectionalLight *light1 = new DirectionalLight({1,1,0.5}, 0.7);
-    DirectionalLight *light2 = new DirectionalLight({-1,1,1.5}, 0.3);
+    DirectionalLight *light1 = new DirectionalLight({1,1,0.5}, 0.6);
+    DirectionalLight *light2 = new DirectionalLight({-1,1,1.5}, 0.5);
 
     BoundingSphere *bound = new BoundingSphere(mesh);
 

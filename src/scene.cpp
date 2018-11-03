@@ -45,7 +45,7 @@ void Scene::Render(const char *filename, unsigned resolution_width, unsigned res
                 {
                     double diffuse_component = (*light_iterator)->direction.DotProduct(closest->normal)*(*light_iterator)->intensity;
 
-                    total_diffuse_component = std::max(total_diffuse_component,std::max(diffuse_component, 0.0));
+                    total_diffuse_component += std::max(diffuse_component, 0.0);
                 }
 
                 double colour_scale = std::min(ambient_intensity + total_diffuse_component, 1.0);
