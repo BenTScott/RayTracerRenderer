@@ -17,17 +17,7 @@ class Plane : public SceneObject
         colour = obj.colour;
     };
 
-    virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override
-    {
-        if (ray.direction.DotProduct(point) == 0)
-        {
-            return nullptr;
-        };
-
-        double t = (point - ray.init_position).DotProduct(normal) / normal.DotProduct(ray.direction);
-        std::shared_ptr<RayIntersect> intersect(new RayIntersect(t, colour, this));
-        return intersect;
-    };
+    virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override;
 
     lin_alg::Vector<3> normal;
     lin_alg::Vector<3> point;
