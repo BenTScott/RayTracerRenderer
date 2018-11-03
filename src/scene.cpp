@@ -17,8 +17,6 @@ void Scene::Render(const char *filename, unsigned resolution_width, unsigned res
     cam.InitialiseResolution(resolution_width, resolution_height);
     RGBImage image(resolution_width, resolution_height);
 
-    lin_alg::Vector<3> red({1, 0, 0});
-
     for (unsigned i = 0; i < resolution_width; ++i)
     {
         for (unsigned j = 0; j < resolution_height; ++j)

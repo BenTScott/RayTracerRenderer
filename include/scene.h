@@ -18,6 +18,10 @@ public:
     {
       delete *iter;
     }
+    for (std::vector<DirectionalLight *>::iterator iter = light_sources.end() - 1; iter >= light_sources.begin(); iter--)
+    {
+      delete *iter;
+    }
   };
 
   void AddObject(SceneObject *object);

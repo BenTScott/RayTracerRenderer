@@ -13,9 +13,9 @@ int main()
 
     lin_alg::Vector<3> cam_up({0, 1, 0});
     lin_alg::Vector<3> cam_forward({0, 0, -1});
-    lin_alg::Vector<3> cam_focal({0, 0, 1});
+    lin_alg::Vector<3> cam_focal({0, 0, 4});
 
-    Camera cam(cam_up, cam_forward, cam_focal, 1);
+    Camera cam(cam_up, cam_forward, cam_focal, 2);
 
     cam.InitialiseScreenSize(32.0/9.0, 2);
 
@@ -40,15 +40,15 @@ int main()
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
-    DirectionalLight *light = new DirectionalLight({1, 2, 1}, 0.7);
+    DirectionalLight *light = new DirectionalLight({1, 2, 0.5}, 0.7);
 
     BoundingSphere *bound = new BoundingSphere(mesh);
 
     Scene scene(cam, {0, 0, 0}, 0.2);
     scene.AddObject(sphere);
-    scene.AddObject(bound);
-    scene.AddObject(plane);
+    //scene.AddObject(bound);
+    //scene.AddObject(plane);
     scene.AddLightSource(light);
     const char *filename = (".\\out\\render.png");
-    scene.Render(filename, 1920*8, 1080*8);
+    scene.Render(filename, 1920/4, 1080/4);
 };
