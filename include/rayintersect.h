@@ -10,7 +10,7 @@ class RayIntersect
 {
   public:
     RayIntersect(){};
-    RayIntersect(double t, lin_alg::Vector<3> colour, SceneObject *obj) : t(t), colour(colour), object(obj) {};
+    RayIntersect(double t, lin_alg::Vector<3> colour, SceneObject *obj, lin_alg::Vector<3> normal) : t(t), colour(colour), object(obj), normal(normal) {};
     RayIntersect(RayIntersect& obj)
     {
         //ray = obj.ray;
@@ -28,6 +28,7 @@ class RayIntersect
     double t;
     lin_alg::Vector<3> colour;
     SceneObject* object;
+    lin_alg::Vector<3> normal;
 };
 
 #endif

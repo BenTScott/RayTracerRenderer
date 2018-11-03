@@ -185,6 +185,7 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
 {
     double t = INFINITY;
     Vector<3> colour;
+    Vector<3> normal;
     for (std::vector<Face>::iterator face_iterator = faces.begin(); face_iterator < faces.end(); face_iterator++)
     {
         Plane face_plane(face_iterator->normal, face_iterator->vertices[0]->pos.GetAsVector3());
@@ -217,6 +218,7 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
         {
             t = face_intersect->t;
             colour = face_iterator->colour;
+            normal = face_iterator->normal;
         }
     }
 
@@ -225,7 +227,7 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
         return nullptr;
     }
 
-    std::shared_ptr<RayIntersect> intersect(new RayIntersect(t, colour, this));
+    std::shared_ptr<RayIntersect> intersect(new RayIntersect(t, colour, this, normal));
     return intersect;
 }
 

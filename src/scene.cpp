@@ -7,6 +7,11 @@ void Scene::AddObject(SceneObject *object)
     objects.push_back(object);
 };
 
+void Scene::AddLightSource(DirectionalLight *light)
+{
+    light_sources.push_back(light);
+};
+
 void Scene::Render(const char *filename, unsigned resolution_height, unsigned resolution_width)
 {
     cam.InitialiseResolution(resolution_width, resolution_height);
@@ -18,27 +23,33 @@ void Scene::Render(const char *filename, unsigned resolution_height, unsigned re
     {
         for (unsigned j = 0; j < resolution_height; ++j)
         {
-            double t = INFINITY;
-            lin_alg::Vector<3> colour = background;
-            SceneObject *object = nullptr;
+            //double t = INFINITY;
+            std::shared_ptr<RayIntersect> closest = nullptr;
 
             Ray ray = cam.GetRay(i, j);
 
             for (std::vector<SceneObject *>::iterator object_iterator = objects.begin(); object_iterator < objects.end(); object_iterator++)
             {
                 std::shared_ptr<RayIntersect> intersect = (*object_iterator)->Intersect(ray);
-                if (intersect)
+                if (intersect && (!closest || intersect->t < closest->t))
                 {
-                    if (intersect->t < t)
-                    {
-                        object = intersect->object;
-                        t = intersect->t;
-                        colour = intersect->colour;
-                    }
+                    closest = intersect;
                 };
             }
+            
+            lin_alg::Vector<3> colour = background;
 
-            image.SetPixel(i, j, colour.Scale(ambient_intensity));
+            if (closest)
+            {
+                double diffuse_intensity = light_sources[0]->direction.DotProduct(closest->normal);
+                if (diffuse_intensity < 0)
+                {
+                    diffuse_intensity = 0;
+                }
+                colour = closest->colour.Scale(ambient_intensity+diffuse_intensity*light_sources[0]->intensity);
+            }
+
+            image.SetPixel(i, j, colour);
         }
     }
 

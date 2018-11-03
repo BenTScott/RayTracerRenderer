@@ -5,6 +5,7 @@
 #include <iterator>
 #include "sceneobject.h"
 #include "camera.h"
+#include "directionallight.h"
 
 class Scene
 {
@@ -21,10 +22,13 @@ public:
 
   void AddObject(SceneObject *object);
 
+  void AddLightSource(DirectionalLight *light);
+
   void Render(const char *filename, unsigned resolution_height, unsigned resolution_width);
 
 private:
   std::vector<SceneObject *> objects;
+  std::vector<DirectionalLight *> light_sources;
   Camera cam;
   lin_alg::Vector<3> background;
   double ambient_intensity;

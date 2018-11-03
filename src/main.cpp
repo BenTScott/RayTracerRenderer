@@ -32,20 +32,23 @@ int main()
     mesh->faces[2].colour = {0, 0, 1};
     mesh->faces[3].colour = {0, 0, 1};
 
-    mesh->faces[5].colour = {0, 1, 0};
-    mesh->faces[7].colour = {0, 1, 0};
+    mesh->faces[5].colour = {1, 0, 0};
+    mesh->faces[7].colour = {1, 0, 0};
 
-    mesh->faces[10].colour = {1, 0, 0};
-    mesh->faces[11].colour = {1, 0, 0};
+    mesh->faces[10].colour = {0, 1, 0};
+    mesh->faces[11].colour = {0, 1, 0};
 
-    Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.6, 0.6, 0.6});
+    Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
+
+    DirectionalLight *light = new DirectionalLight({1, 2, 1}, 0.7);
 
     BoundingSphere *bound = new BoundingSphere(mesh);
 
-    Scene scene(cam, {0.2, 0.2, 0.2}, 0.2);
+    Scene scene(cam, {0, 0, 0}, 0.2);
     scene.AddObject(sphere);
     scene.AddObject(bound);
     scene.AddObject(plane);
+    scene.AddLightSource(light);
     const char *filename = (".\\out\\render.png");
     scene.Render(filename, 512, 512);
 };
