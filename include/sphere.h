@@ -44,7 +44,7 @@ public:
 
     double closest_t = t1 < t2 && t1 > 0 ? t1 : t2;
 
-    lin_alg::Vector<3> normal = ray.direction.Scale(closest_t) - centre.GetAsVector3();
+    lin_alg::Vector<3> normal = (ray.init_position + ray.direction.Scale(closest_t)) - centre.GetAsVector3();
     normal.Normalise();
     std::shared_ptr<RayIntersect> intersect(new RayIntersect(closest_t, colour, this, normal));
 
