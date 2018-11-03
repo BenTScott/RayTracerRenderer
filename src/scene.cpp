@@ -12,7 +12,7 @@ void Scene::AddLightSource(DirectionalLight *light)
     light_sources.push_back(light);
 };
 
-void Scene::Render(const char *filename, unsigned resolution_height, unsigned resolution_width)
+void Scene::Render(const char *filename, unsigned resolution_width, unsigned resolution_height)
 {
     cam.InitialiseResolution(resolution_width, resolution_height);
     RGBImage image(resolution_width, resolution_height);
@@ -36,7 +36,7 @@ void Scene::Render(const char *filename, unsigned resolution_height, unsigned re
                     closest = intersect;
                 };
             }
-            
+
             lin_alg::Vector<3> colour = background;
 
             if (closest)
@@ -46,7 +46,7 @@ void Scene::Render(const char *filename, unsigned resolution_height, unsigned re
                 {
                     diffuse_intensity = 0;
                 }
-                colour = closest->colour.Scale(ambient_intensity+diffuse_intensity*light_sources[0]->intensity);
+                colour = closest->colour.Scale(ambient_intensity + diffuse_intensity * light_sources[0]->intensity);
             }
 
             image.SetPixel(i, j, colour);

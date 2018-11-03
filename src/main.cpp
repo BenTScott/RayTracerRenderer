@@ -9,7 +9,7 @@
 
 int main()
 {
-    std::cout << "Rendering first image..." << std::endl;
+    std::cout << "Rendering image..." << std::endl;
 
     lin_alg::Vector<3> cam_up({0, 1, 0});
     lin_alg::Vector<3> cam_forward({0, 0, -1});
@@ -17,15 +17,15 @@ int main()
 
     Camera cam(cam_up, cam_forward, cam_focal, 1);
 
-    cam.InitialiseScreenSize(2, 2);
+    cam.InitialiseScreenSize(32.0/9.0, 2);
 
-    Sphere *sphere = new Sphere({1.5, 1, -3.5, 1}, 2, {0.1, 0.7, 0.1});
+    Sphere *sphere = new Sphere({2, 1, -3.5, 1}, 2, {0.1, 0.7, 0.1});
 
     Mesh *mesh = new Mesh();
 
     mesh->LoadObjectModel(".\\data\\cube.obj");
 
-    mesh->AddTranslation(-1.5, 1.2, -2);
+    mesh->AddTranslation(-3, 1.2, -2);
 
     mesh->ExecuteTransformation();
 
@@ -50,5 +50,5 @@ int main()
     scene.AddObject(plane);
     scene.AddLightSource(light);
     const char *filename = (".\\out\\render.png");
-    scene.Render(filename, 512, 512);
+    scene.Render(filename, 1920*8, 1080*8);
 };

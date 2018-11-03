@@ -10,7 +10,7 @@
 class Scene
 {
 public:
-  Scene(Camera cam, lin_alg::Vector<3> background_colour, double ambient_intensity) : cam(cam), background(background_colour), ambient_intensity(ambient_intensity) {};
+  Scene(Camera cam, lin_alg::Vector<3> background_colour, double ambient_intensity) : cam(cam), background(background_colour), ambient_intensity(ambient_intensity){};
 
   ~Scene()
   {
@@ -24,7 +24,7 @@ public:
 
   void AddLightSource(DirectionalLight *light);
 
-  void Render(const char *filename, unsigned resolution_height, unsigned resolution_width);
+  void Render(const char *filename, unsigned resolution_width, unsigned resolution_height);
 
 private:
   std::vector<SceneObject *> objects;

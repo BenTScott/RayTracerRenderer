@@ -6,7 +6,7 @@ void Camera::InitialiseResolution(unsigned width, unsigned height)
     resolution_width = width;
 }
 
-void Camera::InitialiseScreenSize(unsigned width, unsigned height)
+void Camera::InitialiseScreenSize(double width, double height)
 {
     screen_height = height;
     screen_width = width;

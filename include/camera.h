@@ -20,7 +20,7 @@ public:
     resolution_height = 100;
   };
 
-  void InitialiseScreenSize(unsigned width, unsigned height);
+  void InitialiseScreenSize(double width, double height);
 
   void InitialiseResolution(unsigned width, unsigned height);
 
