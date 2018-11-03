@@ -29,9 +29,6 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 clean:
 	del /s /q "$(TARGET)" "$(TESTSTARGET)" $(BUILDDIR) "$(TESTDIR)\catch2\tests-main.o"
 
-run: all
-	./$(TARGET)
-
 .PHONY: tests
 tests: $(TESTDIR)\catch2\tests-main.o $(filter-out $(BUILDDIR)/main.o, $(OBJECTS))
 	$(CC) $(CFLAGS) $^ $(TESTS) $(INCLUDE) -o $(TESTSTARGET)
