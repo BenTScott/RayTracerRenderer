@@ -9,7 +9,7 @@
 class Scene
 {
 public:
-  Scene(Camera cam, lin_alg::Vector<3> background_colour) : cam(cam), background(background_colour){};
+  Scene(Camera cam, lin_alg::Vector<3> background_colour, double ambient_intensity) : cam(cam), background(background_colour), ambient_intensity(ambient_intensity) {};
 
   ~Scene()
   {
@@ -27,6 +27,7 @@ private:
   std::vector<SceneObject *> objects;
   Camera cam;
   lin_alg::Vector<3> background;
+  double ambient_intensity;
 };
 
 #endif

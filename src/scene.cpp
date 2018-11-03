@@ -38,7 +38,7 @@ void Scene::Render(const char *filename, unsigned resolution_height, unsigned re
                 };
             }
 
-            image.SetPixel(i, j, colour);
+            image.SetPixel(i, j, colour.Scale(ambient_intensity));
         }
     }
 
