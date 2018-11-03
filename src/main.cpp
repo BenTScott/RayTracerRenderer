@@ -41,7 +41,8 @@ int main()
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
-    DirectionalLight *light = new DirectionalLight({1,1,0.5}, 0.8);
+    DirectionalLight *light1 = new DirectionalLight({1,1,0.5}, 0.7);
+    DirectionalLight *light2 = new DirectionalLight({-1,1,1.5}, 0.3);
 
     BoundingSphere *bound = new BoundingSphere(mesh);
 
@@ -49,7 +50,8 @@ int main()
     scene.AddObject(sphere);
     scene.AddObject(bound);
     scene.AddObject(plane);
-    //scene.AddLightSource(light);
+    scene.AddLightSource(light1);
+    scene.AddLightSource(light2);
     const char *filename = (".\\out\\render.png");
     scene.Render(filename, 1920, 1080);
 };

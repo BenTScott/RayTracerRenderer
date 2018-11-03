@@ -39,12 +39,18 @@ void Scene::Render(const char *filename, unsigned resolution_width, unsigned res
 
             if (closest)
             {
-                double diffuse_intensity = light_sources[0]->direction.DotProduct(closest->normal);
-                if (diffuse_intensity < 0)
+                double total_diffuse_component = 0;
+
+                for (std::vector<DirectionalLight *>::iterator light_iterator = light_sources.begin(); light_iterator < light_sources.end(); light_iterator++)
                 {
-                    diffuse_intensity = 0;
+                    double diffuse_component = (*light_iterator)->direction.DotProduct(closest->normal)*(*light_iterator)->intensity;
+
+                    total_diffuse_component = std::max(total_diffuse_component,std::max(diffuse_component, 0.0));
                 }
-                colour = closest->colour.Scale(ambient_intensity + diffuse_intensity * light_sources[0]->intensity);
+
+                double colour_scale = std::min(ambient_intensity + total_diffuse_component, 1.0);
+
+                colour = closest->colour.Scale(colour_scale);
             }
 
             image.SetPixel(i, j, colour);
