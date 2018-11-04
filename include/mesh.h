@@ -33,6 +33,8 @@ public:
   };
 
   virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override;
+
+  void RecalculateNormals();
   
   std::vector<Vertex> vertices;
   std::vector<Face> faces;

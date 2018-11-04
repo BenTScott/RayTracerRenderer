@@ -198,7 +198,7 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
             continue;
         }
 
-        auto intersect_pos = ray.init_position + ray.direction.Scale(face_intersect->t);
+        Vector<3> intersect_pos = ray.init_position + ray.direction.Scale(face_intersect->t);
 
         Vector<3> vertex_0 = face_iterator->vertices[0]->pos.GetAsVector3();
         Vector<3> vertex_1 = face_iterator->vertices[1]->pos.GetAsVector3();
@@ -238,3 +238,11 @@ void Mesh::SetColour(Vector<3> colour)
         face_iterator->colour = colour;
     }
 };
+
+void Mesh::RecalculateNormals()
+{
+    for (std::vector<Face>::iterator face_iterator = faces.begin(); face_iterator < faces.end(); face_iterator++)
+    {
+        face_iterator->CalculateNormal();
+    }
+}

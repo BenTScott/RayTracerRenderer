@@ -17,7 +17,7 @@ int main()
 
     Camera cam(cam_up, cam_forward, cam_focal, 2);
 
-    cam.InitialiseScreenSize(32.0/9.0, 2);
+    cam.InitialiseScreenSize(32.0 / 9.0, 2);
 
     //Sphere *sphere = new Sphere({2, 1, -3.5, 1}, 2, {0.1, 0.7, 0.1});
     Sphere *sphere = new Sphere({2, 0.5, -3.5, 1}, 2, {0.1, 0.7, 0.1});
@@ -26,9 +26,14 @@ int main()
 
     mesh->LoadObjectModel(".\\data\\cube.obj");
 
+    mesh->AddRotation(lin_alg::x, 50);
+    mesh->AddRotation(lin_alg::y, 45);
+
     mesh->AddTranslation(-3, 1.2, -2);
 
     mesh->ExecuteTransformation();
+
+    mesh->SetColour({0.4, 0.4, 0.4});
 
     mesh->faces[2].colour = {0, 0, 1};
     mesh->faces[3].colour = {0, 0, 1};
@@ -39,10 +44,15 @@ int main()
     mesh->faces[10].colour = {0, 1, 0};
     mesh->faces[11].colour = {0, 1, 0};
 
+    mesh->specular_component = 1;
+
+    mesh->RecalculateNormals();
+
+    sphere->specular_component = 1;
+
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
-    DirectionalLight *light1 = new DirectionalLight({1,1,0.5}, 0.6);
-    DirectionalLight *light2 = new DirectionalLight({-1,1,1.5}, 0.5);
+    DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
 
     BoundingSphere *bound = new BoundingSphere(mesh);
 
@@ -50,8 +60,7 @@ int main()
     scene.AddObject(sphere);
     scene.AddObject(bound);
     scene.AddObject(plane);
-    scene.AddLightSource(light1);
-    scene.AddLightSource(light2);
+    scene.AddLightSource(light);
     const char *filename = (".\\out\\render.png");
     scene.Render(filename, 1920, 1080);
 };

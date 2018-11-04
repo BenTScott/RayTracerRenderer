@@ -7,7 +7,7 @@
 class RGBImage
 {
   public:
-    RGBImage() : width(10), height(10) 
+    RGBImage() : width(10), height(10)
     {
         image.resize(width * height * 3);
     };
@@ -29,6 +29,8 @@ class RGBImage
     void Encode(const char *filename);
 
   private:
+    lin_alg::Vector<3> BoundColour(const lin_alg::Vector<3> &colour);
+
     unsigned width;
     unsigned height;
     std::vector<unsigned char> image;

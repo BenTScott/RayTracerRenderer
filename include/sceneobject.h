@@ -13,6 +13,8 @@ class SceneObject
     virtual ~SceneObject(){};
 
     virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) = 0;
+
+    double specular_component = 0;
 };
 
 #endif
