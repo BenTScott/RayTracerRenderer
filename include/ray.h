@@ -8,8 +8,8 @@ class Ray
   public:
     Ray(){};
 
-    Ray(lin_alg::Vector<3> init_position, lin_alg::Vector<3> direction)
-        : init_position(init_position), direction(direction)
+    Ray(lin_alg::Vector<3> init_position, lin_alg::Vector<3> direction, double length = INFINITY)
+        : init_position(init_position), direction(direction), length(length)
     {
         Ray::direction.Normalise();
     };
@@ -18,17 +18,19 @@ class Ray
     {
         init_position = obj.init_position;
         direction = obj.direction;
+        length = obj.length;
     };
-    
+
     ~Ray(){};
 
     lin_alg::Vector<3> Position(double t)
     {
-        return direction.Scale(t);
+        return init_position + direction.Scale(t);
     };
 
     lin_alg::Vector<3> init_position;
     lin_alg::Vector<3> direction;
+    double length;
 };
 
 #endif

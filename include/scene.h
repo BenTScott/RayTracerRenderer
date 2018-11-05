@@ -5,7 +5,7 @@
 #include <iterator>
 #include "sceneobject.h"
 #include "camera.h"
-#include "directionallight.h"
+#include "Light.h"
 
 class Scene
 {
@@ -18,7 +18,7 @@ public:
     {
       delete *iter;
     }
-    for (std::vector<DirectionalLight *>::iterator iter = light_sources.end() - 1; iter >= light_sources.begin(); iter--)
+    for (std::vector<Light *>::iterator iter = light_sources.end() - 1; iter >= light_sources.begin(); iter--)
     {
       delete *iter;
     }
@@ -26,13 +26,16 @@ public:
 
   void AddObject(SceneObject *object);
 
-  void AddLightSource(DirectionalLight *light);
+  void AddLightSource(Light *light);
 
   void Render(const char *filename, unsigned resolution_width, unsigned resolution_height);
 
 private:
+  bool InShadow(Ray &lightray);
+  lin_alg::Vector<3> CalculateColour(Ray &ray, RayIntersect &intersect);
+
   std::vector<SceneObject *> objects;
-  std::vector<DirectionalLight *> light_sources;
+  std::vector<Light *> light_sources;
   Camera cam;
   lin_alg::Vector<3> background;
   double ambient_intensity;

@@ -7,9 +7,55 @@ void Scene::AddObject(SceneObject *object)
     objects.push_back(object);
 };
 
-void Scene::AddLightSource(DirectionalLight *light)
+void Scene::AddLightSource(Light *light)
 {
     light_sources.push_back(light);
+};
+
+bool Scene::InShadow(Ray &lightray)
+{
+    for (std::vector<SceneObject *>::iterator object_iterator = objects.begin(); object_iterator < objects.end(); object_iterator++)
+    {
+        if ((*object_iterator)->Intersect(lightray))
+        {
+            return true;
+        }
+    }
+    return false;
+};
+
+lin_alg::Vector<3> Scene::CalculateColour(Ray &ray, RayIntersect &intersect)
+{
+    double total_diffuse_component = 0;
+    double total_specular_component = 0;
+
+    for (std::vector<Light *>::iterator light_iterator = light_sources.begin(); light_iterator < light_sources.end(); light_iterator++)
+    {
+        // Correct for any flt pt error to prevent self shadows
+        lin_alg::Vector<3> pos = ray.Position(intersect.t - 0.001);
+        Ray lightray = (*light_iterator)->GetLightRay(pos);
+        // bool shaded =  InShadow(lightray);
+        // double value = intersect.colour[2];
+        if (!InShadow(lightray))
+        {
+            double diffuse_component = lightray.direction.DotProduct(intersect.normal) * (*light_iterator)->intensity;
+
+            //Bling-Phong Specular Term
+            lin_alg::Vector<3> h = ray.direction.Scale(-1) + lightray.direction;
+            h.Normalise();
+
+            double specular = intersect.object->specular_component * std::pow(h.DotProduct(intersect.normal), 100) * (*light_iterator)->intensity;
+
+            total_diffuse_component += std::max(diffuse_component, 0.0);
+            total_specular_component += specular;
+        }
+    }
+
+    double colour_scale = std::min(ambient_intensity + total_diffuse_component, 1.0);
+
+    lin_alg::Vector<3> white({1, 1, 1});
+
+    return intersect.colour.Scale(colour_scale) + white.Scale(total_specular_component);
 };
 
 void Scene::Render(const char *filename, unsigned resolution_width, unsigned resolution_height)
@@ -35,33 +81,7 @@ void Scene::Render(const char *filename, unsigned resolution_width, unsigned res
                 };
             }
 
-            lin_alg::Vector<3> colour = background;
-
-            if (closest)
-            {
-                double total_diffuse_component = 0;
-                double total_specular_component = 0;
-
-                for (std::vector<DirectionalLight *>::iterator light_iterator = light_sources.begin(); light_iterator < light_sources.end(); light_iterator++)
-                {
-                    double diffuse_component = (*light_iterator)->direction.DotProduct(closest->normal) * (*light_iterator)->intensity;
-
-                    total_diffuse_component += std::max(diffuse_component, 0.0);
-
-                    //Bling-Phong Specular Term
-                    lin_alg::Vector<3> h = ray.direction.Scale(-1) + (*light_iterator)->direction;
-                    h.Normalise();
-
-                    double specular = closest->object->specular_component * std::pow(h.DotProduct(closest->normal), 100) * (*light_iterator)->intensity;
-                    total_specular_component += specular;
-                }
-
-                double colour_scale = std::min(ambient_intensity + total_diffuse_component, 1.0);
-
-                lin_alg::Vector<3> white({1, 1, 1});
-
-                colour = closest->colour.Scale(colour_scale) + white.Scale(total_specular_component);
-            }
+            lin_alg::Vector<3> colour = closest ? CalculateColour(ray, *closest) : background;
 
             image.SetPixel(i, j, colour);
         }

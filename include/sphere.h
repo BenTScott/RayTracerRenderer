@@ -37,12 +37,12 @@ public:
     double t1 = (-b + sqrt(discriminant))/2.0;
     double t2 = (-b - sqrt(discriminant))/2.0;
 
-    if (t1 < 0 && t2 < 0)
+    double closest_t = t1 < t2 && t1 > 0 ? t1 : t2;
+
+    if (closest_t < 0 || closest_t > ray.length)
     {
       return nullptr;
     }
-
-    double closest_t = t1 < t2 && t1 > 0 ? t1 : t2;
 
     lin_alg::Vector<3> normal = (ray.init_position + ray.direction.Scale(closest_t)) - centre.GetAsVector3();
     normal.Normalise();

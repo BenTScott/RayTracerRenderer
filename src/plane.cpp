@@ -10,8 +10,7 @@ std::shared_ptr<RayIntersect> Plane::Intersect(Ray ray)
 
     double t = (point - ray.init_position).DotProduct(normal) / normal.DotProduct(ray.direction);
 
-    // Make sure we are in front of the camera
-    if (t < 0)
+    if (t < 0 || t > ray.length)
     {
         return nullptr;
     }

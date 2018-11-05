@@ -2,25 +2,29 @@
 #define INCLUDE_DIRECTIONALLIGHT_H_
 
 #include "vector.h"
+#include "light.h"
 
-class DirectionalLight
+class DirectionalLight : public Light
 {
   public:
     DirectionalLight(){};
-    DirectionalLight(DirectionalLight &obj){};
+    DirectionalLight(DirectionalLight &obj) : Light(obj.intensity)
+    {
+        direction = obj.direction;
+    };
     ~DirectionalLight(){};
 
-    DirectionalLight(lin_alg::Vector<3> direction, double intensity) : direction(direction), intensity(intensity)
+    DirectionalLight(lin_alg::Vector<3> direction, double intensity) : Light(intensity), direction(direction)
     {
         DirectionalLight::direction.Normalise();
-        if (intensity > 1)
-        {
-            DirectionalLight::intensity = 1;
-        }
+    };
+
+    virtual Ray GetLightRay(lin_alg::Vector<3> pos) override
+    {
+        return Ray(pos, direction);
     };
 
     lin_alg::Vector<3> direction;
-    double intensity;
 };
 
 #endif
