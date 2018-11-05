@@ -1,6 +1,7 @@
 #ifndef INCLUDE_CAMERA_H_
 #define INCLUDE_CAMERA_H_
 
+#include <vector>
 #include "vector.h"
 #include "ray.h"
 
@@ -28,7 +29,8 @@ public:
    Returns a ray through the centre of the specified pixel
    (0,0) is the top left of the screen
   */
-  Ray GetRay(int pixel_x, int pixel_y);
+  Ray GetRay(unsigned pixel_x, unsigned pixel_y);
+  std::vector<Ray> GetRandomRaySamples(unsigned pixel_x, unsigned pixel_y, unsigned sampling_rate);
 
   lin_alg::Vector<3> camera_up;
   lin_alg::Vector<3> camera_forward;
@@ -43,6 +45,9 @@ public:
 
   // Calculated
   lin_alg::Vector<3> camera_right;
+
+  private:
+  Ray GetRay(unsigned pixel_x, unsigned pixel_y, double distance_x, double distance_y);
 };
 
 #endif

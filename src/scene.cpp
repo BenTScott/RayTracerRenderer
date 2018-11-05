@@ -24,7 +24,7 @@ bool Scene::InShadow(Ray &lightray)
     return false;
 };
 
-lin_alg::Vector<3> Scene::CalculateColour(Ray &ray, RayIntersect &intersect)
+lin_alg::Vector<3> Scene::CalculateColourAtIntersect(Ray &ray, RayIntersect &intersect)
 {
     double total_diffuse_component = 0;
     double total_specular_component = 0;
@@ -67,25 +67,68 @@ void Scene::Render(const char *filename, unsigned resolution_width, unsigned res
     {
         for (unsigned j = 0; j < resolution_height; ++j)
         {
-            //double t = INFINITY;
             std::shared_ptr<RayIntersect> closest = nullptr;
 
             Ray ray = cam.GetRay(i, j);
 
-            for (std::vector<SceneObject *>::iterator object_iterator = objects.begin(); object_iterator < objects.end(); object_iterator++)
-            {
-                std::shared_ptr<RayIntersect> intersect = (*object_iterator)->Intersect(ray);
-                if (intersect && (!closest || intersect->t < closest->t))
-                {
-                    closest = intersect;
-                };
-            }
-
-            lin_alg::Vector<3> colour = closest ? CalculateColour(ray, *closest) : background;
-
-            image.SetPixel(i, j, colour);
+            image.SetPixel(i, j, GetColour(ray));
         }
     }
 
     image.Encode(filename);
+};
+
+void Scene::Render(const char *filename, unsigned resolution_width, unsigned resolution_height, unsigned sample_rate)
+{
+    cam.InitialiseResolution(resolution_width, resolution_height);
+    RGBImage image(resolution_width, resolution_height);
+
+    for (unsigned i = 0; i < resolution_width; ++i)
+    {
+        for (unsigned j = 0; j < resolution_height; ++j)
+        {
+            std::vector<Ray> rays = cam.GetRandomRaySamples(i, j, sample_rate);
+
+            lin_alg::Vector<3> colour({0, 0, 0});
+
+            for (std::vector<Ray>::iterator ray_iterator = rays.begin(); ray_iterator < rays.end(); ray_iterator++)
+            {
+                colour += GetColour(*ray_iterator);
+            }
+
+            lin_alg::Vector<3> av_col = colour.Scale(1.0 / sample_rate);
+
+            // Get average colour
+            image.SetPixel(i, j, av_col);
+        }
+    }
+
+    image.Encode(filename);
+};
+
+lin_alg::Vector<3> Scene::BoundColour(const lin_alg::Vector<3> &colour)
+{
+    lin_alg::Vector<3> bounded_colour;
+    for (int i = 0; i < 3; ++i)
+    {
+        double value = std::min(colour[i], 1.0);
+        value = std::max(value, 0.0);
+        bounded_colour[i] = value;
+    }
+    return bounded_colour;
+}
+
+lin_alg::Vector<3> Scene::GetColour(Ray &ray)
+{
+    std::shared_ptr<RayIntersect> closest = nullptr;
+    for (std::vector<SceneObject *>::iterator object_iterator = objects.begin(); object_iterator < objects.end(); object_iterator++)
+    {
+        std::shared_ptr<RayIntersect> intersect = (*object_iterator)->Intersect(ray);
+        if (intersect && (!closest || intersect->t < closest->t))
+        {
+            closest = intersect;
+        };
+    }
+
+    return closest ? BoundColour(CalculateColourAtIntersect(ray, *closest)) : background;
 };

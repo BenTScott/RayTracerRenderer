@@ -69,6 +69,6 @@ int main()
     scene.AddObject(plane);
     scene.AddLightSource(light);
     scene.AddLightSource(light2);
-    const char *filename = (".\\out\\render.png");
-    scene.Render(filename, 1920*8, 1080*8);
+    const char *filename = (".\\out\\render2.png");
+    scene.Render(filename, 1920, 1080, 40);
 };

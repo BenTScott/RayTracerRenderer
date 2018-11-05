@@ -30,9 +30,14 @@ public:
 
   void Render(const char *filename, unsigned resolution_width, unsigned resolution_height);
 
+  void Render(const char *filename, unsigned resolution_width, unsigned resolution_height, unsigned sample_rate);
+
 private:
   bool InShadow(Ray &lightray);
-  lin_alg::Vector<3> CalculateColour(Ray &ray, RayIntersect &intersect);
+  lin_alg::Vector<3> BoundColour(const lin_alg::Vector<3> &colour);
+  std::shared_ptr<RayIntersect> GetClosestIntersect(Ray &ray);
+  lin_alg::Vector<3> CalculateColourAtIntersect(Ray &ray, RayIntersect &intersect);
+  lin_alg::Vector<3> GetColour(Ray &ray);
 
   std::vector<SceneObject *> objects;
   std::vector<Light *> light_sources;
