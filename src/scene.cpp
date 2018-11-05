@@ -34,8 +34,7 @@ lin_alg::Vector<3> Scene::CalculateColourAtIntersect(Ray &ray, RayIntersect &int
         // Correct for any flt pt error to prevent self shadows
         lin_alg::Vector<3> pos = ray.Position(intersect.t - 0.001);
         Ray lightray = (*light_iterator)->GetLightRay(pos);
-        // bool shaded =  InShadow(lightray);
-        // double value = intersect.colour[2];
+
         if (!InShadow(lightray))
         {
             double diffuse_component = lightray.direction.DotProduct(intersect.normal) * (*light_iterator)->intensity;
