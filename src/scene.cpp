@@ -17,7 +17,7 @@ bool Scene::InShadow(Ray &lightray)
 {
     for (std::vector<SceneObject *>::iterator object_iterator = objects.begin(); object_iterator < objects.end(); object_iterator++)
     {
-        // Add Intersect Short Curcu
+        // TODO Add Intersect Short Curcuit
         if ((*object_iterator)->Intersect(lightray))
         {
             return true;
