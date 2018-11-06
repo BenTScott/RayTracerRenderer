@@ -31,6 +31,7 @@ public:
   */
   Ray GetRay(unsigned pixel_x, unsigned pixel_y);
   std::vector<Ray> GetRandomRaySamples(unsigned pixel_x, unsigned pixel_y, unsigned sampling_rate);
+  std::vector<Ray> GetJitterRaySamples(unsigned pixel_x, unsigned pixel_y, unsigned sampling_rate);
 
   lin_alg::Vector<3> camera_up;
   lin_alg::Vector<3> camera_forward;

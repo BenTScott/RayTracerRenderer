@@ -10,6 +10,12 @@
 class Scene
 {
 public:
+  enum SamplingMethod
+  {
+    Random,
+    Jitter
+  };
+
   Scene(Camera cam, lin_alg::Vector<3> background_colour, double ambient_intensity) : cam(cam), background(background_colour), ambient_intensity(ambient_intensity){};
 
   ~Scene()
@@ -28,9 +34,11 @@ public:
 
   void AddLightSource(Light *light);
 
+  void AddAmbientOcclusion(double length, unsigned sample_rate);
+
   void Render(const char *filename, unsigned resolution_width, unsigned resolution_height);
 
-  void Render(const char *filename, unsigned resolution_width, unsigned resolution_height, unsigned sample_rate);
+  void Render(const char *filename, unsigned resolution_width, unsigned resolution_height, unsigned sample_rate, SamplingMethod method);
 
 private:
   bool InShadow(Ray &lightray);
@@ -38,12 +46,17 @@ private:
   std::shared_ptr<RayIntersect> GetClosestIntersect(Ray &ray);
   lin_alg::Vector<3> CalculateColourAtIntersect(Ray &ray, RayIntersect &intersect);
   lin_alg::Vector<3> GetColour(Ray &ray);
+  double GetAmbientOcclusion(Ray &ray, RayIntersect &intersect);
 
   std::vector<SceneObject *> objects;
   std::vector<Light *> light_sources;
   Camera cam;
   lin_alg::Vector<3> background;
   double ambient_intensity;
+
+  bool ambient_occlusion = false;
+  double ambient_occlusion_length;
+  unsigned ambient_occlusion_sample_rate;
 };
 
 #endif

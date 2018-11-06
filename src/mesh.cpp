@@ -192,7 +192,7 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
         std::shared_ptr<RayIntersect> face_intersect = face_plane.Intersect(ray);
 
         // Ray does not interect face plane i.e. ray is parrallel to the face
-        // or itersect is behind another face
+        // or intersect is after another face
         if (!face_intersect || face_intersect->t > t)
         {
             continue;
@@ -213,7 +213,6 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
         Vector<3> norm2 = CrossProduct(intersect_pos - vertex_1, vector2);
         Vector<3> norm3 = CrossProduct(intersect_pos - vertex_2, vector3);
 
-        // TODO check if another dot prod is needed
         if (norm1.DotProduct(norm2) >= 0 && norm1.DotProduct(norm3) >= 0 && norm2.DotProduct(norm3) >= 0)
         {
             t = face_intersect->t;

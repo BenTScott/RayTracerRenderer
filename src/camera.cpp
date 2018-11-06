@@ -1,4 +1,6 @@
 #include "camera.h"
+#include <random>
+#include <math.h>
 
 void Camera::InitialiseResolution(unsigned width, unsigned height)
 {
@@ -22,14 +24,35 @@ std::vector<Ray> Camera::GetRandomRaySamples(unsigned pixel_x, unsigned pixel_y,
     std::vector<Ray> rays;
     for (unsigned i = 0; i < sampling_rate; ++i)
     {
-        double distance_x = (double) rand() / (double) (RAND_MAX + 1);
-        double distance_y = (double) rand() / (double) (RAND_MAX + 1);
+        double distance_x = (double)rand() / (double)(RAND_MAX + 1);
+        double distance_y = (double)rand() / (double)(RAND_MAX + 1);
         rays.push_back(GetRay(pixel_x, pixel_y, distance_x, distance_y));
     }
     return rays;
 }
 
-// Gets a ray through a pixel where distance_x and distance_y are distances 
+std::vector<Ray> Camera::GetJitterRaySamples(unsigned pixel_x, unsigned pixel_y, unsigned sampling_rate)
+{
+    unsigned grid_size = sqrt((double)sampling_rate);
+    double grid_width_height = (1.0/(double) grid_size);
+    std::vector<Ray> rays;
+
+    std::mt19937 generator;
+    std::uniform_real_distribution<double> dis;
+
+    for (unsigned i = 0; i < grid_size; ++i)
+    {
+        for (unsigned j = 0; j < grid_size; ++j)
+        {
+            double distance_x = grid_width_height * (double) i + dis(generator);
+            double distance_y = grid_width_height * (double) j + dis(generator);
+            rays.push_back(GetRay(pixel_x, pixel_y, distance_x, distance_y));
+        }
+    }
+    return rays;
+}
+
+// Gets a ray through a pixel where distance_x and distance_y are distances
 Ray Camera::GetRay(unsigned pixel_x, unsigned pixel_y, double distance_x, double distance_y)
 {
     double r = screen_width * ((pixel_x + distance_x) / resolution_width - 0.5);
