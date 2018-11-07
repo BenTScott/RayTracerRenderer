@@ -31,9 +31,9 @@ int main()
     Sphere *sphere3 = new Sphere({-2.79, 1.45, -1.8, 1}, 0.5, {0, 0.8, 0.5});
     Mesh *mesh = new Mesh();
 
-    mesh->LoadObjectModel(".\\data\\diamond.obj");
+    mesh->LoadObjectModel(".\\data\\cube.obj");
 
-    // mesh->AddRotation(lin_alg::x, 50);
+    mesh->AddRotation(lin_alg::x, 50);
     mesh->AddRotation(lin_alg::y, 45);
 
     mesh->AddTranslation(-3, 1.2, -2);
@@ -42,14 +42,14 @@ int main()
 
     mesh->SetColour(GetColourVector(244, 170, 66));
 
-    // mesh->faces[9].colour = {0, 0, 1};
-    // mesh->faces[8].colour = {0, 0, 1};
+    mesh->faces[9].colour = {0, 0, 1};
+    mesh->faces[8].colour = {0, 0, 1};
 
-    // mesh->faces[6].colour = {1, 0, 0};
-    // mesh->faces[4].colour = {1, 0, 0};
+    mesh->faces[6].colour = {1, 0, 0};
+    mesh->faces[4].colour = {1, 0, 0};
 
-    // mesh->faces[10].colour = {0, 1, 0};
-    // mesh->faces[11].colour = {0, 1, 0};
+    mesh->faces[10].colour = {0, 1, 0};
+    mesh->faces[11].colour = {0, 1, 0};
 
     mesh->specular_component = 1;
 
@@ -62,19 +62,21 @@ int main()
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
-    DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.9);
-    PointLight *light2 = new PointLight({-4.5, 2.7, -1}, 0.7);
+    DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.8);
+    PointLight *light2 = new PointLight({-4.5, 2.7, -1}, 0.6);
 
-    BoundingSphere *bound = new BoundingSphere(mesh);
+    BoundingSphere *meshbound = new BoundingSphere(mesh);
+
+    BoundingSphere *dualbound1 = new BoundingSphere(meshbound, sphere3);
+    BoundingSphere *dualbound2 = new BoundingSphere(sphere1, sphere2);
+
 
     Scene scene(cam, {0, 0, 0}, 0.2);
     
     scene.AddAmbientOcclusion(0.1, 3);
 
-    scene.AddObject(sphere1);
-    scene.AddObject(sphere2);
-    //scene.AddObject(sphere3);
-    scene.AddObject(bound);
+    scene.AddObject(dualbound1);
+    scene.AddObject(dualbound2);
     scene.AddObject(plane);
     scene.AddLightSource(light);
     scene.AddLightSource(light2);
