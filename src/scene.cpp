@@ -17,7 +17,6 @@ bool Scene::InShadow(Ray &lightray)
 {
     for (std::vector<SceneObject *>::iterator object_iterator = objects.begin(); object_iterator < objects.end(); object_iterator++)
     {
-        // TODO Add Intersect Short Curcuit
         if ((*object_iterator)->Intersect(lightray))
         {
             return true;
@@ -153,10 +152,10 @@ double Scene::GetAmbientOcclusion(Ray &ray, RayIntersect &intersect)
 {
     lin_alg::Vector<3> pos = ray.Position(intersect.t + 0.001);
     double ambient_count = 0;
+    std::mt19937 generator(rand());
+    std::uniform_real_distribution<> distribution(-1.0, 1.0);
     for (unsigned i = 0; i < ambient_occlusion_sample_rate; ++i)
     {
-        std::mt19937 generator;
-        std::normal_distribution<double> distribution(0, 1);
         lin_alg::Vector<3> dir({distribution(generator), distribution(generator), distribution(generator)});
         if (dir.DotProduct(intersect.normal) < 0)
         {
@@ -164,6 +163,7 @@ double Scene::GetAmbientOcclusion(Ray &ray, RayIntersect &intersect)
         }
 
         Ray sample_ray(pos, dir, ambient_occlusion_length);
+        
         if (!InShadow(sample_ray))
         {
             ambient_count++;

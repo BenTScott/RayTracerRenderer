@@ -37,7 +37,7 @@ std::vector<Ray> Camera::GetJitterRaySamples(unsigned pixel_x, unsigned pixel_y,
     double grid_width_height = (1.0/(double) grid_size);
     std::vector<Ray> rays;
 
-    std::mt19937 generator;
+    std::mt19937 generator(rand());
     std::uniform_real_distribution<double> dis;
 
     for (unsigned i = 0; i < grid_size; ++i)

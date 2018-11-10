@@ -38,7 +38,9 @@ BoundingSphere::BoundingSphere(Sphere *sphere1, Sphere *sphere2)
 
 std::shared_ptr<RayIntersect> BoundingSphere::Intersect(Ray ray)
 {
-    if (!Sphere::Intersect(ray))
+    //Check not in sphere and not intersecting
+    double distance_to_centre = (centre.GetAsVector3() - ray.init_position).Magnitude();
+    if (distance_to_centre > radius && !Sphere::Intersect(ray))
     {
         return nullptr;
     }
