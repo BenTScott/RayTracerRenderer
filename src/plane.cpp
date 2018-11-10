@@ -15,6 +15,6 @@ std::shared_ptr<RayIntersect> Plane::Intersect(Ray ray)
         return nullptr;
     }
 
-    std::shared_ptr<RayIntersect> intersect(new RayIntersect(t, colour, this, normal));
+    std::shared_ptr<RayIntersect> intersect(new RayIntersect(ray, t, colour, this, normal));
     return intersect;
 };

@@ -27,7 +27,7 @@ std::shared_ptr<RayIntersect> Sphere::Intersect(Ray ray)
 
     lin_alg::Vector<3> normal = ray.Position(closest_t) - centre.GetAsVector3();
     normal.Normalise();
-    std::shared_ptr<RayIntersect> intersect(new RayIntersect(closest_t, colour, this, normal));
+    std::shared_ptr<RayIntersect> intersect(new RayIntersect(ray, closest_t, colour, this, normal));
 
     return intersect;
 };

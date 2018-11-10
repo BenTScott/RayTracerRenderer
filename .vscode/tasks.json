@@ -27,7 +27,7 @@
             "args": [
                 "run"
             ]
-        }
+        },
         {
             "label": "runTests",
             "type": "shell",

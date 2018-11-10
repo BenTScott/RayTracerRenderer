@@ -19,7 +19,7 @@ class DirectionalLight : public Light
         DirectionalLight::direction.Normalise();
     };
 
-    virtual Ray GetLightRay(lin_alg::Vector<3> pos) override
+    virtual Ray GetLightRay(lin_alg::Vector<3> pos) const override
     {
         return Ray(pos, direction);
     };

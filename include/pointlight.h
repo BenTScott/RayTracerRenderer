@@ -19,7 +19,7 @@ class PointLight : public Light
     {
     };
 
-    virtual Ray GetLightRay(lin_alg::Vector<3> pos) override
+    virtual Ray GetLightRay(lin_alg::Vector<3> pos) const override
     {
         lin_alg::Vector<3> difference = point-pos;
         return Ray(pos, difference, difference.Magnitude());

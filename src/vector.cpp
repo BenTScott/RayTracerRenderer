@@ -15,7 +15,7 @@ double lin_alg::Vector<N>::Magnitude() const
 };
 
 template <std::size_t N>
-void lin_alg::Vector<N>::Normalise()
+lin_alg::Vector<N> &lin_alg::Vector<N>::Normalise()
 {
     double magnitude = this->Magnitude();
 
@@ -23,6 +23,8 @@ void lin_alg::Vector<N>::Normalise()
     {
         values[i] = values[i] / magnitude;
     }
+
+    return *this;
 };
 
 template <std::size_t N>

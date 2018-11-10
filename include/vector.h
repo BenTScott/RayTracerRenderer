@@ -97,7 +97,7 @@ class Vector
         return *this;
     }
 
-    Vector<N> operator+(const Vector<N> &rhs)
+    Vector<N> operator+(const Vector<N> &rhs) const
     {
         Vector<N> result;
         for (std::size_t i = 0; i < N; ++i)
@@ -107,7 +107,7 @@ class Vector
         return result;
     };
 
-    Vector<N> operator-(const Vector<N> &rhs)
+    Vector<N> operator-(const Vector<N> &rhs) const
     {
         Vector<N> result;
         for (std::size_t i = 0; i < N; ++i)
@@ -117,15 +117,25 @@ class Vector
         return result;
     };
 
+    Vector<N> PointwiseMultiply(const Vector<N> &rhs) const
+    {
+        Vector<N> result;
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            result[i] = values[i] * rhs[i];
+        }
+        return result;
+    };
+
     double Magnitude() const;
 
-    void Normalise();
+    Vector<N> &Normalise();
 
     double DotProduct(const Vector<N> &vector) const;
 
     Vector<3> GetAsVector3();
 
-    Vector<N> Scale(double scalar)
+    Vector<N> Scale(double scalar) const
     {
         Vector<N> result;
         for (std::size_t i = 0; i < N; ++i)
@@ -134,7 +144,16 @@ class Vector
         }
         return result;
     }
-    
+
+    Vector<N> &Bound(double min = 0.0, double max = 1.0)
+    {
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            this->values[i] = std::max(std::min(values[i], max), min);
+        }
+        return *this;
+    }
+
   private:
     void Intialise()
     {

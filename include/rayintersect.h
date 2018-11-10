@@ -10,21 +10,21 @@ class RayIntersect
 {
   public:
     RayIntersect(){};
-    RayIntersect(double t, lin_alg::Vector<3> colour, SceneObject *obj, lin_alg::Vector<3> normal) : t(t), colour(colour), object(obj), normal(normal) {};
+    RayIntersect(Ray ray, double t, lin_alg::Vector<3> colour, SceneObject *obj, lin_alg::Vector<3> normal) : ray(ray), t(t), colour(colour), object(obj), normal(normal) {};
     RayIntersect(RayIntersect& obj)
     {
-        //ray = obj.ray;
+        ray = obj.ray;
         t = obj.t;
         colour = obj.colour;
         object = obj.object;
     };
 
-    // lin_alg::Vector<3> IntersectPosition()
-    // {
-    //     return 
-    // };
+    lin_alg::Vector<3> GetCorrectedPosition(double error = 0.001) const
+    {
+        return ray.Position(t - error);
+    };
 
-    //Ray *ray;
+    Ray ray;
     double t;
     lin_alg::Vector<3> colour;
     SceneObject* object;

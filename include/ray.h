@@ -23,7 +23,7 @@ class Ray
 
     ~Ray(){};
 
-    lin_alg::Vector<3> Position(double t)
+    lin_alg::Vector<3> Position(double t) const
     {
         return init_position + direction.Scale(t);
     };

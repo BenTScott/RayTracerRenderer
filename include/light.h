@@ -15,17 +15,20 @@ class Light
     virtual ~Light(){};
 
     Light(double intensity)
-        : intensity(intensity)
+        : intensity({intensity, intensity, intensity})
     {
-        if (intensity > 1)
-        {
-            Light::intensity = 1;
-        }
+        Light::intensity.Bound();
     };
 
-    virtual Ray GetLightRay(lin_alg::Vector<3> pos) = 0;
+    Light(lin_alg::Vector<3> intensity)
+        : intensity(intensity)
+    {
+        Light::intensity.Bound();
+    };
 
-    double intensity;
+    virtual Ray GetLightRay(lin_alg::Vector<3> pos) const = 0;
+
+    lin_alg::Vector<3> intensity;
 };
 
 #endif
