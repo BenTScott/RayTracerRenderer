@@ -9,10 +9,7 @@ class Ray
     Ray(){};
 
     Ray(lin_alg::Vector<3> init_position, lin_alg::Vector<3> direction, double length = INFINITY)
-        : init_position(init_position), direction(direction), length(length)
-    {
-        Ray::direction.Normalise();
-    };
+        : init_position(init_position), direction(direction.Normalise()), length(length){};
 
     Ray(const Ray &obj)
     {

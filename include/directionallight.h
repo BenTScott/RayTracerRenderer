@@ -14,10 +14,11 @@ class DirectionalLight : public Light
     };
     ~DirectionalLight(){};
 
-    DirectionalLight(lin_alg::Vector<3> direction, double intensity) : Light(intensity), direction(direction)
-    {
-        DirectionalLight::direction.Normalise();
-    };
+    DirectionalLight(lin_alg::Vector<3> direction, double intensity)
+        : Light(intensity), direction(direction.Normalise()){};
+
+    DirectionalLight(lin_alg::Vector<3> direction, lin_alg::Vector<3> intensity)
+        : Light(intensity), direction(direction.Normalise()){};
 
     virtual Ray GetLightRay(lin_alg::Vector<3> pos) const override
     {

@@ -10,10 +10,8 @@ class Camera
 public:
   Camera();
   Camera(lin_alg::Vector<3> camera_up, lin_alg::Vector<3> camera_forward, lin_alg::Vector<3> camera_focalpoint, double focallength)
-      : camera_up(camera_up), camera_forward(camera_forward), camera_focalpoint(camera_focalpoint), focallength(focallength)
+      : camera_up(camera_up.Normalise()), camera_forward(camera_forward.Normalise()), camera_focalpoint(camera_focalpoint), focallength(focallength)
   {
-    Camera::camera_forward.Normalise();
-    Camera::camera_up.Normalise();
     camera_right = lin_alg::CrossProduct(camera_up, camera_forward);
     screen_width = 1;
     screen_height = 1;

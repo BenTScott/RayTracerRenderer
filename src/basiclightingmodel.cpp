@@ -11,8 +11,7 @@ lin_alg::Vector<3> BasicLightingModel::GetSpecularLighting(const Light &light, c
     Ray lightray = light.GetLightRay(intersect.GetCorrectedPosition());
 
     //Bling-Phong Specular Term
-    lin_alg::Vector<3> h = intersect.ray.direction.Scale(-1) + lightray.direction;
-    h.Normalise();
+    lin_alg::Vector<3> h = (intersect.ray.direction.Scale(-1) + lightray.direction).Normalise();
 
     lin_alg::Vector<3> scale = light.intensity.Scale(intersect.object->specular_component * std::pow(h.DotProduct(intersect.normal), specular_dist)).Bound();
 

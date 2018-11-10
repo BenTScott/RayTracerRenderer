@@ -96,9 +96,7 @@ TEST_CASE("Can normalise a vector")
     lin_alg::Vector<2> vector({3, 4});
     lin_alg::Vector<2> expected({3.0/5.0, 4.0/5.0});
 
-    vector.Normalise();
-
-    REQUIRE(vector == expected);
+    REQUIRE(vector.Normalise() == expected);
 };
 
 TEST_CASE("Can get a 4D Vector as a Vector<3>")
