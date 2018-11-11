@@ -13,6 +13,11 @@ void Scene::AddLightSource(Light *light)
     light_sources.push_back(light);
 };
 
+void Scene::SetLightingModel(LightingModel *lighting_model)
+{
+    this->lighting_model = lighting_model;
+};
+
 bool Scene::InShadow(Ray &lightray) const
 {
     for (std::vector<SceneObject *>::const_iterator object_iterator = objects.begin(); object_iterator < objects.end(); object_iterator++)
@@ -25,11 +30,11 @@ bool Scene::InShadow(Ray &lightray) const
     return false;
 };
 
-lin_alg::Vector<3> Scene::CalculateColourAtIntersect(RayIntersect &intersect)
+lin_alg::Vector<3> Scene::CalculateColourAtIntersect(const RayIntersect &intersect) const
 {
     lin_alg::Vector<3> colour;
 
-    for (std::vector<Light *>::iterator light_iterator = light_sources.begin(); light_iterator < light_sources.end(); light_iterator++)
+    for (std::vector<Light *>::const_iterator light_iterator = light_sources.begin(); light_iterator < light_sources.end(); light_iterator++)
     {
         lin_alg::Vector<3> pos = intersect.GetCorrectedPosition();
         Ray lightray = (*light_iterator)->GetLightRay(pos);
@@ -65,10 +70,10 @@ void Scene::Render(const char *filename, unsigned resolution_width, unsigned res
     image.Encode(filename);
 };
 
-lin_alg::Vector<3> Scene::GetColour(Ray &ray)
+lin_alg::Vector<3> Scene::GetColour(const Ray &ray) const
 {
     std::shared_ptr<RayIntersect> closest = nullptr;
-    for (std::vector<SceneObject *>::iterator object_iterator = objects.begin(); object_iterator < objects.end(); object_iterator++)
+    for (std::vector<SceneObject *>::const_iterator object_iterator = objects.begin(); object_iterator < objects.end(); object_iterator++)
     {
         std::shared_ptr<RayIntersect> intersect = (*object_iterator)->Intersect(ray);
         if (intersect && (!closest || intersect->t < closest->t))
@@ -79,27 +84,3 @@ lin_alg::Vector<3> Scene::GetColour(Ray &ray)
 
     return closest ? CalculateColourAtIntersect(*closest).Bound() : background;
 };
-
-// double Scene::GetAmbientOcclusion(RayIntersect &intersect)
-// {
-//     lin_alg::Vector<3> pos = intersect.ray.Position(intersect.t - 0.001);
-//     double ambient_count = 0;
-//     std::mt19937 generator(rand());
-//     std::uniform_real_distribution<> distribution(-1.0, 1.0);
-//     for (unsigned i = 0; i < ambient_occlusion_sample_rate; ++i)
-//     {
-//         lin_alg::Vector<3> dir({distribution(generator), distribution(generator), distribution(generator)});
-//         if (dir.DotProduct(intersect.normal) < 0)
-//         {
-//             dir = dir.Scale(-1);
-//         }
-
-//         Ray sample_ray(pos, dir, ambient_occlusion_length);
-        
-//         if (!InShadow(sample_ray))
-//         {
-//             ambient_count++;
-//         }
-//     }
-//     return ambient_count / (double)ambient_occlusion_sample_rate;
-// };

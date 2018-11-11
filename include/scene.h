@@ -11,7 +11,7 @@
 class Scene
 {
 public:
-  Scene(Camera cam, lin_alg::Vector<3> background_colour, LightingModel *lighting_model) : cam(cam), background(background_colour), lighting_model(lighting_model){};
+  Scene(Camera cam, lin_alg::Vector<3> background_colour) : cam(cam), background(background_colour){};
 
   virtual ~Scene()
   {
@@ -31,12 +31,14 @@ public:
 
   void AddLightSource(Light *light);
 
+  void SetLightingModel(LightingModel *lighting_model);
+
   bool InShadow(Ray &lightray) const;
 
 protected:
-  std::shared_ptr<RayIntersect> GetClosestIntersect(Ray &ray);
-  lin_alg::Vector<3> CalculateColourAtIntersect(RayIntersect &intersect);
-  lin_alg::Vector<3> GetColour(Ray &ray);
+  std::shared_ptr<RayIntersect> GetClosestIntersect(const Ray &ray) const;
+  lin_alg::Vector<3> CalculateColourAtIntersect(const RayIntersect &intersect) const;
+  lin_alg::Vector<3> GetColour(const Ray &ray) const;
 
   std::vector<SceneObject *> objects;
   std::vector<Light *> light_sources;

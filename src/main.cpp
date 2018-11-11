@@ -4,10 +4,13 @@
 #include "sphere.h"
 #include "camera.h"
 #include "scene.h"
+#include "sampledscene.h"
 #include "boundingsphere.h"
 #include "plane.h"
 #include "directionallight.h"
 #include "pointlight.h"
+#include "ambientocclusionlightingmodel.h"
+#include "basiclightingmodel.h"
 
 lin_alg::Vector<3> GetColourVector(unsigned char R, unsigned char G, unsigned char B)
 {
@@ -69,15 +72,19 @@ int main()
     //BoundingSphere *spherebound1 = new BoundingSphere(meshbound, sphere3);
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
-    Scene scene(cam, {0, 0, 0}, 0.3);
+    SampledScene scene(cam, {0, 0, 0}, 40, SampledScene::Jitter);
+
+    LightingModel *model = new AmbientOcclusionLightingModel(0.3, 3, new BasicLightingModel(0.2, 200), scene);
 
     scene.AddObject(meshbound);
     scene.AddObject(spherebound2);
     scene.AddObject(plane);
     scene.AddLightSource(light);
     scene.AddLightSource(light2);
+    scene.SetLightingModel(model);
+    scene.AddMonitoring();
     //  scene.AddAmbientOcclusion(0.3, 50);
 
     const char *filename = (".\\out\\render.png");
-    scene.Render(filename, 1920/4, 1080/4);
+    scene.Render(filename, 1920, 1080);
 };
