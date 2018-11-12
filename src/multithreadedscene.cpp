@@ -14,14 +14,26 @@ RGBImage *MultithreadedScene::GetImage(unsigned resolution_width, unsigned resol
 
     cam.InitialiseResolution(resolution_width, resolution_height);
 
-    unsigned total_pixels = resolution_height * resolution_width;
-    monitor->Initialise(total_pixels);
-
     std::thread threads[thread_count];
 
-    TaskQueue queue(sample_rates);
+    TaskQueue<PixelTask> queue(monitor);
 
-    unsigned total_tasks = queue.Size();
+    for (size_t i = 0; i < sample_rates.size(); ++i)
+    {
+        for (size_t j = 0; j < sample_rates[0].size(); ++j)
+        {
+            if (sample_rates[i][j] > 1)
+            {
+                PixelTask task;
+                task.pixel_x = i;
+                task.pixel_y = j;
+                task.sample_rate = sample_rates[i][j];
+                queue.Push(task);
+            }
+        }
+    }
+
+    queue.InitailiseMonitor();
 
     for (unsigned i = 0; i < thread_count; ++i)
     {
@@ -33,19 +45,17 @@ RGBImage *MultithreadedScene::GetImage(unsigned resolution_width, unsigned resol
         threads[i].join();
     }
 
-    std::cout << queue.Size();
-
     return image;
 }
 
-void MultithreadedScene::ThreadTask(TaskQueue &queue, ThreadSafeImage *image, SamplingMethod method)
+void MultithreadedScene::ThreadTask(TaskQueue<PixelTask> &queue, ThreadSafeImage *image, SamplingMethod method)
 {
-    TaskQueue::Task task;
+    PixelTask task;
 
     while (queue.TryDequeue(task))
     {
         std::vector<Ray> rays = method == SampledScene::Random ? cam.GetRandomRaySamples(task.pixel_x, task.pixel_y, task.sample_rate)
-                                                            : cam.GetJitterRaySamples(task.pixel_x, task.pixel_y, task.sample_rate);
+                                                               : cam.GetJitterRaySamples(task.pixel_x, task.pixel_y, task.sample_rate);
 
         image->SetPixel(task.pixel_x, task.pixel_y, GetRayAverage(rays));
     }

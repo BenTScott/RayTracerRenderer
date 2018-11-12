@@ -100,5 +100,5 @@ lin_alg::Vector<3> Scene::GetColour(const Ray &ray) const
 
 void Scene::AddMonitoring()
 {
-    this->monitor = new Monitor();
+    this->monitor = new TaskMonitor();
 };

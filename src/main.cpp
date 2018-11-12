@@ -65,17 +65,17 @@ int main()
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
-    DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.7);
-    PointLight *light2 = new PointLight({-4.2, 1.8, -2}, 0.5);
+    DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
+    PointLight *light2 = new PointLight({-4.2, 1.8, -2}, 0.4);
 
     BoundingSphere *meshbound = new BoundingSphere(mesh);
 
     //BoundingSphere *spherebound1 = new BoundingSphere(meshbound, sphere3);
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
-    MultithreadedScene scene(cam, {0, 0, 0}, 150, SampledScene::Jitter, 5);
+    MultithreadedScene scene(cam, {0, 0, 0}, 250, SampledScene::Jitter, 7);
 
-    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 15, new BasicLightingModel(0.2, 200), scene);
+    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 25, new BasicLightingModel(0.1, 200), scene);
 
     scene.AddObject(meshbound);
     scene.AddObject(spherebound2);
@@ -87,5 +87,5 @@ int main()
     //  scene.AddAmbientOcclusion(0.3, 50);
 
     const char *filename = (".\\out\\render.png");
-    scene.Render(filename, 1920/8, 1080/8);
+    scene.Render(filename, 1920, 1080);
 };

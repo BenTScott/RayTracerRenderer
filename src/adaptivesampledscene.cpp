@@ -34,7 +34,7 @@ RGBImage *AdaptiveSampledScene::GetSampleRates(unsigned resolution_width, unsign
     // Blur
     copy->ApplyKernel(kernel2, 1.0 / 5.0, 6);
 
-    copy->Encode(".\\out\\edges.png");
+    //copy->Encode(".\\out\\edges.png");
 
     // Pre-allocate
     sample_rates.resize(resolution_width);
