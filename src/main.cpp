@@ -11,6 +11,7 @@
 #include "pointlight.h"
 #include "ambientocclusionlightingmodel.h"
 #include "basiclightingmodel.h"
+#include "adaptivesampledscene.h"
 
 lin_alg::Vector<3> GetColourVector(unsigned char R, unsigned char G, unsigned char B)
 {
@@ -26,7 +27,6 @@ int main()
     lin_alg::Vector<3> cam_focal({0, 0, 4});
 
     Camera cam(cam_up, cam_forward, cam_focal, 2);
-
     cam.InitialiseScreenSize(32.0 / 9.0, 2);
 
     Sphere *sphere1 = new Sphere({2, 0.5, -3.5 + 1.3, 1}, 2, {0.1, 0.7, 0.1});
@@ -72,9 +72,9 @@ int main()
     //BoundingSphere *spherebound1 = new BoundingSphere(meshbound, sphere3);
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
-    SampledScene scene(cam, {0, 0, 0}, 40, SampledScene::Jitter);
+    AdaptiveSampledScene scene(cam, {0, 0, 0}, 150, SampledScene::Jitter);
 
-    LightingModel *model = new AmbientOcclusionLightingModel(0.3, 3, new BasicLightingModel(0.2, 200), scene);
+    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 15, new BasicLightingModel(0.2, 200), scene);
 
     scene.AddObject(meshbound);
     scene.AddObject(spherebound2);

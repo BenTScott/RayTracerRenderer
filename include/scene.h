@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iterator>
+#include "rgbimage.h"
 #include "sceneobject.h"
 #include "camera.h"
 #include "light.h"
@@ -25,7 +26,7 @@ public:
     }
   };
 
-  virtual void Render(const char *filename, unsigned resolution_width, unsigned resolution_height);
+  void Render(const char *filename, unsigned resolution_width, unsigned resolution_height);
 
   void AddObject(SceneObject *object);
 
@@ -39,6 +40,7 @@ protected:
   std::shared_ptr<RayIntersect> GetClosestIntersect(const Ray &ray) const;
   lin_alg::Vector<3> CalculateColourAtIntersect(const RayIntersect &intersect) const;
   lin_alg::Vector<3> GetColour(const Ray &ray) const;
+  virtual RGBImage *GetImage(unsigned resolution_width, unsigned resolution_height);
 
   std::vector<SceneObject *> objects;
   std::vector<Light *> light_sources;

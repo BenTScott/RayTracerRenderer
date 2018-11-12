@@ -5,8 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/include",
-                "C:/MinGW/include/**",
-                "C:/MinGW/lib/**",
+                "C:/MinGW/mingw64/include/**",
+                "C:/MinGW/mingw64/lib/**",
                 "${workspaceFolder}/lib/**",
                 "${workspaceFolder}/tests/catch2/"
             ],
@@ -15,7 +15,7 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "C:\\MinGW\\bin\\gcc.exe",
+            "compilerPath": "C:\\MinGW\\mingw64\\bin\\gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "msvc-x64"

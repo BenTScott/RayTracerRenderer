@@ -52,8 +52,13 @@ lin_alg::Vector<3> Scene::CalculateColourAtIntersect(const RayIntersect &interse
 
 void Scene::Render(const char *filename, unsigned resolution_width, unsigned resolution_height)
 {
+    GetImage(resolution_width, resolution_height)->Encode(filename);
+};
+
+RGBImage *Scene::GetImage(unsigned resolution_width, unsigned resolution_height)
+{
     cam.InitialiseResolution(resolution_width, resolution_height);
-    RGBImage image(resolution_width, resolution_height);
+    RGBImage* image = new RGBImage(resolution_width, resolution_height);
 
     for (unsigned i = 0; i < resolution_width; ++i)
     {
@@ -63,12 +68,12 @@ void Scene::Render(const char *filename, unsigned resolution_width, unsigned res
 
             Ray ray = cam.GetRay(i, j);
 
-            image.SetPixel(i, j, GetColour(ray));
+            image->SetPixel(i, j, GetColour(ray));
         }
     }
 
-    image.Encode(filename);
-};
+    return image;
+}
 
 lin_alg::Vector<3> Scene::GetColour(const Ray &ray) const
 {
