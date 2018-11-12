@@ -97,4 +97,5 @@ std::unique_ptr<lin_alg::Matrix<4>> lin_alg::HomoTransMatrix4D(double x, double 
 };
 
 template class lin_alg::Matrix<4>;
+template class lin_alg::Matrix<3>;
 template class lin_alg::Matrix<2>;

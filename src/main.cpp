@@ -86,5 +86,5 @@ int main()
     //  scene.AddAmbientOcclusion(0.3, 50);
 
     const char *filename = (".\\out\\render.png");
-    scene.Render(filename, 1920, 1080);
+    scene.Render(filename, 1920/16, 1080/16);
 };

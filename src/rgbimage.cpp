@@ -6,12 +6,47 @@
 void RGBImage::SetPixel(unsigned x, unsigned y, lin_alg::Vector<3> colour)
 {
     assert(y < height && x < width);
-    image[3 * width * y + 3 * x + 0] = (unsigned char)round(colour[0] * 255.0);
-    image[3 * width * y + 3 * x + 1] = (unsigned char)round(colour[1] * 255.0);
-    image[3 * width * y + 3 * x + 2] = (unsigned char)round(colour[2] * 255.0);
+    image[width * y + x] = colour;
 };
+
+void RGBImage::ApplyKernel(lin_alg::Matrix<3> kernel, double scale)
+{
+    for (unsigned i = 0; i < width; ++i)
+    {
+        for (unsigned j = 0; i < height; ++j)
+        {
+            if (i != 0 && j != 0 && i != width - 1 && j != height - 1)
+            {
+                lin_alg::Vector<3> block[3][3] = {
+                    {GetPixel(i - 1, j + 1), GetPixel(i - 1, j), GetPixel(i - 1, j - 1)},
+                    {GetPixel(i , j + 1), GetPixel(i, j), GetPixel(i, j + 1)},
+                    {GetPixel(i + 1, j +1), GetPixel(i + 1, j), GetPixel(i + 1, j - 1)}};
+
+                image[width * j + i] = kernel.Apply(block).Scale(scale).Bound();
+            }
+        }
+    }
+}
+
+lin_alg::Vector<3> RGBImage::GetPixel(unsigned x, unsigned y)
+{
+    return image[width * y + x];
+}
 
 void RGBImage::Encode(const char *filename)
 {
-    lodepng::encode(filename, image, width, height, LodePNGColorType::LCT_RGB);
+    std::vector<unsigned char> char_image;
+    char_image.resize(width * height * 3);
+    for (unsigned i = 0; i < width; ++i)
+    {
+        for (unsigned j = 0; i < height; ++j)
+        {
+            lin_alg::Vector<3> pixel = GetPixel(i, j);
+            char_image[3 * width * j + 3 * i + 0] = (unsigned char)round(pixel[0] * 255.0);
+            char_image[3 * width * j + 3 * i + 1] = (unsigned char)round(pixel[1] * 255.0);
+            char_image[3 * width * j + 3 * i + 2] = (unsigned char)round(pixel[2] * 255.0);
+        }
+    }
+
+    lodepng::encode(filename, char_image, width, height, LodePNGColorType::LCT_RGB);
 };

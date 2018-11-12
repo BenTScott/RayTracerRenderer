@@ -21,7 +21,7 @@ RGBImage *MultithreadedScene::GetImage(unsigned resolution_width, unsigned resol
 
     for (unsigned i = 0; i < thread_count; ++i)
     {
-        threads[i] = std::thread(ThreadTask, queue, image, method);
+        threads[i] = std::thread(&MultithreadedScene::ThreadTask, this, std::ref(queue), image, method);
     }
 
     for (unsigned i = 0; i < thread_count; ++i)

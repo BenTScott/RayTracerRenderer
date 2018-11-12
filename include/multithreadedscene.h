@@ -3,6 +3,7 @@
 
 #include <thread>
 #include <queue>
+#include <mutex>
 #include "adaptivesampledscene.h"
 
 class MultithreadedScene : public AdaptiveSampledScene
@@ -41,7 +42,7 @@ protected:
       }
     }
 
-    ~TaskQueue();
+    ~TaskQueue(){};
 
     bool TryDequeue(Task &task)
     {

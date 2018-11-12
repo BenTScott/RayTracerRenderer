@@ -43,7 +43,11 @@
         "bitset": "cpp",
         "optional": "cpp",
         "string_view": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "condition_variable": "cpp",
+        "mutex": "cpp",
+        "thread": "cpp",
+        "variant": "cpp"
     },
     "C_Cpp.intelliSenseEngineFallback": "Disabled"
 }

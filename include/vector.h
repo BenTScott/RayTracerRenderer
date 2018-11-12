@@ -145,6 +145,16 @@ class Vector
         return result;
     }
 
+    Vector<N> operator*(const double &scalar) const
+    {
+        Vector<N> result;
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            result[i] = values[i] * scalar;
+        }
+        return result;
+    }
+
     Vector<N> &Bound(double min = 0.0, double max = 1.0)
     {
         for (std::size_t i = 0; i < N; ++i)
@@ -152,6 +162,16 @@ class Vector
             this->values[i] = std::max(std::min(values[i], max), min);
         }
         return *this;
+    }
+
+    double Max()
+    {
+        double max = 0;
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            max = std::max(max, values[i]);
+        }
+        return max;
     }
 
   private:

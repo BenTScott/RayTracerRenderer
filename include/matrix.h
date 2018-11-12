@@ -87,6 +87,21 @@ class Matrix
         return C;
     };
 
+    template<class T>
+    T Apply(const T (&rhs)[N][N])
+    {
+        T total;
+        for (std::size_t i = 0; i < N; i++)
+        {
+            for (std::size_t j = 0; j < N; j++)
+            {
+                total += rhs[i][j] * values[i][j];
+            }
+        }
+
+        return total;
+    }
+
     double *operator*(const double (&B)[N])
     {
         double *C = new double[N];

@@ -7,7 +7,7 @@ RGBImage *AdaptiveSampledScene::GetSampleRates(unsigned resolution_width, unsign
     RGBImage *image = Scene::GetImage(resolution_width, resolution_height);
     RGBImage *copy = new RGBImage(*image);
 
-    image->Encode(".\\out\\test2.png");
+    //image->Encode(".\\out\\test2.png");
     
     lin_alg::Matrix<3> kernel1;
     lin_alg::Matrix<3> kernel2;
@@ -33,7 +33,7 @@ RGBImage *AdaptiveSampledScene::GetSampleRates(unsigned resolution_width, unsign
     copy->ApplyKernel(kernel2, 1.0 / 5.0);
     copy->ApplyKernel(kernel2, 1.0 / 5.0);
 
-    //copy->Encode(".\\out\\test.png");
+    copy->Encode(".\\out\\edges.png");
 
     // Pre-allocate
     sample_rates.resize(resolution_width);

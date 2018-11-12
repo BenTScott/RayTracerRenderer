@@ -31,6 +31,8 @@ RGBImage *SampledScene::GetImage(unsigned resolution_width, unsigned resolution_
             image->SetPixel(i, j, GetRayAverage(rays));
         }
     }
+
+    return image;
 }
 
 lin_alg::Vector<3> SampledScene::GetRayAverage(const std::vector<Ray> &rays)
