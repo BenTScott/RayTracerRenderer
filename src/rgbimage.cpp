@@ -11,9 +11,12 @@ void RGBImage::SetPixel(unsigned x, unsigned y, lin_alg::Vector<3> colour)
 
 void RGBImage::ApplyKernel(lin_alg::Matrix<3> kernel, double scale)
 {
+    std::vector<lin_alg::Vector<3>> new_image;
+    new_image.resize(width*height);
+
     for (unsigned i = 0; i < width; ++i)
     {
-        for (unsigned j = 0; i < height; ++j)
+        for (unsigned j = 0; j < height; ++j)
         {
             if (i != 0 && j != 0 && i != width - 1 && j != height - 1)
             {
@@ -22,10 +25,12 @@ void RGBImage::ApplyKernel(lin_alg::Matrix<3> kernel, double scale)
                     {GetPixel(i , j + 1), GetPixel(i, j), GetPixel(i, j + 1)},
                     {GetPixel(i + 1, j +1), GetPixel(i + 1, j), GetPixel(i + 1, j - 1)}};
 
-                image[width * j + i] = kernel.Apply(block).Scale(scale).Bound();
+                new_image[width*j + i] = kernel.Apply(block).Scale(scale).Bound();
             }
         }
     }
+
+    image = new_image;
 }
 
 lin_alg::Vector<3> RGBImage::GetPixel(unsigned x, unsigned y)
@@ -39,7 +44,7 @@ void RGBImage::Encode(const char *filename)
     char_image.resize(width * height * 3);
     for (unsigned i = 0; i < width; ++i)
     {
-        for (unsigned j = 0; i < height; ++j)
+        for (unsigned j = 0; j < height; ++j)
         {
             lin_alg::Vector<3> pixel = GetPixel(i, j);
             char_image[3 * width * j + 3 * i + 0] = (unsigned char)round(pixel[0] * 255.0);
