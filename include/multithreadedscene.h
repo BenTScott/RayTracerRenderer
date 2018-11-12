@@ -5,11 +5,12 @@
 #include <queue>
 #include <mutex>
 #include "adaptivesampledscene.h"
+#include "threadsafeimage.h"
 
 class MultithreadedScene : public AdaptiveSampledScene
 {
 public:
-  ~MultithreadedScene(){};
+  virtual ~MultithreadedScene(){};
 
   MultithreadedScene(Camera cam, lin_alg::Vector<3> background_colour, unsigned max_sample_rate, SamplingMethod method, unsigned thread_count) : AdaptiveSampledScene(cam, background_colour, max_sample_rate, method), thread_count(thread_count){};
 
@@ -33,11 +34,14 @@ protected:
       {
         for (size_t j = 0; j < sample_rates[0].size(); ++j)
         {
-          Task task;
-          task.pixel_x = i;
-          task.pixel_y = i;
-          task.sample_rate = sample_rates[i][j];
-          task_queue.push(task);
+          if (sample_rates[i][j] > 1)
+          {
+            Task task;
+            task.pixel_x = i;
+            task.pixel_y = j;
+            task.sample_rate = sample_rates[i][j];
+            task_queue.push(task);
+          }
         }
       }
     }
@@ -46,8 +50,7 @@ protected:
 
     bool TryDequeue(Task &task)
     {
-      std::unique_lock<std::mutex> lock(m, std::defer_lock);
-      lock.lock();
+      std::lock_guard<std::mutex> lock(m);
       if (task_queue.empty())
       {
         return false;
@@ -58,13 +61,18 @@ protected:
       return true;
     };
 
+    unsigned Size()
+    {
+      return task_queue.size();
+    };
+
   private:
     std::mutex m;
     std::queue<Task> task_queue;
     TaskQueue();
   };
 
-  void ThreadTask(TaskQueue &queue, RGBImage *image, SamplingMethod method);
+  void ThreadTask(TaskQueue &queue, ThreadSafeImage *image, SamplingMethod method);
 };
 
 #endif

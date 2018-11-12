@@ -12,6 +12,7 @@
 #include "ambientocclusionlightingmodel.h"
 #include "basiclightingmodel.h"
 #include "adaptivesampledscene.h"
+#include "multithreadedscene.h"
 
 lin_alg::Vector<3> GetColourVector(unsigned char R, unsigned char G, unsigned char B)
 {
@@ -72,7 +73,7 @@ int main()
     //BoundingSphere *spherebound1 = new BoundingSphere(meshbound, sphere3);
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
-    AdaptiveSampledScene scene(cam, {0, 0, 0}, 150, SampledScene::Jitter);
+    MultithreadedScene scene(cam, {0, 0, 0}, 150, SampledScene::Jitter, 5);
 
     LightingModel *model = new AmbientOcclusionLightingModel(0.2, 15, new BasicLightingModel(0.2, 200), scene);
 
@@ -86,5 +87,5 @@ int main()
     //  scene.AddAmbientOcclusion(0.3, 50);
 
     const char *filename = (".\\out\\render.png");
-    scene.Render(filename, 1920, 1080);
+    scene.Render(filename, 1920/8, 1080/8);
 };

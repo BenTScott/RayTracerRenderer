@@ -8,6 +8,8 @@
 class RGBImage
 {
   public:
+    friend class ThreadSafeImage;
+
     RGBImage() : width(10), height(10)
     {
         image.resize(width * height);
@@ -23,15 +25,15 @@ class RGBImage
         image = obj.image;
     };
 
-    ~RGBImage(){};
+    virtual ~RGBImage(){};
 
-    void SetPixel(unsigned x, unsigned y, lin_alg::Vector<3> colour);
+    virtual void SetPixel(unsigned x, unsigned y, lin_alg::Vector<3> colour);
     lin_alg::Vector<3> GetPixel(unsigned x, unsigned y);
     void ApplyKernel(lin_alg::Matrix<3> kernel, double scale = 1);
     void ApplyKernel(lin_alg::Matrix<3> kernel, double scale, unsigned pass_count);
     void Encode(const char *filename);
 
-  private:
+  protected:
     unsigned width;
     unsigned height;
     std::vector<lin_alg::Vector<3>> image;
