@@ -1,12 +1,6 @@
 #include "sampledscene.h"
 #include "rgbimage.h"
 #include <iostream>
-#include <ctime>
-
-void SampledScene::AddMonitoring()
-{
-    this->monitor = new Monitor();
-};
 
 RGBImage *SampledScene::GetImage(unsigned resolution_width, unsigned resolution_height)
 {

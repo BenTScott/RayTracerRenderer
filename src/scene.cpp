@@ -60,10 +60,18 @@ RGBImage *Scene::GetImage(unsigned resolution_width, unsigned resolution_height)
     cam.InitialiseResolution(resolution_width, resolution_height);
     RGBImage* image = new RGBImage(resolution_width, resolution_height);
 
+    unsigned total_pixels = resolution_height * resolution_width;
+    monitor->Initialise(total_pixels);
+
     for (unsigned i = 0; i < resolution_width; ++i)
     {
         for (unsigned j = 0; j < resolution_height; ++j)
         {
+            if (monitor)
+            {
+                monitor->Increment();
+            }
+
             std::shared_ptr<RayIntersect> closest = nullptr;
 
             Ray ray = cam.GetRay(i, j);
@@ -88,4 +96,9 @@ lin_alg::Vector<3> Scene::GetColour(const Ray &ray) const
     }
 
     return closest ? CalculateColourAtIntersect(*closest).Bound() : background;
+};
+
+void Scene::AddMonitoring()
+{
+    this->monitor = new Monitor();
 };

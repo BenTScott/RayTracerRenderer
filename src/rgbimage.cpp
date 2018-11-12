@@ -33,6 +33,14 @@ void RGBImage::ApplyKernel(lin_alg::Matrix<3> kernel, double scale)
     image = new_image;
 }
 
+void RGBImage::ApplyKernel(lin_alg::Matrix<3> kernel, double scale, unsigned pass_count)
+{
+    for (unsigned i = 0; i < pass_count; ++i)
+    {
+        ApplyKernel(kernel, scale);
+    }
+}
+
 lin_alg::Vector<3> RGBImage::GetPixel(unsigned x, unsigned y)
 {
     return image[width * y + x];
