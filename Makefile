@@ -27,7 +27,8 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CC) $(CFLAGS) $(INCLUDE) -c -g -o $@ $<
 
 clean:
-	del /s /q "$(TARGET)" "$(TESTSTARGET)" $(BUILDDIR) "$(TESTDIR)\catch2\tests-main.o"
+	del /q "$(TARGET)" "$(TESTSTARGET)" $(BUILDDIR) "$(TESTDIR)\catch2\tests-main.o"
+	
 
 .PHONY: tests
 tests: $(TESTDIR)\catch2\tests-main.o $(filter-out $(BUILDDIR)/main.o, $(OBJECTS))
