@@ -73,7 +73,7 @@ int main()
     //BoundingSphere *spherebound1 = new BoundingSphere(meshbound, sphere3);
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
-    MultithreadedScene scene(cam, {0, 0, 0}, 250, SampledScene::Jitter, 7);
+    MultithreadedScene scene(cam, {0, 0, 0}, 250, SampledScene::Jitter, 4);
 
     LightingModel *model = new AmbientOcclusionLightingModel(0.2, 25, new BasicLightingModel(0.1, 200), scene);
 
