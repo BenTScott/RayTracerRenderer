@@ -2,8 +2,8 @@ CC := g++
 CFLAGS := -std=c++17 -Wall -Wextra
 SRCDIR := src
 BUILDDIR := build
-RELEASEBUILDDIR := build/release
-DEBUGBUILDDIR := build/debug
+RELEASEBUILDDIR := build\release
+DEBUGBUILDDIR := build\debug
 TESTDIR := tests
 INCLUDE := -I include
 LIB := -L lib
@@ -41,13 +41,13 @@ $(RELEASEBUILDDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CC) $(CFLAGS) $(INCLUDE) -c -O -o $@ $<
 
 clean:
-	del /q "$(TARGET)" "$(TESTSTARGET)" $(BUILDDIR) "$(TESTDIR)\catch2\tests-main.o"
+	del /q $(BINDIR) $(RELEASEBUILDDIR) $(DEBUGBUILDDIR) "$(TESTDIR)\catch2\tests-main.o"
 	
 
 .PHONY: tests
-tests: $(TESTDIR)\catch2\tests-main.o $(filter-out $(BUILDDIR)/main.o, $(OBJECTS))
+tests: $(TESTDIR)\catch2\tests-main.o $(filter-out $(DEBUGBUILDDIR)\main.o, $(DEBUGOBJECTS))
 	$(CC) $(CFLAGS) $^ $(TESTS) $(INCLUDE) -o $(TESTSTARGET)
-	./$(TESTSTARGET)
+	.\$(TESTSTARGET)
 
 $(TESTDIR)\catch2\tests-main.o:
 	$(CC) $(CFLAGS) $(TESTDIR)\catch2\tests-main.cpp -I tests\catch2 -c -o $@
