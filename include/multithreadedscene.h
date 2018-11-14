@@ -19,13 +19,6 @@ protected:
   virtual RGBImage *GetImage(unsigned resolution_width, unsigned resolution_height) override;
   unsigned thread_count;
 
-  struct PixelTask
-  {
-    unsigned pixel_x;
-    unsigned pixel_y;
-    unsigned sample_rate;
-  };
-
   void ThreadTask(TaskQueue<PixelTask> &queue, ThreadSafeImage *image, SamplingMethod method);
 };
 

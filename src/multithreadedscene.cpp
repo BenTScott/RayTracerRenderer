@@ -12,28 +12,11 @@ RGBImage *MultithreadedScene::GetImage(unsigned resolution_width, unsigned resol
 
     std::cout << "Starting render\n";
 
-    cam.InitialiseResolution(resolution_width, resolution_height);
-
     std::thread threads[thread_count];
 
-    TaskQueue<PixelTask> queue(monitor);
+    TaskQueue<PixelTask> queue(tasks);
 
-    for (size_t i = 0; i < sample_rates.size(); ++i)
-    {
-        for (size_t j = 0; j < sample_rates[0].size(); ++j)
-        {
-            if (sample_rates[i][j] > 1)
-            {
-                PixelTask task;
-                task.pixel_x = i;
-                task.pixel_y = j;
-                task.sample_rate = sample_rates[i][j];
-                queue.Push(task);
-            }
-        }
-    }
-
-    queue.InitailiseMonitor();
+    queue.InitailiseMonitor(*monitor);
 
     for (unsigned i = 0; i < thread_count; ++i)
     {

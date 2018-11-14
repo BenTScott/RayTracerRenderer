@@ -7,8 +7,6 @@ RGBImage *AdaptiveSampledScene::GetSampleRates(unsigned resolution_width, unsign
     RGBImage *image = Scene::GetImage(resolution_width, resolution_height);
     RGBImage *copy = new RGBImage(*image);
 
-    //image->Encode(".\\out\\test2.png");
-    
     lin_alg::Matrix<3> kernel1;
     lin_alg::Matrix<3> kernel2;
 
@@ -34,29 +32,23 @@ RGBImage *AdaptiveSampledScene::GetSampleRates(unsigned resolution_width, unsign
     //copy->Encode(".\\out\\test1.png");
 
     // Blur
-    copy->ApplyKernel(kernel2, 1.0 / 6.0, 9);
+    copy->ApplyKernel(kernel2, 1.0 / 4.0, 5);
 
-    //copy->Encode(".\\out\\test2.png");
-
-    // Pre-allocate
-    sample_rates.resize(resolution_width);
-    for (unsigned i = 0; i < resolution_width; ++i)
-    {
-        sample_rates[i].resize(resolution_height);
-    }
-
-    double max_max = 0;
+    // Reserve max size
+    tasks.clear();
+    tasks.reserve(resolution_width * resolution_height);
 
     for (unsigned i = 0; i < resolution_width; i++)
     {
         for (unsigned j = 0; j < resolution_height; j++)
         {
-            double max = image->GetPixel(i, j).Max();
-            if (max > max_max)
-            {
-                max_max = max;
-            }
-            sample_rates[i][j] = std::round(max * (double)(sample_rate - 1)) + 1;
+            double max = copy->GetPixel(i, j).Max();
+            unsigned pixel_sample_rate = std::round(max * (sample_rate - 1)) + 1;
+            PixelTask task;
+            task.pixel_x = i;
+            task.pixel_y = j;
+            task.sample_rate = pixel_sample_rate;
+            tasks.push_back(task);
         }
     }
 
@@ -73,30 +65,19 @@ RGBImage *AdaptiveSampledScene::GetImage(unsigned resolution_width, unsigned res
 
     std::cout << "Starting render\n";
 
-    cam.InitialiseResolution(resolution_width, resolution_height);
-    //RGBImage *image = new RGBImage(resolution_width, resolution_height);
-    
-    unsigned total_pixels = resolution_height * resolution_width;
-    monitor->Initialise(total_pixels);
-    for (unsigned i = 0; i < resolution_width; ++i)
+    monitor->Initialise(tasks.size());
+
+    for (const PixelTask &t : tasks)
     {
-        for (unsigned j = 0; j < resolution_height; ++j)
+        if (monitor)
         {
-            if (monitor)
-            {
-                monitor->Increment();
-            }
-
-            if (sample_rates[i][j] > 1)
-            {
-                unsigned pixel_sample_rate = sample_rates[i][j];
-
-                std::vector<Ray> rays = method == SampledScene::Random ? cam.GetRandomRaySamples(i, j, pixel_sample_rate)
-                                                                       : cam.GetJitterRaySamples(i, j, pixel_sample_rate);
-
-                image->SetPixel(i, j, GetRayAverage(rays));
-            }
+            monitor->Increment();
         }
+
+        std::vector<Ray> rays = method == SampledScene::Random ? cam.GetRandomRaySamples(t.pixel_x, t.pixel_y, t.sample_rate)
+                                                               : cam.GetJitterRaySamples(t.pixel_x, t.pixel_y, t.sample_rate);
+
+        image->SetPixel(t.pixel_x, t.pixel_y, GetRayAverage(rays));
     }
 
     return image;

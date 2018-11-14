@@ -4,7 +4,6 @@
 
 RGBImage *SampledScene::GetImage(unsigned resolution_width, unsigned resolution_height)
 {
-    cam.InitialiseResolution(resolution_width, resolution_height);
     RGBImage *image = new RGBImage(resolution_width, resolution_height);
 
     unsigned total_pixels = resolution_height * resolution_width;

@@ -9,9 +9,8 @@ template <typename T>
 class TaskQueue
 {
   public:
-    TaskQueue() : monitor(nullptr) {};
-
-    TaskQueue(TaskMonitor* monitor) : monitor(monitor){};
+    TaskQueue(std::vector<T> &tasks) : queue(std::deque<T>(tasks.begin(), tasks.end())), monitor(nullptr){};;
+    TaskQueue() : monitor(nullptr){};;
 
     ~TaskQueue(){};
 
@@ -40,12 +39,10 @@ class TaskQueue
         queue.push(task);
     }
 
-    void InitailiseMonitor()
+    void InitailiseMonitor(TaskMonitor monitor)
     {
-        if (monitor)
-        {
-            monitor->Initialise(this->Size());
-        }
+        this->monitor = new TaskMonitor(monitor);
+        this->monitor->Initialise(this->Size());
     }
 
     unsigned Size()
@@ -54,9 +51,9 @@ class TaskQueue
     };
 
   private:
+    std::queue<T> queue;
     TaskMonitor *monitor;
     std::mutex m;
-    std::queue<T> queue;
 
 };
 
