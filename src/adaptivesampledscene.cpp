@@ -31,10 +31,12 @@ RGBImage *AdaptiveSampledScene::GetSampleRates(unsigned resolution_width, unsign
     // Apply edge detection kernel
     copy->ApplyKernel(kernel1);
 
-    // Blur
-    copy->ApplyKernel(kernel2, 1.0 / 5.0, 6);
+    //copy->Encode(".\\out\\test1.png");
 
-    //copy->Encode(".\\out\\edges.png");
+    // Blur
+    copy->ApplyKernel(kernel2, 1.0 / 6.0, 9);
+
+    //copy->Encode(".\\out\\test2.png");
 
     // Pre-allocate
     sample_rates.resize(resolution_width);
@@ -43,11 +45,18 @@ RGBImage *AdaptiveSampledScene::GetSampleRates(unsigned resolution_width, unsign
         sample_rates[i].resize(resolution_height);
     }
 
+    double max_max = 0;
+
     for (unsigned i = 0; i < resolution_width; i++)
     {
         for (unsigned j = 0; j < resolution_height; j++)
         {
-            sample_rates[i][j] = std::round(image->GetPixel(i, j).Max() * (double)(sample_rate - 1)) + 1;
+            double max = image->GetPixel(i, j).Max();
+            if (max > max_max)
+            {
+                max_max = max;
+            }
+            sample_rates[i][j] = std::round(max * (double)(sample_rate - 1)) + 1;
         }
     }
 
