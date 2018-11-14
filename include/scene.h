@@ -17,13 +17,13 @@ public:
 
   virtual ~Scene()
   {
-    for (std::vector<SceneObject *>::reverse_iterator iter = objects.rbegin(); iter >= objects.rend(); ++iter)
+    for (auto obj_ptr : objects)
     {
-      delete *iter;
+      delete obj_ptr;
     }
-    for (std::vector<Light *>::reverse_iterator iter = light_sources.rbegin(); iter >= light_sources.rend(); ++iter)
+    for (auto light_ptr : light_sources)
     {
-      delete *iter;
+      delete light_ptr;
     }
 
     if (monitor)

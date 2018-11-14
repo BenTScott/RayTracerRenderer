@@ -108,25 +108,25 @@ void Mesh::WriteToFile(const char *filename, const int startingVertexIndex, bool
 
     out << std::fixed << std::setprecision(4);
 
-    for (std::vector<Vertex>::iterator vertex_ptr = vertices.begin(); vertex_ptr < vertices.end(); vertex_ptr++)
+    for (const Vertex &vertex : vertices)
     {
         out << "v "
-            << vertex_ptr->pos[0] << " "
-            << vertex_ptr->pos[1] << " "
-            << vertex_ptr->pos[2] << " "
-            << vertex_ptr->pos[3] << "\n";
+            << vertex.pos[0] << " "
+            << vertex.pos[1] << " "
+            << vertex.pos[2] << " "
+            << vertex.pos[3] << "\n";
     }
 
-    for (std::vector<Face>::iterator face_ptr = faces.begin(); face_ptr < faces.end(); face_ptr++)
+    for (const Face &face : faces)
     {
         int indexarray[3];
-        for (std::vector<Vertex>::iterator vertex_ptr = vertices.begin(); vertex_ptr < vertices.end(); vertex_ptr++)
+        for (std::size_t i = 0; i < vertices.size(); ++i)
         {
-            for (int i = 0; i < 3; ++i)
+            for (int j = 0; j < 3; ++j)
             {
-                if (face_ptr->vertices[i] == &(*vertex_ptr))
+                if (face.vertices[j] == &vertices[i])
                 {
-                    indexarray[i] = std::distance(vertices.begin(), vertex_ptr) + startingVertexIndex;
+                    indexarray[j] = i + startingVertexIndex;
                 }
             }
         }
@@ -156,10 +156,10 @@ void Mesh::Rotate(Axis3D a, double angle)
 
 void Mesh::UpdateVertices(Matrix<4> &transformation_mat)
 {
-    for (std::vector<Vertex>::iterator vertex_ptr = vertices.begin(); vertex_ptr < vertices.end(); vertex_ptr++)
+    for (Vertex &vertex : vertices)
     {
-        Vector<4> new_pos = transformation_mat * (vertex_ptr->pos);
-        vertex_ptr->Update_Position(new_pos);
+        Vector<4> new_pos = transformation_mat * (vertex.pos);
+        vertex.Update_Position(new_pos);
     }
 }
 
@@ -186,9 +186,9 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
     double t = INFINITY;
     Vector<3> colour;
     Vector<3> normal;
-    for (std::vector<Face>::iterator face_iterator = faces.begin(); face_iterator < faces.end(); face_iterator++)
+    for (const Face &face : faces)
     {
-        Plane face_plane(face_iterator->normal, face_iterator->vertices[0]->pos.GetAsVector3());
+        Plane face_plane(face.normal, face.vertices[0]->pos.GetAsVector3());
         std::shared_ptr<RayIntersect> face_intersect = face_plane.Intersect(ray);
 
         // Ray does not interect face plane i.e. ray is parrallel to the face
@@ -200,9 +200,9 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
 
         Vector<3> intersect_pos = ray.Position(face_intersect->t);
 
-        Vector<3> vertex_0 = face_iterator->vertices[0]->pos.GetAsVector3();
-        Vector<3> vertex_1 = face_iterator->vertices[1]->pos.GetAsVector3();
-        Vector<3> vertex_2 = face_iterator->vertices[2]->pos.GetAsVector3();
+        Vector<3> vertex_0 = face.vertices[0]->pos.GetAsVector3();
+        Vector<3> vertex_1 = face.vertices[1]->pos.GetAsVector3();
+        Vector<3> vertex_2 = face.vertices[2]->pos.GetAsVector3();
 
         // Get vectors between face verticies
         Vector<3> vector1 = vertex_1 - vertex_0;
@@ -216,8 +216,8 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
         if (norm1.DotProduct(norm2) >= 0 && norm1.DotProduct(norm3) >= 0 && norm2.DotProduct(norm3) >= 0)
         {
             t = face_intersect->t;
-            colour = face_iterator->colour;
-            normal = face_iterator->normal;
+            colour = face.colour;
+            normal = face.normal;
         }
     }
 

@@ -20,9 +20,9 @@ void Scene::SetLightingModel(LightingModel *lighting_model)
 
 bool Scene::InShadow(Ray &lightray) const
 {
-    for (std::vector<SceneObject *>::const_iterator object_iterator = objects.begin(); object_iterator < objects.end(); object_iterator++)
+    for (const auto &obj : objects)
     {
-        if ((*object_iterator)->Intersect(lightray))
+        if (obj->Intersect(lightray))
         {
             return true;
         }
@@ -34,15 +34,15 @@ lin_alg::Vector<3> Scene::CalculateColourAtIntersect(const RayIntersect &interse
 {
     lin_alg::Vector<3> colour;
 
-    for (std::vector<Light *>::const_iterator light_iterator = light_sources.begin(); light_iterator < light_sources.end(); light_iterator++)
+    for (const auto &light : light_sources)
     {
         lin_alg::Vector<3> pos = intersect.GetCorrectedPosition();
-        Ray lightray = (*light_iterator)->GetLightRay(pos);
+        Ray lightray = light->GetLightRay(pos);
 
         if (!InShadow(lightray))
         {
-            colour += lighting_model->GetDiffuseLighting(**light_iterator, intersect);
-            colour += lighting_model->GetSpecularLighting(**light_iterator, intersect);
+            colour += lighting_model->GetDiffuseLighting(*light, intersect);
+            colour += lighting_model->GetSpecularLighting(*light, intersect);
         }
         colour += lighting_model->GetGlobalLighting(intersect);
     }
@@ -87,9 +87,9 @@ RGBImage *Scene::GetImage(unsigned resolution_width, unsigned resolution_height)
 lin_alg::Vector<3> Scene::GetColour(const Ray &ray) const
 {
     std::shared_ptr<RayIntersect> closest = nullptr;
-    for (std::vector<SceneObject *>::const_iterator object_iterator = objects.begin(); object_iterator < objects.end(); object_iterator++)
+    for (const auto &obj : objects)
     {
-        std::shared_ptr<RayIntersect> intersect = (*object_iterator)->Intersect(ray);
+        std::shared_ptr<RayIntersect> intersect = obj->Intersect(ray);
         if (intersect && (!closest || intersect->t < closest->t))
         {
             closest = intersect;

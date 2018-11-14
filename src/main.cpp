@@ -73,7 +73,7 @@ int main()
     //BoundingSphere *spherebound1 = new BoundingSphere(meshbound, sphere3);
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
-    MultithreadedScene scene(cam, {0, 0, 0}, 600, SampledScene::Random, 7);
+    MultithreadedScene scene(cam, {0, 0, 0}, 400, SampledScene::Random, 7);
 
     LightingModel *model = new AmbientOcclusionLightingModel(0.2, 45, new BasicLightingModel(0.1, 200), scene);
 
@@ -88,5 +88,5 @@ int main()
     //  scene.AddAmbientOcclusion(0.3, 50);
 
     const char *filename = (".\\out\\render.png");
-    scene.Render(filename, 1920, 1080);
+    scene.Render(filename, 1920/16, 1080/16);
 };

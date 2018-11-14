@@ -7,16 +7,16 @@ BoundingSphere::BoundingSphere(Mesh *contained_mesh)
     contained_objects.push_back(contained_mesh);
 
     lin_alg::Vector<4> total;
-    for (std::vector<Vertex>::iterator vertex_ptr = contained_mesh->vertices.begin(); vertex_ptr < contained_mesh->vertices.end(); vertex_ptr++)
+    for (const Vertex &vertex : contained_mesh->vertices)
     {
-        total += vertex_ptr->pos;
+        total += vertex.pos;
     }
 
     centre = total.Scale(1.0 / contained_mesh->vertices.size());
 
     double max = 0;
 
-    for (std::vector<Vertex>::iterator vertex_ptr = contained_mesh->vertices.begin(); vertex_ptr < contained_mesh->vertices.end(); vertex_ptr++)
+    for (const Vertex &vertex : contained_mesh->vertices)
     {
         double distance = (centre - vertex_ptr->pos).Magnitude();
         if (distance > max)
@@ -47,11 +47,11 @@ std::shared_ptr<RayIntersect> BoundingSphere::Intersect(Ray ray)
 
     std::shared_ptr<RayIntersect> closest = nullptr;
 
-    for (std::vector<SceneObject *>::iterator it = contained_objects.begin(); it < contained_objects.end(); it++)
+    for (const auto obj : contained_objects)
     {
         if (closest)
         {
-            std::shared_ptr<RayIntersect> intersect = (*it)->Intersect(ray);
+            std::shared_ptr<RayIntersect> intersect = obj->Intersect(ray);
             if (intersect && intersect->t < closest->t)
             {
                 closest = intersect;
@@ -59,7 +59,7 @@ std::shared_ptr<RayIntersect> BoundingSphere::Intersect(Ray ray)
         }
         else
         {
-            closest = (*it)->Intersect(ray);
+            closest = obj->Intersect(ray);
         }
     }
 

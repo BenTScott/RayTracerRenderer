@@ -13,9 +13,9 @@ public:
 
   ~BoundingSphere()
   {
-    for (std::vector<SceneObject *>::iterator it = contained_objects.begin(); it < contained_objects.end(); it++)
+    for (auto obj_ptr : contained_objects)
     {
-      delete *it;
+      delete obj_ptr;
     }
   };
 
