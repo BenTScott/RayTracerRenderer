@@ -65,17 +65,17 @@ int main()
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
-    DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
-    PointLight *light2 = new PointLight({-4.2, 1.8, -2}, 0.4);
+    DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.65);
+    PointLight *light2 = new PointLight({-4.2, 1.8, -2}, {0.1,0.44,0.42});
 
     BoundingSphere *meshbound = new BoundingSphere(mesh);
 
     //BoundingSphere *spherebound1 = new BoundingSphere(meshbound, sphere3);
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
-    MultithreadedScene scene(cam, {0, 0, 0}, 600, SampledScene::Random, 7);
+    MultithreadedScene scene(cam, {0, 0, 0}, 600, SampledScene::Jitter, 7);
 
-    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 45, new BasicLightingModel(0.1, 200), scene);
+    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 50, new BasicLightingModel(0.12, 200), scene);
 
     scene.AddObject(meshbound);
     //scene.AddObject(sphere1);
