@@ -29,8 +29,6 @@ RGBImage *AdaptiveSampledScene::GetSampleRates(unsigned resolution_width, unsign
     // Apply edge detection kernel
     copy->ApplyKernel(kernel1);
 
-    //copy->Encode(".\\out\\test1.png");
-
     // Blur
     copy->ApplyKernel(kernel2, 1.0 / 4.0, 5);
 

@@ -32,9 +32,9 @@ lin_alg::Vector<3> SampledScene::GetRayAverage(const std::vector<Ray> &rays)
 {
     lin_alg::Vector<3> colour;
 
-    for (std::vector<Ray>::const_iterator ray_iterator = rays.begin(); ray_iterator < rays.end(); ray_iterator++)
+    for (const Ray &ray : rays)
     {
-        colour += GetColour(*ray_iterator);
+        colour += GetColour(ray);
     }
 
     // Get average colour

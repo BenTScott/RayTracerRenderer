@@ -232,16 +232,16 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
 
 void Mesh::SetColour(Vector<3> colour)
 {
-    for (std::vector<Face>::iterator face_iterator = faces.begin(); face_iterator < faces.end(); face_iterator++)
+    for (Face &face : faces)
     {
-        face_iterator->colour = colour;
+        face.colour = colour;
     }
 };
 
 void Mesh::RecalculateNormals()
 {
-    for (std::vector<Face>::iterator face_iterator = faces.begin(); face_iterator < faces.end(); face_iterator++)
+    for (Face &face : faces)
     {
-        face_iterator->CalculateNormal();
+        face.CalculateNormal();
     }
 }

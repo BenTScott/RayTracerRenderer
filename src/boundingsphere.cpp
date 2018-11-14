@@ -18,7 +18,7 @@ BoundingSphere::BoundingSphere(Mesh *contained_mesh)
 
     for (const Vertex &vertex : contained_mesh->vertices)
     {
-        double distance = (centre - vertex_ptr->pos).Magnitude();
+        double distance = (centre - vertex.pos).Magnitude();
         if (distance > max)
         {
             max = distance;
