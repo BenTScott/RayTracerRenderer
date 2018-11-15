@@ -20,6 +20,14 @@ public:
     pos[2] = z;
     pos[3] = 1;
   };
+  Vertex(lin_alg::Vector<3> pos)
+  {
+    for (int i = 0; i < 3; i++)
+    {
+      this->pos[i] = pos[i];
+    }
+    this->pos[3] = 1;
+  };
 
   ~Vertex(){};
 

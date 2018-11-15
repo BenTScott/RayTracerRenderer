@@ -19,6 +19,11 @@ class RayIntersect
         object = obj.object;
     };
 
+    lin_alg::Vector<3> Position() const
+    {
+        return ray.Position(t);
+    };
+
     lin_alg::Vector<3> GetCorrectedPosition(double error = 0.001) const
     {
         return ray.Position(t - error);
