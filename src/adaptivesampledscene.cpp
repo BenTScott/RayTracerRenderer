@@ -30,7 +30,7 @@ RGBImage *AdaptiveSampledScene::GetSampleRates(unsigned resolution_width, unsign
     copy->ApplyKernel(kernel1);
 
     // Blur
-    copy->ApplyKernel(kernel2, 1.0 / 4.0, 5);
+    copy->ApplyKernel(kernel2, 1.0 / 5.0, 7);
 
     // Reserve max size
     tasks.clear();
