@@ -11,13 +11,7 @@ class RayIntersect
   public:
     RayIntersect(){};
     RayIntersect(Ray ray, double t, lin_alg::Vector<3> colour, SceneObject *obj, lin_alg::Vector<3> normal) : ray(ray), t(t), colour(colour), object(obj), normal(normal) {};
-    RayIntersect(RayIntersect& obj)
-    {
-        ray = obj.ray;
-        t = obj.t;
-        colour = obj.colour;
-        object = obj.object;
-    };
+    RayIntersect(RayIntersect& obj) : ray(obj.ray), t(obj.t), colour(obj.colour), object(obj.object){};
 
     lin_alg::Vector<3> Position() const
     {

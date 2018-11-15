@@ -33,7 +33,7 @@ void Rectangle::Initialise(lin_alg::Vector<3> p1, lin_alg::Vector<3> p2,lin_alg:
 
 std::shared_ptr<RayIntersect> Rectangle::Intersect(Ray ray)
 {
-    return this->Intersect(ray);
+    return Mesh::Intersect(ray);
 }
 
 std::shared_ptr<RayIntersect> Circle::Intersect(Ray ray)

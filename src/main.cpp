@@ -13,6 +13,7 @@
 #include "basiclightingmodel.h"
 #include "adaptivesampledscene.h"
 #include "multithreadedscene.h"
+#include "2dshapes.h"
 
 lin_alg::Vector<3> GetColourVector(unsigned char R, unsigned char G, unsigned char B)
 {
@@ -65,16 +66,19 @@ int main()
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
-    DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.65);
-    PointLight *light2 = new PointLight({-4.2, 1.8, -2}, {0.1,0.44,0.42});
+    DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
+    PointLight *light2 = new PointLight({-4.2, 1.8, -2}, 0.4);
 
     BoundingSphere *meshbound = new BoundingSphere(mesh);
 
     //BoundingSphere *spherebound1 = new BoundingSphere(meshbound, sphere3);
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
-    MultithreadedScene scene(cam, {0, 0, 0}, 600, SampledScene::Random, 7);
-    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 50, new BasicLightingModel(0.12, 200), scene);
+    //Rectangle *rec = new Rectangle({1,2,-1}, {-1, 2, -1.5}, {-1, 0, 0}, {1, 1, -0.5});
+
+    MultithreadedScene scene(cam, {0, 0, 0}, 10, SampledScene::Random, 7);
+
+    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 45, new BasicLightingModel(0.1, 200), scene);
 
     scene.AddObject(meshbound);
     //scene.AddObject(sphere1);
@@ -87,5 +91,5 @@ int main()
     //  scene.AddAmbientOcclusion(0.3, 50);
 
     const char *filename = (".\\out\\render.png");
-    scene.Render(filename, 1920/16, 1080/16);
+    scene.Render(filename, 1920/2, 1080/2);
 };
