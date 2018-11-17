@@ -30,13 +30,14 @@ bool Scene::InShadow(Ray &lightray) const
     return false;
 };
 
-lin_alg::Vector<3> Scene::CalculateColourAtIntersect(const RayIntersect &intersect) const
+lin_alg::Vector<3> Scene::CalculateColourAtIntersect(const RayIntersect &intersect, unsigned depth) const
 {
     lin_alg::Vector<3> colour;
 
+    lin_alg::Vector<3> pos = intersect.GetCorrectedPosition();
+
     for (const auto &light : light_sources)
     {
-        lin_alg::Vector<3> pos = intersect.GetCorrectedPosition();
         Ray lightray = light->GetLightRay(pos);
 
         if (!InShadow(lightray))
@@ -45,6 +46,14 @@ lin_alg::Vector<3> Scene::CalculateColourAtIntersect(const RayIntersect &interse
             colour += lighting_model->GetSpecularLighting(*light, intersect);
         }
         colour += lighting_model->GetGlobalLighting(intersect);
+    }
+
+    if (intersect.object->reflected_proportion > 0 && depth < max_reflection_depth)
+    {
+        lin_alg::Vector<3> reflected_dir = intersect.ray.direction.Scale(-1) - intersect.normal.Scale(2 * intersect.normal.DotProduct(intersect.ray.direction));
+        Ray reflected(pos, reflected_dir);
+        colour = colour.Scale(1.0 - intersect.object->reflected_proportion);
+        colour += GetColour(reflected, depth + 1).Scale(intersect.object->reflected_proportion);
     }
 
     return colour;
@@ -59,7 +68,7 @@ void Scene::Render(const char *filename, unsigned resolution_width, unsigned res
 RGBImage *Scene::GetImage(unsigned resolution_width, unsigned resolution_height)
 {
     cam.InitialiseResolution(resolution_width, resolution_height);
-    RGBImage* image = new RGBImage(resolution_width, resolution_height);
+    RGBImage *image = new RGBImage(resolution_width, resolution_height);
 
     unsigned total_pixels = resolution_height * resolution_width;
     monitor->Initialise(total_pixels);
@@ -84,7 +93,7 @@ RGBImage *Scene::GetImage(unsigned resolution_width, unsigned resolution_height)
     return image;
 }
 
-lin_alg::Vector<3> Scene::GetColour(const Ray &ray) const
+lin_alg::Vector<3> Scene::GetColour(const Ray &ray, unsigned depth) const
 {
     std::shared_ptr<RayIntersect> closest = nullptr;
     for (const auto &obj : objects)
@@ -96,7 +105,7 @@ lin_alg::Vector<3> Scene::GetColour(const Ray &ray) const
         };
     }
 
-    return closest ? CalculateColourAtIntersect(*closest).Bound() : background;
+    return closest ? CalculateColourAtIntersect(*closest, depth).Bound() : background;
 };
 
 void Scene::AddMonitoring()
