@@ -50,47 +50,28 @@ RGBImage *MultithreadedScene::GetSampleRates(unsigned resolution_width, unsigned
 RGBImage *MultithreadedScene::FirstPass(unsigned resolution_width, unsigned resolution_height)
 {
     cam.InitialiseResolution(resolution_width, resolution_height);
-    RGBImage *image = new RGBImage(resolution_width, resolution_height);
-
-    unsigned total_pixels = resolution_height * resolution_width;
-    monitor->Initialise(total_pixels);
-
+    ThreadSafeImage *image = new ThreadSafeImage(resolution_width, resolution_height);
+    
     std::vector<unsigned> rows;
     rows.reserve(resolution_height);
     for (unsigned i = 0; i < resolution_height; ++i)
     {
-        rows.push_back(resolution_height);
+        rows.push_back(i);
     }
 
     TaskQueue<unsigned> queue(rows);
+    queue.InitailiseMonitor(*monitor);
 
     std::thread threads[thread_count];
 
     for (unsigned i = 0; i < thread_count; ++i)
     {
-        threads[i] = std::thread(&MultithreadedScene::ThreadTask, this, std::ref(queue), image, method);
+        threads[i] = std::thread(&MultithreadedScene::RowThreadTask, this, std::ref(queue), image, resolution_width);
     }
 
     for (unsigned i = 0; i < thread_count; ++i)
     {
         threads[i].join();
-    }
-
-    for (unsigned i = 0; i < resolution_width; ++i)
-    {
-        for (unsigned j = 0; j < resolution_height; ++j)
-        {
-            if (monitor)
-            {
-                monitor->Increment();
-            }
-
-            std::shared_ptr<RayIntersect> closest = nullptr;
-
-            Ray ray = cam.GetRay(i, j);
-
-            image->SetPixel(i, j, GetColour(ray));
-        }
     }
 
     return image;
@@ -118,7 +99,7 @@ void MultithreadedScene::RowThreadTask(TaskQueue<unsigned> &queue, ThreadSafeIma
         for (unsigned i = 0; i < resolution_width; ++i)
         {
             Ray ray = cam.GetRay(i, row_index);
-            image->SetPixel(task.pixel_x, task.pixel_y, GetColour(ray));
+            image->SetPixel(i, row_index, GetColour(ray));
         }
     }
 }

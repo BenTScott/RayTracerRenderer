@@ -20,7 +20,7 @@ protected:
 
   std::vector<PixelTask> tasks;
   virtual RGBImage *GetImage(unsigned resolution_width, unsigned resolution_height) override;
-  RGBImage *GetSampleRates(unsigned resolution_width, unsigned resolution_height);
+  virtual RGBImage *GetSampleRates(unsigned resolution_width, unsigned resolution_height);
   void ApplyKernelTransformations(RGBImage *first_pass);
   void BuildTaskList(RGBImage *first_pass);
 

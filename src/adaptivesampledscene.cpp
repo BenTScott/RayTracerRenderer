@@ -21,7 +21,7 @@ void AdaptiveSampledScene::BuildTaskList(RGBImage *first_pass)
     // Reserve max size
     tasks.clear();
     tasks.reserve(first_pass->Width() * first_pass->Height());
-
+    
     for (unsigned i = 0; i < first_pass->Width(); i++)
     {
         for (unsigned j = 0; j < first_pass->Height(); j++)

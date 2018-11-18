@@ -16,7 +16,7 @@
 #include "2dshapes.h"
 
 #ifndef MAX_THREAD_COUNT
-#define MAX_THREAD_COUNT 7
+#define MAX_THREAD_COUNT 6
 #endif
 
 lin_alg::Vector<3> GetColourVector(unsigned char R, unsigned char G, unsigned char B)

@@ -7,6 +7,8 @@
 class ThreadSafeImage : public RGBImage
 {
 public:
+    ThreadSafeImage(unsigned width, unsigned height) : RGBImage(width, height) {}
+
     ThreadSafeImage(RGBImage &img)
     {
         this->image = img.image;

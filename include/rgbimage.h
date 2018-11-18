@@ -30,12 +30,12 @@ class RGBImage
     unsigned Width()
     {
         return width;
-    }
+    };
 
     unsigned Height()
     {
-        return width;
-    }
+        return height;
+    };
 
     virtual void SetPixel(unsigned x, unsigned y, lin_alg::Vector<3> colour);
     lin_alg::Vector<3> GetPixel(unsigned x, unsigned y);
