@@ -7,6 +7,38 @@ RGBImage *AdaptiveSampledScene::GetSampleRates(unsigned resolution_width, unsign
     RGBImage *image = Scene::GetImage(resolution_width, resolution_height);
     RGBImage *copy = new RGBImage(*image);
 
+    ApplyKernelTransformations(copy);
+
+    BuildTaskList(copy);
+
+    delete copy;
+
+    return image;
+};
+
+void AdaptiveSampledScene::BuildTaskList(RGBImage *first_pass)
+{
+    // Reserve max size
+    tasks.clear();
+    tasks.reserve(first_pass->Width() * first_pass->Height());
+
+    for (unsigned i = 0; i < first_pass->Width(); i++)
+    {
+        for (unsigned j = 0; j < first_pass->Height(); j++)
+        {
+            double max = first_pass->GetPixel(i, j).Max();
+            unsigned pixel_sample_rate = std::round(max * (sample_rate - 1)) + 1;
+            PixelTask task;
+            task.pixel_x = i;
+            task.pixel_y = j;
+            task.sample_rate = pixel_sample_rate;
+            tasks.push_back(task);
+        }
+    }
+};
+
+void AdaptiveSampledScene::ApplyKernelTransformations(RGBImage *first_pass)
+{
     lin_alg::Matrix<3> kernel1;
     lin_alg::Matrix<3> kernel2;
 
@@ -27,33 +59,11 @@ RGBImage *AdaptiveSampledScene::GetSampleRates(unsigned resolution_width, unsign
     }
 
     // Apply edge detection kernel
-    copy->ApplyKernel(kernel1);
+    first_pass->ApplyKernel(kernel1);
 
     // Blur
-    copy->ApplyKernel(kernel2, 1.0 / 5.0, 7);
-
-    // Reserve max size
-    tasks.clear();
-    tasks.reserve(resolution_width * resolution_height);
-
-    for (unsigned i = 0; i < resolution_width; i++)
-    {
-        for (unsigned j = 0; j < resolution_height; j++)
-        {
-            double max = copy->GetPixel(i, j).Max();
-            unsigned pixel_sample_rate = std::round(max * (sample_rate - 1)) + 1;
-            PixelTask task;
-            task.pixel_x = i;
-            task.pixel_y = j;
-            task.sample_rate = pixel_sample_rate;
-            tasks.push_back(task);
-        }
-    }
-
-    delete copy;
-
-    return image;
-};
+    first_pass->ApplyKernel(kernel2, 1.0 / 5.0, 7);
+}
 
 RGBImage *AdaptiveSampledScene::GetImage(unsigned resolution_width, unsigned resolution_height)
 {

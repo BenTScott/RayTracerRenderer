@@ -161,7 +161,7 @@ std::unique_ptr<Scene> Reflections_Refractions()
     Sphere *sphere2 = new Sphere({1.5, -0.15, 0.5, 1}, 0.5, {0, 0, 0});
     Sphere *sphere3 = new Sphere({-2.775, 1.49, -1.775, 1}, 0.5, {0, 0.8, 0.5});
     Sphere *sphere4 = new Sphere({-4, 1.2, -6.5, 1}, 2, GetColourVector(209, 252, 55));
-    
+
     Sphere *mirror_ball = new Sphere({-1.6, 1, -4.5, 1}, 0.95, {0, 0, 0});
     mirror_ball->reflection_constant = 1;
     mirror_ball->specular_component = 1;
@@ -180,7 +180,7 @@ std::unique_ptr<Scene> Reflections_Refractions()
 
     mesh->ExecuteTransformation();
 
-    mesh->SetColour({0, 0 , 0});
+    mesh->SetColour({0, 0, 0});
 
     mesh->refractive_index = 1.5;
     mesh->refraction_constant = 1;
@@ -220,14 +220,47 @@ std::unique_ptr<Scene> Reflections_Refractions()
     return scene;
 };
 
+std::unique_ptr<Scene> Bunny()
+{
+    lin_alg::Vector<3> cam_up({0, 1, 0});
+    lin_alg::Vector<3> cam_forward({0, 0, -1});
+    lin_alg::Vector<3> cam_focal({0, 0.5, 4});
+
+    Camera cam(cam_up, cam_forward, cam_focal, 2);
+    cam.InitialiseScreenSize(32.0 / 9.0, 2);
+
+    Mesh *mesh = new Mesh();
+
+    mesh->LoadObjectModel(".\\data\\bunny.obj");
+    mesh->AddTranslation(0, -0.16, -2);
+    mesh->ExecuteTransformation();
+    mesh->SetColour(GetColourVector(244, 170, 66));
+
+    DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
+
+    BoundingSphere *meshbound = new BoundingSphere(mesh);
+    Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
+
+    std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 200, SampledScene::Random, (unsigned)MAX_THREAD_COUNT));
+
+    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 50, new BasicLightingModel(0.1, 200), *scene);
+
+    scene->AddObject(meshbound);
+    scene->AddObject(plane);
+    scene->AddLightSource(light);
+    scene->SetLightingModel(model);
+
+    return scene;
+};
 int main(int argc, char *argv[])
 {
     auto scene1 = Diamond_Scene_Two_Light_Sources();
     auto scene2 = Cube_Scene_Two_Light_Sources();
     auto scene3 = Reflections_Refractions();
+    auto scene4 = Bunny();
 
-    scene3->AddMonitoring();
+    scene4->AddMonitoring();
 
-    const char *filename = (".\\out\\render.png");
-    scene3->Render(filename, 1920, 1080);
+    const char *filename = (".\\out\\bunny_render.png");
+    scene4->Render(filename, 1920, 1080);
 };

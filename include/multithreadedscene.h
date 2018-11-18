@@ -17,9 +17,12 @@ public:
 
 protected:
   virtual RGBImage *GetImage(unsigned resolution_width, unsigned resolution_height) override;
+  virtual RGBImage *GetSampleRates(unsigned resolution_width, unsigned resolution_height) override;
+  RGBImage *FirstPass(unsigned resolution_width, unsigned resolution_height);
   unsigned thread_count;
 
-  void ThreadTask(TaskQueue<PixelTask> &queue, ThreadSafeImage *image, SamplingMethod method);
+  void SampledPixelThreadTask(TaskQueue<PixelTask> &queue, ThreadSafeImage *image, SamplingMethod method);
+  void RowThreadTask(TaskQueue<unsigned> &queue, ThreadSafeImage *image, unsigned resolution_width);
 };
 
 #endif

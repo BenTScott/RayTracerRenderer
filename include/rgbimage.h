@@ -27,6 +27,16 @@ class RGBImage
 
     virtual ~RGBImage(){};
 
+    unsigned Width()
+    {
+        return width;
+    }
+
+    unsigned Height()
+    {
+        return width;
+    }
+
     virtual void SetPixel(unsigned x, unsigned y, lin_alg::Vector<3> colour);
     lin_alg::Vector<3> GetPixel(unsigned x, unsigned y);
     void ApplyKernel(lin_alg::Matrix<3> kernel, double scale = 1);
