@@ -48,12 +48,11 @@ lin_alg::Vector<3> Scene::CalculateColourAtIntersect(const RayIntersect &interse
         colour += lighting_model->GetGlobalLighting(intersect);
     }
 
-    if (intersect.object->reflected_proportion > 0 && depth < max_reflection_depth)
+    if (intersect.object->reflection_constant > 0 && depth < max_reflection_depth)
     {
         lin_alg::Vector<3> reflected_dir = intersect.ray.direction.Scale(-1) - intersect.normal.Scale(2 * intersect.normal.DotProduct(intersect.ray.direction));
         Ray reflected(pos, reflected_dir);
-        colour = colour.Scale(1.0 - intersect.object->reflected_proportion);
-        colour += GetColour(reflected, depth + 1).Scale(intersect.object->reflected_proportion);
+        colour += GetColour(reflected, depth + 1).Scale(intersect.object->reflection_constant);
     }
 
     return colour;

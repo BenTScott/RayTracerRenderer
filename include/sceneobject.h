@@ -15,7 +15,7 @@ class SceneObject
     virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) = 0;
 
     double specular_component = 0;
-    double reflected_proportion = 0;
+    double reflection_constant = 0;
 };
 
 #endif

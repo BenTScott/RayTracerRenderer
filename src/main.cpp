@@ -16,7 +16,7 @@
 #include "2dshapes.h"
 
 #ifndef MAX_THREAD_COUNT
-#define MAX_THREAD_COUNT 4
+#define MAX_THREAD_COUNT 7
 #endif
 
 lin_alg::Vector<3> GetColourVector(unsigned char R, unsigned char G, unsigned char B)
@@ -88,10 +88,11 @@ std::unique_ptr<Scene> Cube_Scene_Two_Light_Sources()
 
     Sphere *sphere1 = new Sphere({2, 0.5, -3.5 + 1.3, 1}, 2, {0.1, 0.7, 0.1});
     Sphere *sphere2 = new Sphere({2.5, -0.15, -0.01, 1}, 0.5, GetColourVector(211, 42, 118));
-    Sphere *sphere3 = new Sphere({-2.79, 1.45, -1.8, 1}, 0.5, {0, 0.8, 0.5});
-
-    Sphere *mirror_ball = new Sphere({-3, 1.2, -4, 1}, 1, {0, 0, 0});
-    mirror_ball->reflected_proportion = 0.95;
+    Sphere *sphere3 = new Sphere({-2.775, 1.49, -1.775, 1}, 0.5, {0, 0.8, 0.5});
+    
+    Sphere *mirror_ball = new Sphere({-1.6, 0.4, -5, 1}, 0.95, {0, 0, 0});
+    mirror_ball->reflection_constant = 1;
+    mirror_ball->specular_component = 1;
 
     Mesh *mesh = new Mesh();
 
@@ -104,6 +105,8 @@ std::unique_ptr<Scene> Cube_Scene_Two_Light_Sources()
 
     mesh->ExecuteTransformation();
 
+    //mesh->SetColour(GetColourVector(244, 170, 66));
+
     mesh->faces[9].colour = {0, 0, 1};
     mesh->faces[8].colour = {0, 0, 1};
 
@@ -112,6 +115,12 @@ std::unique_ptr<Scene> Cube_Scene_Two_Light_Sources()
 
     mesh->faces[10].colour = {0, 1, 0};
     mesh->faces[11].colour = {0, 1, 0};
+
+    mesh->faces[2].colour = {1, 1, 0};
+    mesh->faces[3].colour = {1, 1, 0};
+
+    mesh->faces[5].colour = {0, 1, 1};
+    mesh->faces[7].colour = {0, 1, 1};
 
     mesh->specular_component = 1;
 
@@ -131,11 +140,11 @@ std::unique_ptr<Scene> Cube_Scene_Two_Light_Sources()
     BoundingSphere *spherebound1 = new BoundingSphere(meshbound, sphere3);
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
-    std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 10, SampledScene::Random, (unsigned)MAX_THREAD_COUNT));
+    std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 1000, SampledScene::Random, (unsigned)MAX_THREAD_COUNT));
 
-    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 45, new BasicLightingModel(0.1, 200), *scene);
+    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 55, new BasicLightingModel(0.1, 200), *scene);
 
-    //scene->AddObject(spherebound1);
+    scene->AddObject(spherebound1);
     scene->AddObject(spherebound2);
     scene->AddObject(mirror_ball);
     scene->AddObject(plane);
@@ -154,5 +163,5 @@ int main(int argc, char *argv[])
     scene2->AddMonitoring();
 
     const char *filename = (".\\out\\render.png");
-    scene2->Render(filename, 1920 / 2, 1080 / 2);
+    scene2->Render(filename, 1920*2, 1080*2);
 };
