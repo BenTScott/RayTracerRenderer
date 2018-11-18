@@ -2,8 +2,8 @@
 
 std::shared_ptr<RayIntersect> Plane::Intersect(Ray ray)
 {
-    // Get one-sided plane intersect only
-    if (ray.direction.DotProduct(normal) > 0)
+    // Get two-sided
+    if (ray.direction.DotProduct(normal) == 0)
     {
         return nullptr;
     };

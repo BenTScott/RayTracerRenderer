@@ -59,7 +59,7 @@ protected:
 
   TaskMonitor *monitor = nullptr;
 
-  unsigned max_reflection_depth = 1;
+  unsigned max_reflection_depth = 10;
 
   Scene(){};
 };

@@ -16,6 +16,8 @@ class SceneObject
 
     double specular_component = 0;
     double reflection_constant = 0;
+    double refractive_index = 1;
+    double refraction_constant = 0;
 };
 
 #endif

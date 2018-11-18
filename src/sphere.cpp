@@ -18,7 +18,9 @@ std::shared_ptr<RayIntersect> Sphere::Intersect(Ray ray)
     double t1 = (-b + sqrt(discriminant)) / 2.0;
     double t2 = (-b - sqrt(discriminant)) / 2.0;
 
-    double closest_t = t1 < t2 && t1 > 0 ? t1 : t2;
+    //double closest_t = t1 < t2 && t1 > 0 ? t1 : t2;
+    //two sided
+    double closest_t = t1 > 0 && (t1 < t2 || t2 < 0) ? t1 : t2;
 
     if (closest_t < 0 || closest_t > ray.length)
     {
