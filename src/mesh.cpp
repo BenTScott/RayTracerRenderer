@@ -183,51 +183,23 @@ void Mesh::AddTranslation(double x, double y, double z)
 
 std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
 {
-    double t = INFINITY;
-    Vector<3> colour;
-    Vector<3> normal;
-    for (const Face &face : faces)
+    std::shared_ptr<RayIntersect> closest = nullptr;
+
+    for (Face &face : faces)
     {
-        Plane face_plane(face.normal, face.vertices[0]->pos.GetAsVector3());
-        std::shared_ptr<RayIntersect> face_intersect = face_plane.Intersect(ray);
-
-        // Ray does not interect face plane i.e. ray is parrallel to the face
-        // or intersect is after another face
-        if (!face_intersect || face_intersect->t > t)
+        std::shared_ptr<RayIntersect> intersect = face.Intersect(ray);
+        if (!closest || (intersect && intersect->t < closest->t))
         {
-            continue;
-        }
-
-        Vector<3> intersect_pos = ray.Position(face_intersect->t);
-
-        Vector<3> vertex_0 = face.vertices[0]->pos.GetAsVector3();
-        Vector<3> vertex_1 = face.vertices[1]->pos.GetAsVector3();
-        Vector<3> vertex_2 = face.vertices[2]->pos.GetAsVector3();
-
-        // Get vectors between face verticies
-        Vector<3> vector1 = vertex_1 - vertex_0;
-        Vector<3> vector2 = vertex_2 - vertex_1;
-        Vector<3> vector3 = vertex_0 - vertex_2;
-
-        Vector<3> norm1 = CrossProduct(intersect_pos - vertex_0, vector1);
-        Vector<3> norm2 = CrossProduct(intersect_pos - vertex_1, vector2);
-        Vector<3> norm3 = CrossProduct(intersect_pos - vertex_2, vector3);
-
-        if (norm1.DotProduct(norm2) >= 0 && norm1.DotProduct(norm3) >= 0 && norm2.DotProduct(norm3) >= 0)
-        {
-            t = face_intersect->t;
-            colour = face.colour;
-            normal = face.normal;
+            closest = intersect;
         }
     }
 
-    if (t == INFINITY)
+    if (closest)
     {
-        return nullptr;
+        closest->object = this;
     }
 
-    std::shared_ptr<RayIntersect> intersect(new RayIntersect(ray, t, colour, this, normal));
-    return intersect;
+    return closest;
 }
 
 void Mesh::SetColour(Vector<3> colour)
