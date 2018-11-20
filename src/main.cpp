@@ -11,6 +11,7 @@
 #include "pointlight.h"
 #include "ambientocclusionlightingmodel.h"
 #include "basiclightingmodel.h"
+#include "meshoctree.h"
 #include "adaptivesampledscene.h"
 #include "multithreadedscene.h"
 #include "2dshapes.h"
@@ -59,7 +60,7 @@ std::unique_ptr<Scene> Diamond_Scene_Two_Light_Sources()
     DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
     PointLight *light2 = new PointLight({-4.2, 1.8, -2}, 0.4);
 
-    BoundingSphere *meshbound = new BoundingSphere(mesh);
+    MeshOctree *meshbound = new MeshOctree(mesh, 10);
 
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
@@ -238,7 +239,7 @@ std::unique_ptr<Scene> Bunny()
 
     DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
 
-    BoundingSphere *meshbound = new BoundingSphere(mesh);
+    MeshOctree *meshbound = new MeshOctree(mesh, 50);
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
     std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 200, SampledScene::Random, (unsigned)MAX_THREAD_COUNT));
@@ -259,8 +260,10 @@ int main(int argc, char *argv[])
     auto scene3 = Reflections_Refractions();
     auto scene4 = Bunny();
 
-    scene3->AddMonitoring();
+    scene4->AddMonitoring();
 
     const char *filename = (".\\out\\render.png");
-    scene3->Render(filename, 1920, 1080);
+    scene4->Render(filename, 1920, 1080);
+    
+    std::cout << "Done";
 };
