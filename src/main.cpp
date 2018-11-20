@@ -16,7 +16,7 @@
 #include "2dshapes.h"
 
 #ifndef MAX_THREAD_COUNT
-#define MAX_THREAD_COUNT 6
+#define MAX_THREAD_COUNT 4
 #endif
 
 lin_alg::Vector<3> GetColourVector(unsigned char R, unsigned char G, unsigned char B)
@@ -259,8 +259,8 @@ int main(int argc, char *argv[])
     auto scene3 = Reflections_Refractions();
     auto scene4 = Bunny();
 
-    scene4->AddMonitoring();
+    scene3->AddMonitoring();
 
-    const char *filename = (".\\out\\bunny_render.png");
-    scene4->Render(filename, 1920, 1080);
+    const char *filename = (".\\out\\render.png");
+    scene3->Render(filename, 1920, 1080);
 };

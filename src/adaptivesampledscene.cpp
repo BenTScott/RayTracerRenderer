@@ -71,6 +71,8 @@ RGBImage *AdaptiveSampledScene::GetImage(unsigned resolution_width, unsigned res
 
     RGBImage *image = GetSampleRates(resolution_width, resolution_height);
 
+    image->Encode("first_pass.png");
+
     std::cout << "Starting render\n";
 
     monitor->Initialise(tasks.size());
