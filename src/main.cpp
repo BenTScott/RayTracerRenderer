@@ -17,7 +17,7 @@
 #include "2dshapes.h"
 
 #ifndef MAX_THREAD_COUNT
-#define MAX_THREAD_COUNT 4
+#define MAX_THREAD_COUNT 7
 #endif
 
 lin_alg::Vector<3> GetColourVector(unsigned char R, unsigned char G, unsigned char B)
@@ -42,7 +42,9 @@ std::unique_ptr<Scene> Diamond_Scene_Two_Light_Sources()
 
     mesh->AddRotation(lin_alg::y, 45);
 
-    mesh->AddTranslation(-3, 1.2, -2);
+    //mesh->AddTranslation(-3, 1.2, -2);
+    //mesh->AddTranslation(-1.2, 0.6, 1);
+    mesh->AddTranslation(-1, 0.6, 1);
 
     mesh->ExecuteTransformation();
 
@@ -66,13 +68,13 @@ std::unique_ptr<Scene> Diamond_Scene_Two_Light_Sources()
 
     std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 100, SampledScene::Jitter, (unsigned)MAX_THREAD_COUNT));
 
-    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 45, new BasicLightingModel(0.1, 200), *scene);
+    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 10, new BasicLightingModel(0.1, 200), *scene);
 
     scene->AddObject(meshbound);
-    scene->AddObject(spherebound2);
+    //scene->AddObject(spherebound2);
     scene->AddObject(plane);
     scene->AddLightSource(light);
-    scene->AddLightSource(light2);
+    //scene->AddLightSource(light2);
     scene->SetLightingModel(model);
 
     return scene;
@@ -240,6 +242,7 @@ std::unique_ptr<Scene> Bunny()
     DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
 
     MeshOctree *meshbound = new MeshOctree(mesh, 50);
+
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
     std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 200, SampledScene::Random, (unsigned)MAX_THREAD_COUNT));
@@ -262,8 +265,6 @@ int main(int argc, char *argv[])
 
     scene4->AddMonitoring();
 
-    const char *filename = (".\\out\\render.png");
-    scene4->Render(filename, 1920, 1080);
-    
-    std::cout << "Done";
+    const char *filename = (".\\out\\test_render.png");
+    scene4->Render(filename, 1920 / 2, 1080 / 2);
 };

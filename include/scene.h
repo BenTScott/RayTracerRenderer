@@ -44,6 +44,8 @@ public:
 
   bool InShadow(Ray &lightray) const;
 
+  lin_alg::Vector<3> RayTest(Ray ray);
+
 protected:
   //std::shared_ptr<RayIntersect> GetClosestIntersect(const Ray &ray) const;
   lin_alg::Vector<3> CalculateColourAtIntersect(const RayIntersect &intersect, unsigned depth = 0) const;
