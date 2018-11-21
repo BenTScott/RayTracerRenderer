@@ -265,6 +265,6 @@ int main(int argc, char *argv[])
 
     scene4->AddMonitoring();
 
-    const char *filename = (".\\out\\test_render.png");
+    const char *filename = (".\\out\\render.png");
     scene4->Render(filename, 1920, 1080);
 };
