@@ -25,8 +25,6 @@ class MeshOctree : public SceneObject
 
         bool TryAdd(const Face &face);
 
-        bool IsValid();
-
         ~Node()
         {
             delete nodes;

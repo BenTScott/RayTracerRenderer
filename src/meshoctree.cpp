@@ -59,6 +59,8 @@ bool MeshOctree::Node::BoundIntersect(Ray ray, double &t) const
             }
             continue;
         }
+        
+        // Allow for flt pt errors
         t0 = ((p1[i]-0.0001) - ray.init_position[i]) / ray.direction[i];
         t1 = ((p2[i]+0.0001) - ray.init_position[i]) / ray.direction[i];
 
@@ -67,13 +69,6 @@ bool MeshOctree::Node::BoundIntersect(Ray ray, double &t) const
             return false;
         }
 
-        // if (t0 < 0 || t1 < 0)
-        // {
-        //     t = 0;
-        //     return true;
-        // }
-        // else
-        // {
         if (t0 < t1)
         {
             t_min = std::max(t_min, t0);
@@ -89,11 +84,9 @@ bool MeshOctree::Node::BoundIntersect(Ray ray, double &t) const
         {
             return false;
         }
-        //}
     }
 
     t = t_min >= 0 ? t_min : 0;
-    //t = t_min;
     return true;
 };
 
@@ -156,21 +149,11 @@ std::shared_ptr<RayIntersect> MeshOctree::Node::Intersect(Ray ray)
         }
     }
 
-    if (!faces.empty() && !closest)
-    {
-        // double t;
-        // BoundIntersect(ray, t);
-
-        // lin_alg::Vector<3> pos = ray.Position(t);
-        // std::cout << "HERE";
-    }
-
     return closest;
 };
 
 void MeshOctree::Node::Fragment(unsigned max_faces)
 {
-    unsigned a = faces.size();
     if (faces.size() > max_faces)
     {
         lin_alg::Vector<3> diff = p2 - p1;
@@ -179,23 +162,6 @@ void MeshOctree::Node::Fragment(unsigned max_faces)
         lin_alg::Vector<3> mid_z = lin_alg::Vector<3>({0, 0, diff[2] * 0.5});
 
         nodes = new std::vector<Node>();
-        // nodes->push_back(Node(p1, p2 - mid_x - mid_y - mid_z));
-        // nodes->push_back(Node(p1 + mid_x, p2 - mid_y - mid_z));
-        // nodes->push_back(Node(p1 + mid_y, p2 - mid_x - mid_z));
-        // nodes->push_back(Node(p1 + mid_x + mid_y, p2 - mid_z));
-        // nodes->push_back(Node(p1 + mid_z, p2 - mid_x - mid_y));
-        // nodes->push_back(Node(p1 + mid_x + mid_z, p2 - mid_y));
-        // nodes->push_back(Node(p1 + mid_y + mid_z, p2 - mid_x));
-        // nodes->push_back(Node(p1 + mid_x + mid_y + mid_z, p2));
-
-        // nodes->push_back(Node(p1, p1 + diff.Scale(0.5)));
-        // nodes->push_back(Node(p1 + mid_x, p1 + diff.Scale(0.5) + mid_x));
-        // nodes->push_back(Node(p1 + mid_y, p1 + diff.Scale(0.5) + mid_y));
-        // nodes->push_back(Node(p1 + mid_x + mid_y, p1 + diff.Scale(0.5) + mid_x + mid_y));
-        // nodes->push_back(Node(p1 + mid_z, p1 + diff.Scale(0.5) + mid_z));
-        // nodes->push_back(Node(p1 + mid_x + mid_z, p1 + diff.Scale(0.5) + mid_x + mid_z));
-        // nodes->push_back(Node(p1 + mid_y + mid_z, p1 + diff.Scale(0.5) + mid_y + mid_z));
-        // nodes->push_back(Node(p1 + mid_x + mid_y + mid_z, p1 + diff.Scale(0.5) + mid_x + mid_z + mid_y));
 
         nodes->push_back(Node(p1, diff.Scale(0.5)));
         nodes->push_back(Node(p1 + mid_x, diff.Scale(0.5)));
@@ -209,8 +175,6 @@ void MeshOctree::Node::Fragment(unsigned max_faces)
         for (const auto &face : faces)
         {
             bool added = false;
-            unsigned a = nodes->size();
-            unsigned b = faces.size();
             for (auto &node : *nodes)
             {
                 if (node.TryAdd(face) && !added)
@@ -220,14 +184,7 @@ void MeshOctree::Node::Fragment(unsigned max_faces)
             }
             if (!added)
             {
-                std::cout << "Error face not added";
-                for (auto &node : *nodes)
-                {
-                    if (node.TryAdd(face) && !added)
-                    {
-                        added = true;
-                    };
-                }
+                std::cout << "Error face not added to any octant";
             }
         }
 
@@ -265,24 +222,3 @@ bool MeshOctree::Node::TryAdd(const Face &face)
     }
     return false;
 };
-
-bool MeshOctree::Node::IsValid()
-{
-    bool check = true;
-    for (int i = 0; i < 3; ++i)
-    {
-        check = check && p1[i] < p2[i];
-    }
-
-    check = check && (p2 - p1).Magnitude() > 0;
-
-    if (nodes)
-    {
-        for (auto &node : *nodes)
-        {
-            return check && node.IsValid();
-        }
-    }
-
-    return check;
-}

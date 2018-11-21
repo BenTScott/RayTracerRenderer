@@ -16,16 +16,12 @@
 #include "multithreadedscene.h"
 #include "2dshapes.h"
 
-#ifndef MAX_THREAD_COUNT
-#define MAX_THREAD_COUNT 7
-#endif
-
 lin_alg::Vector<3> GetColourVector(unsigned char R, unsigned char G, unsigned char B)
 {
     return lin_alg::Vector<3>({(double)R / 255.0, (double)G / 255.0, (double)B / 255.0});
 };
 
-std::unique_ptr<Scene> Diamond_Scene_Two_Light_Sources()
+std::unique_ptr<Scene> Diamond_Scene_Two_Light_Sources(unsigned max_thread)
 {
     lin_alg::Vector<3> cam_up({0, 1, 0});
     lin_alg::Vector<3> cam_forward({0, 0, -1});
@@ -34,7 +30,7 @@ std::unique_ptr<Scene> Diamond_Scene_Two_Light_Sources()
     Camera cam(cam_up, cam_forward, cam_focal, 2);
     cam.InitialiseScreenSize(32.0 / 9.0, 2);
 
-    Sphere *sphere1 = new Sphere({2, 0.5, -3.5 + 1.3, 1}, 2, {0.1, 0.7, 0.1});
+    Sphere *sphere1 = new Sphere({2, 0.5, -2.2, 1}, 2, {0.1, 0.7, 0.1});
     Sphere *sphere2 = new Sphere({2.5, -0.15, -0.01, 1}, 0.5, GetColourVector(211, 42, 118));
     Mesh *mesh = new Mesh();
 
@@ -42,9 +38,7 @@ std::unique_ptr<Scene> Diamond_Scene_Two_Light_Sources()
 
     mesh->AddRotation(lin_alg::y, 45);
 
-    //mesh->AddTranslation(-3, 1.2, -2);
-    //mesh->AddTranslation(-1.2, 0.6, 1);
-    mesh->AddTranslation(-1, 0.6, 1);
+    mesh->AddTranslation(-3, 1.2, -2);
 
     mesh->ExecuteTransformation();
 
@@ -66,21 +60,21 @@ std::unique_ptr<Scene> Diamond_Scene_Two_Light_Sources()
 
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
-    std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 100, SampledScene::Jitter, (unsigned)MAX_THREAD_COUNT));
+    std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 100, SampledScene::Jitter, max_thread));
 
     LightingModel *model = new AmbientOcclusionLightingModel(0.2, 10, new BasicLightingModel(0.1, 200), *scene);
 
     scene->AddObject(meshbound);
-    //scene->AddObject(spherebound2);
+    scene->AddObject(spherebound2);
     scene->AddObject(plane);
     scene->AddLightSource(light);
-    //scene->AddLightSource(light2);
+    scene->AddLightSource(light2);
     scene->SetLightingModel(model);
 
     return scene;
 };
 
-std::unique_ptr<Scene> Cube_Scene_Two_Light_Sources()
+std::unique_ptr<Scene> Cube_Scene_Two_Light_Sources(unsigned max_thread)
 {
     lin_alg::Vector<3> cam_up({0, 1, 0});
     lin_alg::Vector<3> cam_forward({0, 0, -1});
@@ -137,7 +131,7 @@ std::unique_ptr<Scene> Cube_Scene_Two_Light_Sources()
     BoundingSphere *spherebound1 = new BoundingSphere(meshbound, sphere3);
     BoundingSphere *spherebound2 = new BoundingSphere(sphere1, sphere2);
 
-    std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 1000, SampledScene::Random, (unsigned)MAX_THREAD_COUNT));
+    std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 1000, SampledScene::Random,max_thread));
 
     LightingModel *model = new AmbientOcclusionLightingModel(0.2, 55, new BasicLightingModel(0.1, 200), *scene);
 
@@ -151,7 +145,7 @@ std::unique_ptr<Scene> Cube_Scene_Two_Light_Sources()
     return scene;
 };
 
-std::unique_ptr<Scene> Reflections_Refractions()
+std::unique_ptr<Scene> Reflections_Refractions(unsigned max_thread)
 {
     lin_alg::Vector<3> cam_up({0, 1, 0});
     lin_alg::Vector<3> cam_forward({0, 0, -1});
@@ -209,7 +203,7 @@ std::unique_ptr<Scene> Reflections_Refractions()
     BoundingSphere *spherebound3 = new BoundingSphere(sphere4, mirror_ball);
     BoundingSphere *spherebound4 = new BoundingSphere(spherebound1, spherebound3);
 
-    std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 10, SampledScene::Random, (unsigned)MAX_THREAD_COUNT));
+    std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 10, SampledScene::Random, max_thread));
 
     LightingModel *model = new AmbientOcclusionLightingModel(0.2, 55, new BasicLightingModel(0.1, 200), *scene);
 
@@ -223,7 +217,7 @@ std::unique_ptr<Scene> Reflections_Refractions()
     return scene;
 };
 
-std::unique_ptr<Scene> Bunny()
+std::unique_ptr<Scene> Bunny(unsigned max_thread)
 {
     lin_alg::Vector<3> cam_up({0, 1, 0});
     lin_alg::Vector<3> cam_forward({0, 0, -1});
@@ -245,7 +239,7 @@ std::unique_ptr<Scene> Bunny()
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
-    std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 200, SampledScene::Random, (unsigned)MAX_THREAD_COUNT));
+    std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 200, SampledScene::Random, max_thread));
 
     LightingModel *model = new AmbientOcclusionLightingModel(0.2, 50, new BasicLightingModel(0.1, 200), *scene);
 
@@ -256,15 +250,22 @@ std::unique_ptr<Scene> Bunny()
 
     return scene;
 };
+
 int main(int argc, char *argv[])
 {
-    auto scene1 = Diamond_Scene_Two_Light_Sources();
-    auto scene2 = Cube_Scene_Two_Light_Sources();
-    auto scene3 = Reflections_Refractions();
-    auto scene4 = Bunny();
+    unsigned max_thread = 4;
+    if (argc >= 2)
+    {
+        max_thread = std::strtoul(argv[1], nullptr, 10);
+    }
+
+    auto scene1 = Diamond_Scene_Two_Light_Sources(max_thread);
+    auto scene2 = Cube_Scene_Two_Light_Sources(max_thread);
+    auto scene3 = Reflections_Refractions(max_thread);
+    auto scene4 = Bunny(max_thread);
 
     scene4->AddMonitoring();
 
     const char *filename = (".\\out\\test_render.png");
-    scene4->Render(filename, 1920 / 2, 1080 / 2);
+    scene4->Render(filename, 1920, 1080);
 };
