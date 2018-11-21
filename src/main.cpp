@@ -1,6 +1,4 @@
 #include "mesh.h"
-// #include "matrix.h"
-// #include "vector.h"
 #include "sphere.h"
 #include "camera.h"
 #include "scene.h"
