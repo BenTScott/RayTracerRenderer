@@ -10,7 +10,7 @@ RGBImage *MultithreadedScene::GetImage(unsigned resolution_width, unsigned resol
     ThreadSafeImage *image = new ThreadSafeImage(*first_pass);
     delete first_pass;
 
-    image->Encode("first_pass.png");
+    image->Encode(".\\out\\first_pass.png");
 
     std::cout << "Starting render\n";
 

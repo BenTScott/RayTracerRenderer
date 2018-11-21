@@ -43,9 +43,8 @@ public:
   void SetLightingModel(LightingModel *lighting_model);
 
   bool InShadow(Ray &lightray) const;
-
+  
 protected:
-  //std::shared_ptr<RayIntersect> GetClosestIntersect(const Ray &ray) const;
   lin_alg::Vector<3> CalculateColourAtIntersect(const RayIntersect &intersect, unsigned depth = 0) const;
   lin_alg::Vector<3> GetColour(const Ray &ray, unsigned depth = 0) const;
   virtual RGBImage *GetImage(unsigned resolution_width, unsigned resolution_height);

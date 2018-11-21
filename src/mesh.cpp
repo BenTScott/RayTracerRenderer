@@ -188,7 +188,7 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
     for (Face &face : faces)
     {
         std::shared_ptr<RayIntersect> intersect = face.Intersect(ray);
-        if (!closest || (intersect && intersect->t < closest->t))
+        if (intersect && (!closest || intersect->t < closest->t))
         {
             closest = intersect;
         }
