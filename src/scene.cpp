@@ -135,8 +135,3 @@ void Scene::AddMonitoring()
 {
     this->monitor = new TaskMonitor();
 };
-
-lin_alg::Vector<3> Scene::RayTest(Ray ray)
-{
-    return GetColour(ray);
-}

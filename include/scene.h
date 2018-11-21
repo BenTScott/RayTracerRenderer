@@ -43,9 +43,7 @@ public:
   void SetLightingModel(LightingModel *lighting_model);
 
   bool InShadow(Ray &lightray) const;
-
-  lin_alg::Vector<3> RayTest(Ray ray);
-
+  
 protected:
   lin_alg::Vector<3> CalculateColourAtIntersect(const RayIntersect &intersect, unsigned depth = 0) const;
   lin_alg::Vector<3> GetColour(const Ray &ray, unsigned depth = 0) const;
