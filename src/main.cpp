@@ -230,6 +230,7 @@ std::unique_ptr<Scene> Bunny(unsigned max_thread)
     mesh->AddTranslation(0, -0.16, -2);
     mesh->ExecuteTransformation();
     mesh->SetColour(GetColourVector(244, 170, 66));
+    mesh->specular_component = 1;
 
     DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
 
