@@ -18,7 +18,7 @@ public:
   ~Mesh(){};
 
   void LoadObjectModel(const char *filename);
-  void ExportObjectModel(const char *filename, bool overwrite = false);
+  [[deprecated]] void ExportObjectModel(const char *filename, bool overwrite = false);
   void Translate(double x, double y, double z);
   void Rotate(lin_alg::Axis3D a, double angle);
   void AddRotation(lin_alg::Axis3D a, double angle);

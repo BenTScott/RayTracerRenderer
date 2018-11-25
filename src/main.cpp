@@ -229,20 +229,29 @@ std::unique_ptr<Scene> Bunny(unsigned max_thread)
     mesh->LoadObjectModel(".\\data\\bunny.obj");
     mesh->AddTranslation(0, -0.16, -2);
     mesh->ExecuteTransformation();
-    mesh->SetColour(GetColourVector(244, 170, 66));
+    //mesh->SetColour(GetColourVector(244, 170, 66));
     mesh->specular_component = 1;
+    mesh->refraction_constant = 1;
+    mesh->refractive_index = 1.5; 
 
     DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
 
     MeshOctree *meshbound = new MeshOctree(mesh, 50);
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
+    Sphere *sphere1 = new Sphere({-4, 1.2, -6.5, 1}, 2, GetColourVector(209, 252, 55));
+    Sphere *sphere2 = new Sphere({2, 0.5, -3.5, 1}, 1.5, {0.1, 0.7, 0.1});
+    sphere1->specular_component = 1;
+    sphere2->specular_component = 1;
 
     std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 200, SampledScene::Random, max_thread));
 
     LightingModel *model = new AmbientOcclusionLightingModel(0.2, 50, new BasicLightingModel(0.1, 200), *scene);
 
     scene->AddObject(meshbound);
+    scene->AddObject(sphere1);
+    scene->AddObject(sphere2);
+
     scene->AddObject(plane);
     scene->AddLightSource(light);
     scene->SetLightingModel(model);

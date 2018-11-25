@@ -25,6 +25,7 @@ void Mesh::LoadObjectModel(const char *filename)
     }
 
     std::string line;
+    std::vector<Vector<3>> vertex_normals;
 
     while (getline(in, line))
     {
@@ -51,6 +52,16 @@ void Mesh::LoadObjectModel(const char *filename)
             vertices[v2 - 1].faces.push_back(face);
             vertices[v3 - 1].faces.push_back(face);
             vertices[v1 - 1].faces.push_back(face);
+        }
+        // check for vertex normal
+        else if (line.substr(0,3) == "vn ")
+        {
+            std::istringstream v(line.substr(3));
+            double x, y, z;
+            v >> x;
+            v >> y;
+            v >> z;
+            vertex_normals.push_back({x, y, z});
         }
     }
 
