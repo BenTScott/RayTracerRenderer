@@ -37,6 +37,21 @@ std::shared_ptr<RayIntersect> Face::Intersect(Ray ray)
 
     if (norm1.DotProduct(norm2) >= 0 && norm1.DotProduct(norm3) >= 0 && norm2.DotProduct(norm3) >= 0)
     {
+        lin_alg::Vector<3> normal;
+        if (use_vertex_normals)
+        {
+            double face_area = lin_alg::Area(vertex_0, vertex_1, vertex_2);
+            double t1 = std::max(0.0, std::min(1.0, lin_alg::Area(vertex_1, intersect_pos, vertex_2) / face_area));
+            double t2 = std::max(0.0, std::min(1.0, lin_alg::Area(vertex_2, intersect_pos, vertex_0) / face_area));
+            double t3 = std::max(0.0, std::min(1.0, 1 - t1 - t2));
+            normal = (normals[0].Scale(t1) + normals[1].Scale(t2) + normals[2].Scale(t3)).Normalise();
+        }
+        else
+        {
+            normal = this->normal;
+        }
+
+        return std::shared_ptr<RayIntersect>(new RayIntersect(ray, face_intersect->t, colour, this, normal));
         return std::shared_ptr<RayIntersect>(new RayIntersect(ray, face_intersect->t, colour, this, normal));
     }
 

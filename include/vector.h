@@ -190,6 +190,8 @@ extern Vector<3> CrossProduct(const Vector<3> &rhs, const Vector<3> &lhs);
 
 extern Vector<4> CrossProduct(const Vector<4> &rhs, const Vector<4> &lhs);
 
+extern double Area(const Vector<3> &a, const Vector<3> &b, const Vector<3> &c);
+
 } // namespace lin_alg
 
 #endif

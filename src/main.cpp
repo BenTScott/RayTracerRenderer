@@ -226,13 +226,13 @@ std::unique_ptr<Scene> Bunny(unsigned max_thread)
 
     Mesh *mesh = new Mesh();
 
-    mesh->LoadObjectModel(".\\data\\bunny.obj");
+    mesh->LoadObjectModel(".\\data\\bunny_with_normals.obj");
     mesh->AddTranslation(0, -0.16, -2);
     mesh->ExecuteTransformation();
-    //mesh->SetColour(GetColourVector(244, 170, 66));
+    mesh->SetColour(GetColourVector(244, 170, 66));
     mesh->specular_component = 1;
-    mesh->refraction_constant = 1;
-    mesh->refractive_index = 1.5; 
+    // mesh->refraction_constant = 1;
+    // mesh->refractive_index = 1.5; 
 
     DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
 

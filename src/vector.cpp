@@ -58,6 +58,11 @@ lin_alg::Vector<3> lin_alg::CrossProduct(const Vector<3> &rhs, const Vector<3> &
     return result;
 };
 
+double lin_alg::Area(const lin_alg::Vector<3> &a, const lin_alg::Vector<3> &b, const lin_alg::Vector<3> &c)
+{
+    return lin_alg::CrossProduct((b - a), (c - a)).Magnitude()/2.0;
+}
+
 template <std::size_t N>
 lin_alg::Vector<3> lin_alg::Vector<N>::GetAsVector3()
 {

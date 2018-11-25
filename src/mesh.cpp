@@ -37,30 +37,58 @@ void Mesh::LoadObjectModel(const char *filename)
             v >> x;
             v >> y;
             v >> z;
-            vertices.push_back(*new Vertex(x, y, z));
+            vertices.push_back(Vertex(x, y, z));
         }
         // check for face
         else if (line.substr(0, 2) == "f ")
         {
             std::istringstream f(line.substr(2));
-            int v1, v2, v3;
-            f >> v1;
-            f >> v2;
-            f >> v3;
-            Face *face = new Face(&vertices[v1 - 1], &vertices[v2 - 1], &vertices[v3 - 1]);
-            faces.push_back(*face);
-            vertices[v2 - 1].faces.push_back(face);
-            vertices[v3 - 1].faces.push_back(face);
-            vertices[v1 - 1].faces.push_back(face);
+            std::string delimiter = "//";
+            std::string s;
+            int v[3];
+            int n[3];
+            bool normals_defined = false;
+
+            for (int i = 0; i < 3; ++i)
+            {
+                f >> s;
+                std::size_t pos = s.find(delimiter);
+                if (pos == std::string::npos)
+                {
+                    v[i] = std::stoi(s);
+                }
+                else
+                {
+                    normals_defined = true;
+                    v[i] = std::stoi(s.substr(0, pos));
+                    n[i] = std::stoi(s.substr(pos + delimiter.length(), s.length()-(pos + delimiter.length())));;
+                }
+            }
+
+            Face face;
+            if (normals_defined)
+            {
+                face = Face(&vertices[v[0] - 1], vertex_normals[n[0] - 1], &vertices[v[1] - 1], vertex_normals[n[1] - 1], &vertices[v[2] - 1], vertex_normals[n[2] - 1]);
+            }
+            else
+            {
+                face = Face(&vertices[v[0] - 1], &vertices[v[1] - 1], &vertices[v[2] - 1]);
+            }
+
+            faces.push_back(face);
+            int face_index = faces.size()-1;
+            vertices[v[1] - 1].faces.push_back(&faces[face_index]);
+            vertices[v[2] - 1].faces.push_back(&faces[face_index]);
+            vertices[v[0] - 1].faces.push_back(&faces[face_index]);
         }
         // check for vertex normal
-        else if (line.substr(0,3) == "vn ")
+        else if (line.substr(0, 3) == "vn ")
         {
-            std::istringstream v(line.substr(3));
+            std::istringstream vn(line.substr(3));
             double x, y, z;
-            v >> x;
-            v >> y;
-            v >> z;
+            vn >> x;
+            vn >> y;
+            vn >> z;
             vertex_normals.push_back({x, y, z});
         }
     }
