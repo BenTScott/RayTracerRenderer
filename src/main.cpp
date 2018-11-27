@@ -229,12 +229,13 @@ std::unique_ptr<Scene> Bunny(unsigned max_thread)
     mesh->LoadObjectModel(".\\data\\bunny_with_normals.obj");
     mesh->AddTranslation(0, -0.16, -2);
     mesh->ExecuteTransformation();
-    mesh->SetColour(GetColourVector(244, 170, 66));
+    //mesh->SetColour(GetColourVector(244, 170, 66));
     mesh->specular_component = 1;
-    // mesh->refraction_constant = 1;
-    // mesh->refractive_index = 1.5; 
+    mesh->refraction_constant = 1;
+    mesh->refractive_index = 1.5; 
 
-    DirectionalLight *light = new DirectionalLight({1, 1, 0.5}, 0.6);
+    DirectionalLight *light1 = new DirectionalLight({1, 1, 0.5}, 0.6);
+    DirectionalLight *light2 = new DirectionalLight({-0.3, 1, -0.3}, 0.7);
 
     MeshOctree *meshbound = new MeshOctree(mesh, 50);
 
@@ -253,7 +254,8 @@ std::unique_ptr<Scene> Bunny(unsigned max_thread)
     scene->AddObject(sphere2);
 
     scene->AddObject(plane);
-    scene->AddLightSource(light);
+    scene->AddLightSource(light1);
+    scene->AddLightSource(light2);
     scene->SetLightingModel(model);
 
     return scene;
