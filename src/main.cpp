@@ -13,6 +13,7 @@
 #include "adaptivesampledscene.h"
 #include "multithreadedscene.h"
 #include "2dshapes.h"
+#include "photonmap.h"
 
 lin_alg::Vector<3> GetColourVector(unsigned char R, unsigned char G, unsigned char B)
 {
