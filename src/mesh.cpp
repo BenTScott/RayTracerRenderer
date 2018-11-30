@@ -235,7 +235,8 @@ std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)
 
     if (closest)
     {
-        closest->object = this;
+        // Return mesh material with face diffuse colour
+        closest->material = Material(this->material).SetDiffuseConstant(closest->material.GetDiffuseConstant());
     }
 
     return closest;
@@ -245,7 +246,7 @@ void Mesh::SetColour(Vector<3> colour)
 {
     for (Face &face : faces)
     {
-        face.colour = colour;
+        face.material.SetDiffuseConstant(colour);
     }
 };
 

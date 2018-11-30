@@ -8,14 +8,8 @@
 class Sphere : public SceneObject
 {
 public:
-  Sphere() : centre(), radius(), colour(){};
-  Sphere(lin_alg::Vector<4> centre, double radius, lin_alg::Vector<3> colour) : centre(centre), radius(radius), colour(colour){};
-  Sphere(const Sphere &obj)
-  {
-    centre = obj.centre;
-    colour = obj.colour;
-    radius = obj.radius;
-  };
+  Sphere() : centre(), radius(){};
+  Sphere(lin_alg::Vector<4> centre, double radius, lin_alg::Vector<3> colour) : SceneObject(colour), centre(centre), radius(radius){};
 
   ~Sphere(){};
 
@@ -23,7 +17,6 @@ public:
 
   lin_alg::Vector<4> centre;
   double radius;
-  lin_alg::Vector<3> colour;
 };
 
 #endif

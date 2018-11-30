@@ -47,6 +47,7 @@ std::shared_ptr<RayIntersect> Circle::Intersect(Ray ray)
     }
     else
     {
+        plane_intersect->material = this->material;
         return plane_intersect;
     }
 }

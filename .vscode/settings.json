@@ -61,4 +61,10 @@
         "**/lodepng.cpp",
         "**/lodepng.h"
     ],
+    "todohighlight.keywords": [
+        {
+            "text": "TODO:",
+            "backgroundColor": "red",
+        }
+    ],
 }

@@ -48,35 +48,14 @@ lin_alg::Vector<3> Scene::CalculateColourAtIntersect(const RayIntersect &interse
         colour += lighting_model->GetGlobalLighting(intersect);
     }
 
-    if (intersect.object->reflection_constant > 0 && depth < max_reflection_depth)
+    if (intersect.material.GetReflectionConstant() > 0 && depth < max_reflection_depth)
     {
-        lin_alg::Vector<3> reflected_dir = (intersect.ray.direction + intersect.normal.Scale(2 * intersect.normal.DotProduct(intersect.ray.direction))).Scale(-1);
-        Ray reflected(pos, reflected_dir);
-        colour += GetColour(reflected, depth + 1).Scale(intersect.object->reflection_constant);
+        colour += GetColour(lighting_model->GetReflectionRay(intersect), depth + 1).Scale(intersect.material.GetReflectionConstant());
     }
 
-    if (intersect.object->refraction_constant > 0 && depth < max_reflection_depth)
+    if (intersect.material.GetRefractionConstant() > 0 && depth < max_reflection_depth)
     {
-        double ratio = intersect.ray.medium_refractive_index / intersect.object->refractive_index;
-        double cos_theta_1 = intersect.ray.direction.DotProduct(intersect.normal);
-        double cos_theta_2_sqr = 1 - std::pow(ratio, 2) * (1 - (std::pow(cos_theta_1, 2)));
-        if (cos_theta_2_sqr < 0)
-        {
-            lin_alg::Vector<3> reflected_dir = (intersect.ray.direction + intersect.normal.Scale(2 * intersect.normal.DotProduct(intersect.ray.direction))).Scale(-1);
-            Ray reflected(pos, reflected_dir, intersect.ray.medium_refractive_index);
-            colour += GetColour(reflected, depth + 1).Scale(intersect.object->refraction_constant);
-        }
-        else
-        {
-            lin_alg::Vector<3> refracted_dir = intersect.ray.direction.Scale(ratio) + intersect.normal.Scale(ratio * cos_theta_1 - std::sqrt(cos_theta_2_sqr));
-            double new_refraction_index = 1;
-            if (intersect.ray.medium_refractive_index != intersect.ray.medium_refractive_index)
-            {
-                new_refraction_index = intersect.object->refractive_index;
-            }
-            Ray refracted(intersect.ray.Position(intersect.t + 0.001), refracted_dir, INFINITY, new_refraction_index);
-            colour += GetColour(refracted, depth + 1).Scale(intersect.object->refraction_constant);
-        }
+        colour += GetColour(lighting_model->GetRefractionRay(intersect), depth + 1).Scale(intersect.material.GetRefractionConstant());
     }
 
     return colour;

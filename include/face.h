@@ -21,7 +21,6 @@ public:
   Vertex* vertices[3];
   lin_alg::Vector<3> normal;
   lin_alg::Vector<3> normals[3];
-  lin_alg::Vector<3> colour;
   bool use_vertex_normals = false;
 };
 

@@ -4,20 +4,20 @@
 #include <memory>
 #include "ray.h"
 #include "rayintersect.h"
+#include "material.h"
 
 class SceneObject
 {
   public:
     SceneObject(){};
+    SceneObject(Material material) : material(material) {};
 
     virtual ~SceneObject(){};
 
+    // TODO: Change to return RayIntersect and then pass around by ref
     virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) = 0;
 
-    double specular_component = 0;
-    double reflection_constant = 0;
-    double refractive_index = 1;
-    double refraction_constant = 0;
+    Material material;
 };
 
 #endif

@@ -1,5 +1,5 @@
 CC := g++
-CFLAGS := -std=c++17 -Wall -Wextra
+CFLAGS := -std=c++17 -Wall -Wextra -Wno-unknown-pragmas
 SRCDIR := src
 BUILDDIR := build
 RELEASEBUILDDIR := build\release

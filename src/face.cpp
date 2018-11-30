@@ -51,8 +51,7 @@ std::shared_ptr<RayIntersect> Face::Intersect(Ray ray)
             normal = this->normal;
         }
 
-        return std::shared_ptr<RayIntersect>(new RayIntersect(ray, face_intersect->t, colour, this, normal));
-        return std::shared_ptr<RayIntersect>(new RayIntersect(ray, face_intersect->t, colour, this, normal));
+        return std::shared_ptr<RayIntersect>(new RayIntersect(ray, face_intersect->t, material, normal));
     }
 
     return nullptr;

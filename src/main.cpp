@@ -8,7 +8,7 @@
 #include "directionallight.h"
 #include "pointlight.h"
 #include "ambientocclusionlightingmodel.h"
-#include "basiclightingmodel.h"
+#include "phonglightingmodel.h"
 #include "meshoctree.h"
 #include "adaptivesampledscene.h"
 #include "multithreadedscene.h"
@@ -43,12 +43,12 @@ std::unique_ptr<Scene> Diamond_Scene_Two_Light_Sources(unsigned max_thread)
 
     mesh->SetColour(GetColourVector(244, 170, 66));
 
-    mesh->specular_component = 1;
+    mesh->material.SetSpecularConstant(1);
 
     mesh->RecalculateNormals();
 
-    sphere1->specular_component = 1;
-    sphere2->specular_component = 0.5;
+    sphere1->material.SetSpecularConstant(1);
+    sphere2->material.SetSpecularConstant(0.5);
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
@@ -61,7 +61,7 @@ std::unique_ptr<Scene> Diamond_Scene_Two_Light_Sources(unsigned max_thread)
 
     std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 100, SampledScene::Jitter, max_thread));
 
-    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 10, new BasicLightingModel(0.1, 200), *scene);
+    LightingModel *model = new AmbientOcclusionLightingModel(0.1, 200, 0.2, 10, *scene);
 
     scene->AddObject(meshbound);
     scene->AddObject(spherebound2);
@@ -97,28 +97,28 @@ std::unique_ptr<Scene> Cube_Scene_Two_Light_Sources(unsigned max_thread)
 
     mesh->ExecuteTransformation();
 
-    mesh->faces[9].colour = {0, 0, 1};
-    mesh->faces[8].colour = {0, 0, 1};
+    mesh->faces[9].material.SetDiffuseConstant({0, 0, 1});
+    mesh->faces[8].material.SetDiffuseConstant({0, 0, 1});
 
-    mesh->faces[6].colour = {1, 0, 0};
-    mesh->faces[4].colour = {1, 0, 0};
+    mesh->faces[6].material.SetDiffuseConstant({1, 0, 0});
+    mesh->faces[4].material.SetDiffuseConstant({1, 0, 0});
 
-    mesh->faces[10].colour = {0, 1, 0};
-    mesh->faces[11].colour = {0, 1, 0};
+    mesh->faces[10].material.SetDiffuseConstant({0, 1, 0});
+    mesh->faces[11].material.SetDiffuseConstant({0, 1, 0});
 
-    mesh->faces[2].colour = {1, 1, 0};
-    mesh->faces[3].colour = {1, 1, 0};
+    mesh->faces[2].material.SetDiffuseConstant({1, 1, 0});
+    mesh->faces[3].material.SetDiffuseConstant({1, 1, 0});
 
-    mesh->faces[5].colour = {0, 1, 1};
-    mesh->faces[7].colour = {0, 1, 1};
+    mesh->faces[5].material.SetDiffuseConstant({0, 1, 1});
+    mesh->faces[7].material.SetDiffuseConstant({0, 1, 1});
 
-    mesh->specular_component = 1;
+    mesh->material.SetSpecularConstant(1);
 
     mesh->RecalculateNormals();
 
-    sphere1->specular_component = 1;
-    sphere2->specular_component = 0.5;
-    sphere3->specular_component = 1;
+    sphere1->material.SetSpecularConstant(1);
+    sphere2->material.SetSpecularConstant(0.5);
+    sphere3->material.SetSpecularConstant(1);
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
@@ -132,7 +132,7 @@ std::unique_ptr<Scene> Cube_Scene_Two_Light_Sources(unsigned max_thread)
 
     std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 1000, SampledScene::Random,max_thread));
 
-    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 55, new BasicLightingModel(0.1, 200), *scene);
+    LightingModel *model = new AmbientOcclusionLightingModel(0.1, 200, 0.2, 55, *scene);
 
     scene->AddObject(spherebound1);
     scene->AddObject(spherebound2);
@@ -159,11 +159,9 @@ std::unique_ptr<Scene> Reflections_Refractions(unsigned max_thread)
     Sphere *sphere4 = new Sphere({-4, 1.2, -6.5, 1}, 2, GetColourVector(209, 252, 55));
 
     Sphere *mirror_ball = new Sphere({-1.6, 1, -4.5, 1}, 0.95, {0, 0, 0});
-    mirror_ball->reflection_constant = 1;
-    mirror_ball->specular_component = 1;
+    mirror_ball->material.AddReflection(1).SetSpecularConstant(1);
 
-    sphere2->refraction_constant = 0.95;
-    sphere2->refractive_index = 1.3;
+    sphere2->material.AddTransparency(0.95, 1.3);
 
     Mesh *mesh = new Mesh();
 
@@ -178,17 +176,14 @@ std::unique_ptr<Scene> Reflections_Refractions(unsigned max_thread)
 
     mesh->SetColour({0, 0, 0});
 
-    mesh->refractive_index = 1.5;
-    mesh->refraction_constant = 1;
-
-    mesh->specular_component = 1;
+    mesh->material.AddTransparency(1, 1.5).SetSpecularConstant(1);
 
     mesh->RecalculateNormals();
 
-    sphere1->specular_component = 1;
-    sphere2->specular_component = 1;
-    sphere3->specular_component = 1;
-    sphere4->specular_component = 1;
+    sphere1->material.SetSpecularConstant(1);
+    sphere2->material.SetSpecularConstant(1);
+    sphere3->material.SetSpecularConstant(1);
+    sphere4->material.SetSpecularConstant(1);
 
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
 
@@ -204,7 +199,7 @@ std::unique_ptr<Scene> Reflections_Refractions(unsigned max_thread)
 
     std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 10, SampledScene::Random, max_thread));
 
-    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 55, new BasicLightingModel(0.1, 200), *scene);
+    LightingModel *model = new AmbientOcclusionLightingModel(0.1, 200, 0.2, 55, *scene);
 
     scene->AddObject(spherebound4);
     scene->AddObject(spherebound2);
@@ -231,9 +226,7 @@ std::unique_ptr<Scene> Bunny(unsigned max_thread)
     mesh->AddTranslation(0, -0.16, -2);
     mesh->ExecuteTransformation();
     //mesh->SetColour(GetColourVector(244, 170, 66));
-    mesh->specular_component = 1;
-    mesh->refraction_constant = 1;
-    mesh->refractive_index = 1.5; 
+    mesh->material.SetSpecularConstant(1).AddTransparency(1, 1.5);
 
     DirectionalLight *light1 = new DirectionalLight({1, 1, 0.5}, 0.6);
     DirectionalLight *light2 = new DirectionalLight({-0.3, 1, -0.3}, 0.7);
@@ -243,12 +236,12 @@ std::unique_ptr<Scene> Bunny(unsigned max_thread)
     Plane *plane = new Plane({0, 1, 0}, {0, -0.5, 0}, {0.4, 0.4, 0.4});
     Sphere *sphere1 = new Sphere({-4, 1.2, -6.5, 1}, 2, GetColourVector(209, 252, 55));
     Sphere *sphere2 = new Sphere({2, 0.5, -3.5, 1}, 1.5, {0.1, 0.7, 0.1});
-    sphere1->specular_component = 1;
-    sphere2->specular_component = 1;
+    sphere1->material.SetSpecularConstant(1);
+    sphere2->material.SetSpecularConstant(1);
 
     std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 200, SampledScene::Random, max_thread));
 
-    LightingModel *model = new AmbientOcclusionLightingModel(0.2, 50, new BasicLightingModel(0.1, 200), *scene);
+    LightingModel *model = new AmbientOcclusionLightingModel(0.1, 200, 0.2, 50, *scene);
 
     scene->AddObject(meshbound);
     scene->AddObject(sphere1);
@@ -275,8 +268,8 @@ int main(int argc, char *argv[])
     auto scene3 = Reflections_Refractions(max_thread);
     auto scene4 = Bunny(max_thread);
 
-    scene4->AddMonitoring();
+    scene2->AddMonitoring();
 
     const char *filename = (".\\out\\render.png");
-    scene4->Render(filename, 1920, 1080);
+    scene2->Render(filename, 1920/4, 1080/4);
 };

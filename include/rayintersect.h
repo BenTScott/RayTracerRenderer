@@ -3,6 +3,7 @@
 
 #include "ray.h"
 #include "vector.h"
+#include "material.h"
 
 class SceneObject;
 
@@ -10,8 +11,8 @@ class RayIntersect
 {
   public:
     RayIntersect(){};
-    RayIntersect(Ray ray, double t, lin_alg::Vector<3> colour, SceneObject *obj, lin_alg::Vector<3> normal) : ray(ray), t(t), colour(colour), object(obj), normal(normal) {};
-    RayIntersect(RayIntersect& obj) : ray(obj.ray), t(obj.t), colour(obj.colour), object(obj.object){};
+    RayIntersect(Ray ray, double t, Material material, lin_alg::Vector<3> normal) : ray(ray), t(t), material(material), normal(normal){};
+    //RayIntersect(RayIntersect &obj) : ray(obj.ray), t(obj.t), colour(obj.colour), object(obj.object){};
 
     lin_alg::Vector<3> Position() const
     {
@@ -25,8 +26,7 @@ class RayIntersect
 
     Ray ray;
     double t;
-    lin_alg::Vector<3> colour;
-    SceneObject* object;
+    Material material;
     lin_alg::Vector<3> normal;
 };
 

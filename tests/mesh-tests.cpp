@@ -87,5 +87,5 @@ TEST_CASE("Can set colour")
     lin_alg::Vector<3> colour({1,1,1});
 
     mesh.SetColour(colour);
-    REQUIRE(mesh.faces[0].colour == colour);
+    REQUIRE(mesh.faces[0].material.GetDiffuseConstant() == colour);
 }

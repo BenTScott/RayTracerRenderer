@@ -34,7 +34,7 @@ std::shared_ptr<RayIntersect> MeshOctree::Intersect(Ray ray)
 
         if (intersect)
         {
-            intersect->object = contained_mesh;
+            intersect->material = Material(contained_mesh->material).SetDiffuseConstant(intersect->material.GetDiffuseConstant());
             return intersect;
         }
     }
