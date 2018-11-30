@@ -1,8 +1,10 @@
 #ifndef INCLUDE_LIGHT_H_
 #define INCLUDE_LIGHT_H_
 
+#include <vector>
 #include "vector.h"
 #include "ray.h"
+#include "photonpathray.h"
 
 class Light
 {
@@ -27,6 +29,14 @@ class Light
     };
 
     virtual Ray GetLightRay(lin_alg::Vector<3> pos) const = 0;
+
+    virtual std::vector<PhotonPathRay> GeneratePhotonRays(unsigned number_of_photons) const
+    {
+        (void) number_of_photons;
+
+        // Does nothing to allow no overriding
+        return std::vector<PhotonPathRay>();
+    };
 
     lin_alg::Vector<3> intensity;
 };
