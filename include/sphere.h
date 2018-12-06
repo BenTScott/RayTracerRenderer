@@ -14,6 +14,7 @@ public:
   ~Sphere(){};
 
   virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override;
+  virtual std::vector<SurfacePoint> GetRandomPoints(unsigned samples) const override;
 
   lin_alg::Vector<4> centre;
   double radius;

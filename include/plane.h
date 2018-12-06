@@ -18,6 +18,7 @@ class Plane : public SceneObject
     // };
 
     virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override;
+    virtual std::vector<SurfacePoint> GetRandomPoints(unsigned samples) const override;
 
     lin_alg::Vector<3> normal;
     lin_alg::Vector<3> point;

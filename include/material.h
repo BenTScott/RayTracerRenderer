@@ -3,8 +3,10 @@
 
 #include "photonpathray.h"
 #include "rayintersect.h"
+#include "utilities.h"
 #include <memory>
 #include <random>
+#include <ctime>
 
 class Material
 {
@@ -64,6 +66,17 @@ class Material
         return refractive_index;
     }
 
+    Material &IsEmitter()
+    {
+        this->is_emitter = true;
+        return *this;
+    }
+
+    const bool &IsEmmitter() const
+    {
+        return this->is_emitter;
+    }
+
 #pragma endregion
 
 #pragma region Photon Mapping Methods
@@ -81,24 +94,32 @@ class Material
         MirrorReflection
     };
 
-    Material &IntialiseRussianRoulette(double absorbed, double reflected)
+    Material &IntialiseRussianRoulette()
     {
-        assert(absorbed >= 0 && reflected >= 0 && absorbed + reflected <= 1);
-        this->absorbed = absorbed;
-        this->reflected = reflected;
+        reflected = this->k_d.Max() + k_s;
+        absorbed = 1 - reflected - k_r - k_t;
+        if (k_r != 0 || k_t != 0)
+        {
+            transmitted_refracted = k_r;
+        }
+
+        // assert(absorbed >= 0 && reflected >= 0 && absorbed + reflected <= 1);
+        // this->absorbed = absorbed;
+        // this->reflected = reflected;
         return *this;
     }
 
-    Material &InitialiseTransmission(double transmitted_refracted)
-    {
-        assert(transmitted_refracted >= 0 and transmitted_refracted <= 1);
-        this->transmitted_refracted = transmitted_refracted;
-        return *this;
-    }
+    // Material &InitialiseTransmission(double transmitted_refracted)
+    // {
+    //     assert(transmitted_refracted >= 0 and transmitted_refracted <= 1);
+    //     this->transmitted_refracted = transmitted_refracted;
+    //     return *this;
+    // }
 
     Material::PhotonOutcome GetPhotonOutcome()
     {
-        double val = distribution(generator);
+        std::uniform_real_distribution<> distribution = std::uniform_real_distribution<>(0.0, 1.0);
+        double val = distribution(Random::Generator());
         if (val < absorbed)
         {
             return Absorbed;
@@ -113,7 +134,7 @@ class Material
 
     Material::TransmissionOutcome GetTransmissionOutcome()
     {
-        double val = distribution(generator);
+        double val = distribution(Random::Generator());
         if (val < transmitted_refracted)
         {
             return Refracted;
@@ -123,6 +144,21 @@ class Material
             return MirrorReflection;
         }
     };
+
+    double GetAbsorptionProbablity()
+    {
+        return absorbed;
+    };
+
+    double GetReflectionProbablity()
+    {
+        return reflected;
+    };
+
+    double GetTransmittedProbablity()
+    {
+        return 1 - absorbed - reflected;
+    }
 
 #pragma endregion
 
@@ -141,11 +177,12 @@ class Material
     double k_t = 0;
     double refractive_index = 1;
 
+    bool is_emitter = false;;
+
     // Photon Mapping members
     double absorbed = 1;
     double reflected = 0;
     double transmitted_refracted = 1;
-    std::mt19937 generator = std::mt19937(rand());
     std::uniform_real_distribution<> distribution = std::uniform_real_distribution<>(0.0, 1.0);
 };
 

@@ -7,11 +7,10 @@ lin_alg::Vector<3> AmbientOcclusionLightingModel::GetGlobalLighting(const RayInt
     double ambient_count = 0;
 
     //TODO: Performance increase by factoring out
-    std::mt19937 generator(rand());
     std::uniform_real_distribution<> distribution(-1.0, 1.0);
     for (unsigned i = 0; i < sample_rate; ++i)
     {
-        lin_alg::Vector<3> dir({distribution(generator), distribution(generator), distribution(generator)});
+        lin_alg::Vector<3> dir = Random::RandomUnitVector();
         if (dir.DotProduct(intersect.normal) < 0)
         {
             dir = dir.Scale(-1);

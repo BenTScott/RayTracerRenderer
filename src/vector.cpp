@@ -64,7 +64,7 @@ double lin_alg::Area(const lin_alg::Vector<3> &a, const lin_alg::Vector<3> &b, c
 }
 
 template <std::size_t N>
-lin_alg::Vector<3> lin_alg::Vector<N>::GetAsVector3()
+lin_alg::Vector<3> lin_alg::Vector<N>::GetAsVector3() const
 {
     if (N >= 3)
     {

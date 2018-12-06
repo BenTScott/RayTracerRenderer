@@ -32,3 +32,20 @@ std::shared_ptr<RayIntersect> Sphere::Intersect(Ray ray)
 
     return intersect;
 };
+
+std::vector<SurfacePoint> Sphere::GetRandomPoints(unsigned samples) const
+{
+    std::vector<SurfacePoint> points;
+    points.resize(samples);
+
+    std::uniform_real_distribution<> distribution(-1.0, 1.0);
+
+    for (unsigned i = 0; i < samples; ++i)
+    {
+        lin_alg::Vector<3> dir = Random::RandomUnitVector();
+        lin_alg::Vector<3> point = centre.GetAsVector3() + dir.Scale(radius);
+        points[i] = SurfacePoint(point, dir);
+    }
+
+    return points;
+};

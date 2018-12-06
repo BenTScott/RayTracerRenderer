@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <memory>
 #include "vector.h"
+#include "utilities.h"
 #include "mesh.h"
 #include "matrix.h"
 #include "plane.h"
@@ -248,6 +249,7 @@ void Mesh::SetColour(Vector<3> colour)
     {
         face.material.SetDiffuseConstant(colour);
     }
+    this->material.SetDiffuseConstant(colour);
 };
 
 void Mesh::RecalculateNormals()
@@ -256,4 +258,16 @@ void Mesh::RecalculateNormals()
     {
         face.CalculateNormal();
     }
-}
+};
+
+std::vector<SurfacePoint> Mesh::GetRandomPoints(unsigned samples) const
+{
+    std::vector<SurfacePoint> points;
+    points.resize(samples);
+    for (unsigned i = 0; i < samples; ++i)
+    {
+        points[i] = RandomElement(faces.begin(), faces.end())->GetRandomPoints(1).front();
+    }
+    return points;
+    
+};

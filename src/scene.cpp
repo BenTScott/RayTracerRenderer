@@ -34,18 +34,28 @@ lin_alg::Vector<3> Scene::CalculateColourAtIntersect(const RayIntersect &interse
 {
     lin_alg::Vector<3> colour;
 
+    if (intersect.material.IsEmmitter())
+    {
+        colour += intersect.material.GetDiffuseConstant();
+    }
+
     lin_alg::Vector<3> pos = intersect.GetCorrectedPosition();
 
     for (const auto &light : light_sources)
     {
-        Ray lightray = light->GetLightRay(pos);
+        std::vector<Ray> lightrays = light->GetLightRays(pos, 50);
 
-        if (!InShadow(lightray))
+        for (Ray &ray : lightrays)
         {
-            colour += lighting_model->GetDiffuseLighting(*light, intersect);
-            colour += lighting_model->GetSpecularLighting(*light, intersect);
+            if (!InShadow(ray))
+            {
+                colour += lighting_model->GetDiffuseLighting(*light, intersect).Scale(1.0 / lightrays.size());
+                colour += lighting_model->GetSpecularLighting(*light, intersect).Scale(1.0 / lightrays.size());
+            }
         }
-        colour += lighting_model->GetGlobalLighting(intersect);
+        
+        //TODO: Put global lighting back!!
+        //colour += lighting_model->GetGlobalLighting(intersect);
     }
 
     if (intersect.material.GetReflectionConstant() > 0 && depth < max_reflection_depth)
@@ -83,8 +93,6 @@ RGBImage *Scene::GetImage(unsigned resolution_width, unsigned resolution_height)
             {
                 monitor->Increment();
             }
-
-            std::shared_ptr<RayIntersect> closest = nullptr;
 
             Ray ray = cam.GetRay(i, j);
 

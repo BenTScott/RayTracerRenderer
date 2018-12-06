@@ -13,7 +13,8 @@
 #include "adaptivesampledscene.h"
 #include "multithreadedscene.h"
 #include "2dshapes.h"
-#include "photonmap.h"
+#include "photonmappedscene.h"
+#include "arealight.h"
 
 lin_alg::Vector<3> GetColourVector(unsigned char R, unsigned char G, unsigned char B)
 {
@@ -255,6 +256,74 @@ std::unique_ptr<Scene> Bunny(unsigned max_thread)
     return scene;
 };
 
+std::unique_ptr<Scene> CornellBox(unsigned max_thread)
+{
+    lin_alg::Vector<3> cam_up({0, 1, 0});
+    lin_alg::Vector<3> cam_forward({0, 0, -1});
+    lin_alg::Vector<3> cam_focal({0, 0.5, 1});
+
+    Camera cam(cam_up, cam_forward, cam_focal, 1);
+    cam.InitialiseScreenSize(2, 2);
+
+    Plane *right_wall = new Plane({-1, 0, 0}, {2, 0 , 0}, {0, 0.6, 0});
+    right_wall->material.IntialiseRussianRoulette();
+
+    Plane *left_wall = new Plane({1, 0, 0}, {-2, 0, 0}, {0.6, 0, 0});
+    left_wall->material.IntialiseRussianRoulette();
+
+    Plane *floor = new Plane({0, 1, 0}, {0, -0.8, 0}, {1, 1, 1});
+    floor->material.IntialiseRussianRoulette();
+
+    Plane *ceiling = new Plane({0, -1, 0}, {0, 2, 0}, {1, 1, 1});
+    ceiling->material.IntialiseRussianRoulette();
+
+    Plane *back_wall = new Plane({0, 0, 1}, {0, 0, -2.5}, {1, 1, 1});
+    back_wall->material.IntialiseRussianRoulette();
+
+    Plane *camera_wall = new Plane({0.3, 0, -1}, {0, 0, 5}, {1, 1, 1});
+    camera_wall->material.IntialiseRussianRoulette();
+
+    Mesh *mesh = new Mesh();
+
+    mesh->LoadObjectModel(".\\data\\cube.obj");
+
+    mesh->AddRotation(lin_alg::y, 35);
+
+    mesh->AddTranslation(0, -0.3, -1.5);
+
+    mesh->ExecuteTransformation();
+
+    mesh->RecalculateNormals();
+
+    mesh->SetColour({1, 1, 1});
+
+    mesh->material.IntialiseRussianRoulette();
+
+    lin_alg::Vector<3> centre = {0.4,1.999,-0.8};
+    Rectangle *light_rec = new Rectangle(centre+lin_alg::Vector<3>({-0.3, 0, 0.3}),centre+lin_alg::Vector<3>({-0.3, 0, -0.3}),centre+lin_alg::Vector<3>({0.3, 0, -0.3}), {1, 0, 0});
+    AreaLight *area_light = new AreaLight(light_rec, {0.7, 0.7, 0.55});
+
+    LightingModel *model = new PhongLightingModel(0.1, 200);
+
+    std::unique_ptr<Scene> scene(new PhotonMappedScene(cam, {0, 0, 0}, 1000000, {0, 0.6, -1.5}, 6));
+    //std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 100, SampledScene::Jitter, max_thread));
+
+    //LightingModel *model = new AmbientOcclusionLightingModel(0.1, 200, 0.3, 50, *scene);
+
+    scene->SetLightingModel(model);
+    scene->AddLightSource(area_light);
+    scene->AddObject(right_wall);
+    scene->AddObject(mesh);
+    scene->AddObject(left_wall);
+    scene->AddObject(back_wall);
+    scene->AddObject(camera_wall);
+    scene->AddObject(floor);
+    scene->AddObject(ceiling);
+    scene->AddObject(area_light);
+
+    return scene;
+}
+
 int main(int argc, char *argv[])
 {
     unsigned max_thread = 4;
@@ -266,10 +335,12 @@ int main(int argc, char *argv[])
     auto scene1 = Diamond_Scene_Two_Light_Sources(max_thread);
     auto scene2 = Cube_Scene_Two_Light_Sources(max_thread);
     auto scene3 = Reflections_Refractions(max_thread);
-    auto scene4 = Bunny(max_thread);
+    //auto scene4 = Bunny(max_thread);
+    auto scene5 = CornellBox(max_thread);
 
-    scene2->AddMonitoring();
+    //scene3->AddMonitoring();
 
     const char *filename = (".\\out\\render.png");
-    scene2->Render(filename, 1920/4, 1080/4);
+    scene5->Render(filename, 1000, 1000);
+    //scene3->Render(filename, 1920, 1080);
 };

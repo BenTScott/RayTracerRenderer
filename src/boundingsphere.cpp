@@ -1,6 +1,7 @@
 #include <iterator>
 #include "boundingsphere.h"
 #include "vector.h"
+#include "utilities.h"
 
 BoundingSphere::BoundingSphere(Mesh *contained_mesh)
 {
@@ -64,4 +65,16 @@ std::shared_ptr<RayIntersect> BoundingSphere::Intersect(Ray ray)
     }
 
     return closest;
+};
+
+std::vector<SurfacePoint> BoundingSphere::GetRandomPoints(unsigned samples) const
+{
+    std::vector<SurfacePoint> points;
+    points.resize(samples);
+    for (unsigned i = 0; i < samples; ++i)
+    {
+        points[i] = (*RandomElement(contained_objects.begin(), contained_objects.end()))->GetRandomPoints(1).front();
+    }
+
+    return points;
 };

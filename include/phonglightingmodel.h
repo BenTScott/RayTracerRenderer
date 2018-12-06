@@ -14,11 +14,14 @@ class PhongLightingModel : public LightingModel
     virtual lin_alg::Vector<3> GetGlobalLighting(const RayIntersect &intersect) override;
     virtual lin_alg::Vector<3> GetSpecularLighting(const Light &light, const RayIntersect &intersect) override;
     virtual lin_alg::Vector<3> GetDiffuseLighting(const Light &light, const RayIntersect &intersect) override;
+    virtual lin_alg::Vector<3> EstimatedPhotonRadiance(Photon photon, const RayIntersect &intersect, lin_alg::Vector<3> view_dir) override;
 
     virtual Ray GetReflectionRay(const RayIntersect &intersect) override;
     virtual Ray GetRefractionRay(const RayIntersect &intersect) override;
 
     virtual PhotonPathRay GetRandomPhotonReflection(std::shared_ptr<RayIntersect> intersect, PhotonPathRay incident) override;
+
+    lin_alg::Vector<3> BRDF(lin_alg::Vector<3> incident, lin_alg::Vector<3> reflected, const RayIntersect &intersect);
 
   private:
     // Defualt values

@@ -2,6 +2,7 @@
 #define INCLUDE_POINTLIGHT_H_
 
 #include <random>
+#include <ctime>
 #include "vector.h"
 #include "light.h"
 
@@ -36,11 +37,10 @@ class PointLight : public Light
         std::vector<PhotonPathRay> photon_rays;
         photon_rays.reserve(number_of_photons);
         lin_alg::Vector<3> photon_intensity = this->intensity.Scale(1.0/number_of_photons);
-        std::mt19937 generator(rand());
         std::uniform_real_distribution<> distribution(-1.0, 1.0);
         for (unsigned i = 0; i < number_of_photons; ++i)
         {
-            Ray ray(point, {distribution(generator), distribution(generator), distribution(generator)});
+            Ray ray(point, Random::RandomUnitVector());
             photon_rays.push_back(PhotonPathRay(ray, photon_intensity));
         }
 

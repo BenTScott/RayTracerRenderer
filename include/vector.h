@@ -133,7 +133,7 @@ class Vector
 
     double DotProduct(const Vector<N> &vector) const;
 
-    Vector<3> GetAsVector3();
+    Vector<3> GetAsVector3() const;
 
     Vector<N> Scale(double scalar) const
     {

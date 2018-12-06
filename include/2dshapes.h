@@ -35,6 +35,7 @@ class Circle : SceneObject
     virtual ~Circle(){};
 
     virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override;
+    virtual std::vector<SurfacePoint> GetRandomPoints(unsigned samples) const override;
 
   protected:
     lin_alg::Vector<3> centre;

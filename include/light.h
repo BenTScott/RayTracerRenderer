@@ -30,6 +30,16 @@ class Light
 
     virtual Ray GetLightRay(lin_alg::Vector<3> pos) const = 0;
 
+    virtual std::vector<Ray> GetLightRays(lin_alg::Vector<3> pos, unsigned sample_rate) const
+    {
+        (void) sample_rate;
+        
+        std::vector<Ray> rays;
+        rays.push_back(GetLightRay(pos));
+
+        return rays;
+    };
+
     virtual std::vector<PhotonPathRay> GeneratePhotonRays(unsigned number_of_photons) const
     {
         (void) number_of_photons;

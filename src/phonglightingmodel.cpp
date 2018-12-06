@@ -1,5 +1,6 @@
 #include "phonglightingmodel.h"
 #include "sceneobject.h"
+#include <iostream>
 #include <random>
 
 lin_alg::Vector<3> PhongLightingModel::GetGlobalLighting(const RayIntersect &intersect)
@@ -31,26 +32,17 @@ PhotonPathRay PhongLightingModel::GetRandomPhotonReflection(std::shared_ptr<RayI
 {
     // Can I pull this out to a BRDF fucntion for ease.
     // Generate random reflection ray
-    std::mt19937 generator(rand());
-    std::uniform_real_distribution<> distribution(-1.0, 1.0);
-    lin_alg::Vector<3> reflected({distribution(generator), distribution(generator), distribution(generator)});
+    lin_alg::Vector<3> reflected = Random::RandomUnitVector();
+
     if (reflected.DotProduct(intersect->normal) < 0)
     {
-        reflected = reflected.Scale(-1);
+        reflected = reflected * -1;
     }
-    reflected.Normalise();
-
-    lin_alg::Vector<3> specular_direction = incident.ray.direction - intersect->normal.Scale(2.0 * incident.ray.direction.DotProduct(intersect->normal));
-
-    lin_alg::Vector<3> diffuse = intersect->material.GetDiffuseConstant() * intersect->normal.DotProduct(reflected);
-
-    // Specular highlights are treated as white
-    // TODO: Verify this is correct behaviour
-    lin_alg::Vector<3> specular({1, 1, 1});
-    specular = specular.Scale(intersect->material.GetSpecularConstant() * std::pow(specular_direction.DotProduct(reflected), specular_dist));
 
     //TODO: Verfiy photon won't get more energy
-    return PhotonPathRay(Ray(intersect->GetCorrectedPosition(), reflected), incident.intensity.PointwiseMultiply(diffuse + specular));
+    lin_alg::Vector<3> reflected_intensity = incident.intensity.PointwiseMultiply(BRDF(incident.ray.direction, reflected, *intersect));
+
+    return PhotonPathRay(Ray(intersect->GetCorrectedPosition(), reflected), reflected_intensity);
 };
 
 Ray PhongLightingModel::GetReflectionRay(const RayIntersect &intersect)
@@ -80,4 +72,23 @@ Ray PhongLightingModel::GetRefractionRay(const RayIntersect &intersect)
 
     // Correct position into the object (opposite to usual correction)
     return Ray(intersect.GetCorrectedPosition(-0.001), refracted_dir, INFINITY, new_refraction_index);
+};
+
+lin_alg::Vector<3> PhongLightingModel::BRDF(lin_alg::Vector<3> incident, lin_alg::Vector<3> reflected, const RayIntersect &intersect)
+{
+    lin_alg::Vector<3> specular_direction = incident - intersect.normal.Scale(2.0 * incident.DotProduct(intersect.normal));
+
+    lin_alg::Vector<3> diffuse = intersect.material.GetDiffuseConstant() * intersect.normal.DotProduct(reflected);
+
+    // Specular highlights are treated as white
+    // TODO: Verify this is correct behaviour
+    lin_alg::Vector<3> specular({1, 1, 1});
+    specular = specular.Scale(intersect.material.GetSpecularConstant() * std::pow(specular_direction.DotProduct(reflected), specular_dist));
+
+    return specular + diffuse;
+};
+
+lin_alg::Vector<3> PhongLightingModel::EstimatedPhotonRadiance(Photon photon, const RayIntersect &intersect, lin_alg::Vector<3> view_dir)
+{
+    return BRDF(photon.direction, view_dir.Normalise(), intersect).PointwiseMultiply(photon.intensity);
 };

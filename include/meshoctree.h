@@ -10,8 +10,9 @@ class MeshOctree : public SceneObject
     MeshOctree(Mesh *contained_mesh, unsigned max_faces_per_octant);
 
     virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override;
+    virtual std::vector<SurfacePoint> GetRandomPoints(unsigned samples) const override;
 
-    class Node : public SceneObject
+    class Node
     {
       public:
         Node() : nodes(nullptr){};
@@ -19,7 +20,7 @@ class MeshOctree : public SceneObject
 
         bool BoundIntersect(Ray ray, double &t) const;
 
-        virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override;
+        std::shared_ptr<RayIntersect> Intersect(Ray ray);
 
         void Fragment(unsigned max_faces);
 

@@ -20,6 +20,7 @@ public:
   };
 
   virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override;
+  virtual std::vector<SurfacePoint> GetRandomPoints(unsigned samples) const override;
 
   std::vector<SceneObject *> contained_objects;
 

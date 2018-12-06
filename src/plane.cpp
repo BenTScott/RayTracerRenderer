@@ -18,3 +18,22 @@ std::shared_ptr<RayIntersect> Plane::Intersect(Ray ray)
     std::shared_ptr<RayIntersect> intersect(new RayIntersect(ray, t, material, normal));
     return intersect;
 };
+
+std::vector<SurfacePoint> Plane::GetRandomPoints(unsigned samples) const
+{
+    std::uniform_real_distribution<> distribution(std::numeric_limits<double>::min(), std::numeric_limits<double>::min());
+
+    std::vector<SurfacePoint> points;
+    points.resize(samples);
+
+    auto u = lin_alg::Vector<3>({normal[1],-normal[0], 0}).Normalise();
+    auto v = lin_alg::CrossProduct(u, normal);
+
+    for (unsigned i = 0; i < samples; ++i)
+    {
+        lin_alg::Vector<3> random_point = point + u.Scale(distribution(Random::Generator())) + v.Scale(distribution(Random::Generator()));
+        points[i] = SurfacePoint(random_point, normal);
+    }
+
+    return points;
+};

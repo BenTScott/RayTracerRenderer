@@ -222,3 +222,8 @@ bool MeshOctree::Node::TryAdd(const Face &face)
     }
     return false;
 };
+
+std::vector<SurfacePoint> MeshOctree::GetRandomPoints(unsigned samples) const
+{
+    return contained_mesh->GetRandomPoints(samples);
+};

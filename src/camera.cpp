@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "utilities.h"
 #include <random>
 #include <math.h>
 
@@ -37,15 +38,14 @@ std::vector<Ray> Camera::GetJitterRaySamples(unsigned pixel_x, unsigned pixel_y,
     double grid_width_height = (1.0/(double) grid_size);
     std::vector<Ray> rays;
 
-    std::mt19937 generator(rand());
     std::uniform_real_distribution<double> dis;
 
     for (unsigned i = 0; i < grid_size; ++i)
     {
         for (unsigned j = 0; j < grid_size; ++j)
         {
-            double distance_x = grid_width_height * (double) i + dis(generator);
-            double distance_y = grid_width_height * (double) j + dis(generator);
+            double distance_x = grid_width_height * (double) i + dis(Random::Generator());
+            double distance_y = grid_width_height * (double) j + dis(Random::Generator());
             rays.push_back(GetRay(pixel_x, pixel_y, distance_x, distance_y));
         }
     }
