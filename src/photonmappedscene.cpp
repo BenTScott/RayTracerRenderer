@@ -208,7 +208,7 @@ RGBImage *PhotonMappedScene::GetImage(unsigned resolution_width, unsigned resolu
 
             //TODO: Case if it is a light hit i.e. area light...
             double radius;
-            std::vector<Photon *> closest_photons = global_map->LocatePhotons(pos, 600, radius);
+            std::vector<Photon *> closest_photons = global_map->LocatePhotons(pos, 4000, radius);
 
             // Remove photons not in the disc
             // for (auto photon_iter = closest_photons.begin(); photon_iter < closest_photons.end(); photon_iter++)
@@ -226,14 +226,16 @@ RGBImage *PhotonMappedScene::GetImage(unsigned resolution_width, unsigned resolu
                 if (photon_ptr->direction.DotProduct(closest->normal) < 0.0)
                 {
                     double filter = std::max(0.0, 1 - (photon_ptr->position - pos).Magnitude() / radius);
-                    estimate += lighting_model->EstimatedPhotonRadiance(*photon_ptr, *closest, cam.camera_focalpoint - pos);// * filter;
+                    estimate += lighting_model->EstimatedPhotonRadiance(*photon_ptr, *closest, cam.camera_focalpoint - pos)* filter;
                     //radius = std::max(radius, (photon_ptr->position - pos).Magnitude());
                 }
             }
 
             max1 = std::max(estimate.Max(), max1);
-            estimate = estimate * (8.0 / (M_PI * std::pow(radius, 2.0)));
-            image->SetPixel(i, j, (CalculateColourAtIntersect(*closest) + estimate).Bound());
+            //8 is best so far
+            estimate = estimate * (15.0 / (M_PI * std::pow(radius, 2.0)));
+            //image->SetPixel(i, j, (CalculateColourAtIntersect(*closest) + estimate).Bound());
+            image->SetPixel(i, j, estimate.Bound());
 
             //std::cout << closest_photons.size() << "\n";
             //std::cout << i << ", " << j << " - " << estimate[0] << ", " << estimate[1] << ", " << estimate[2] << " - " << radius << " - " << closest_photons.size() << "\n";
@@ -320,8 +322,8 @@ RGBImage *PhotonMappedScene::GetImage(unsigned resolution_width, unsigned resolu
             {
                 max = estimate.Max();
             }
-            //image->SetPixel(i, j, estimate.Bound());
-            image->SetPixel(i, j, (CalculateColourAtIntersect(*closest) + estimate).Bound());
+            image->SetPixel(i, j, estimate.Bound());
+            //image->SetPixel(i, j, (CalculateColourAtIntersect(*closest) + estimate).Bound());
         }
     }
     std::cout << max1;

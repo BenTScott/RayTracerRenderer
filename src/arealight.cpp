@@ -34,15 +34,15 @@ std::vector<PhotonPathRay> AreaLight::GeneratePhotonRays(unsigned number_of_phot
     for (const SurfacePoint &surface_point : points)
     {
         // TODO: DO I NEED REJECTION SAMPLING
-        lin_alg::Vector<3> direction = Random::RandomUnitVector();
+        // lin_alg::Vector<3> direction = Random::RandomUnitVector();
 
-        if (direction.DotProduct(surface_point.normal) < 0)
-        {
-            direction = direction.Scale(-1);
-        }
-        direction.Normalise();
+        // if (direction.DotProduct(surface_point.normal) < 0)
+        // {
+        //     direction = direction.Scale(-1);
+        // }
+        // direction.Normalise();
 
-        Ray ray(surface_point.GetCorrectedPoint(), direction);
+        Ray ray(surface_point.GetCorrectedPoint(), Random::CosineHemisphereVector(surface_point.normal));
         rays.push_back(PhotonPathRay(ray, intensity));
     }
 

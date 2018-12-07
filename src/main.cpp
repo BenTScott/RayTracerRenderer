@@ -268,7 +268,7 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
     Plane *right_wall = new Plane({-1, 0, 0}, {2, 0 , 0}, {0, 0.6, 0});
     right_wall->material.IntialiseRussianRoulette();
 
-    Plane *left_wall = new Plane({1, 0, 0}, {-2, 0, 0}, {0.6, 0, 0});
+    Plane *left_wall = new Plane({1, 0, 0}, {-2, 0, 0}, {0.8, 0, 0});
     left_wall->material.IntialiseRussianRoulette();
 
     Plane *floor = new Plane({0, 1, 0}, {0, -0.8, 0}, {1, 1, 1});
@@ -305,7 +305,7 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
 
     LightingModel *model = new PhongLightingModel(0.1, 200);
 
-    std::unique_ptr<Scene> scene(new PhotonMappedScene(cam, {0, 0, 0}, 1000000, {0, 0.6, -1.5}, 6));
+    std::unique_ptr<Scene> scene(new PhotonMappedScene(cam, {0, 0, 0}, 250000, {0, 0.6, -1.5}, 6));
     //std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 100, SampledScene::Jitter, max_thread));
 
     //LightingModel *model = new AmbientOcclusionLightingModel(0.1, 200, 0.3, 50, *scene);
@@ -316,7 +316,7 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
     scene->AddObject(mesh);
     scene->AddObject(left_wall);
     scene->AddObject(back_wall);
-    scene->AddObject(camera_wall);
+    //scene->AddObject(camera_wall);
     scene->AddObject(floor);
     scene->AddObject(ceiling);
     scene->AddObject(area_light);
