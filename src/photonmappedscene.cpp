@@ -126,19 +126,18 @@ void PhotonMappedScene::GetPhotonOutcome(std::vector<Photon *> &photons, const P
     }
     else if (outcome == Material::Reflected)
     {
-        double pos_z = intersect->GetCorrectedPosition()[2];
         photons.push_back(new Photon(intersect->GetCorrectedPosition(), photon_ray.ray.direction, photon_ray.intensity, Photon::Indirect));
         // std::uniform_real_distribution<> distribution(-1.0, 1.0);
-        lin_alg::Vector<3> direction = Random::RandomUnitVector();
+        lin_alg::Vector<3> direction = Random::CosineHemisphereVector(intersect->normal);//RandomUnitVector();
         // // do
         // // {
         // //     direction = {distribution(Random::Generator()), distribution(Random::Generator()), distribution(Random::Generator())};
         // // } while(direction.Magnitude() > 1);
 
-        if (direction.DotProduct(intersect->normal) < 0)
-        {
-            direction = direction.Scale(-1);
-        }
+        // if (direction.DotProduct(intersect->normal) < 0)
+        // {
+        //     direction = direction.Scale(-1);
+        // }
         // direction.Normalise();
         //next_ray = PhotonPathRay(Ray(intersect->GetCorrectedPosition(), direction), photon_ray.intensity.PointwiseMultiply(intersect->material.GetDiffuseConstant() * intersect->material.GetReflectionProbablity()));
         //next_ray = lighting_model->GetRandomPhotonRefle5ction(intersect, photon_ray);

@@ -96,7 +96,7 @@ class Material
 
     Material &IntialiseRussianRoulette()
     {
-        reflected = this->k_d.Max() + k_s;
+        reflected = this->k_d.Average() + k_s;
         absorbed = 1 - reflected - k_r - k_t;
         if (k_r != 0 || k_t != 0)
         {

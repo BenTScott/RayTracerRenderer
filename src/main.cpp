@@ -280,7 +280,7 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
     Plane *back_wall = new Plane({0, 0, 1}, {0, 0, -2.5}, {1, 1, 1});
     back_wall->material.IntialiseRussianRoulette();
 
-    Plane *camera_wall = new Plane({0.3, 0, -1}, {0, 0, 5}, {1, 1, 1});
+    Plane *camera_wall = new Plane({0.4, 0, -1}, {0, 0, 5}, {1, 1, 1});
     camera_wall->material.IntialiseRussianRoulette();
 
     Mesh *mesh = new Mesh();
@@ -299,9 +299,9 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
 
     mesh->material.IntialiseRussianRoulette();
 
-    lin_alg::Vector<3> centre = {0.4,1.999,-0.8};
-    Rectangle *light_rec = new Rectangle(centre+lin_alg::Vector<3>({-0.3, 0, 0.3}),centre+lin_alg::Vector<3>({-0.3, 0, -0.3}),centre+lin_alg::Vector<3>({0.3, 0, -0.3}), {1, 0, 0});
-    AreaLight *area_light = new AreaLight(light_rec, {0.7, 0.7, 0.55});
+    lin_alg::Vector<3> centre = {0,1.999,-0.8};
+    Rectangle *light_rec = new Rectangle(centre+lin_alg::Vector<3>({-0.6, 0, 0.6}),centre+lin_alg::Vector<3>({-0.6, 0, -0.6}),centre+lin_alg::Vector<3>({0.6, 0, -0.6}), {1, 0, 0});
+    AreaLight *area_light = new AreaLight(light_rec, {0.9, 0.9, 0.7});
 
     LightingModel *model = new PhongLightingModel(0.1, 200);
 
@@ -341,6 +341,6 @@ int main(int argc, char *argv[])
     //scene3->AddMonitoring();
 
     const char *filename = (".\\out\\render.png");
-    scene5->Render(filename, 1000, 1000);
+    scene5->Render(filename, 100, 100);
     //scene3->Render(filename, 1920, 1080);
 };

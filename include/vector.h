@@ -174,6 +174,16 @@ class Vector
         return max;
     }
 
+    double Average()
+    {
+        double sum = 0;
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            sum += values[i];
+        }
+        return sum/N;
+    }
+
   private:
     void Intialise()
     {

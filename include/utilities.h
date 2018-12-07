@@ -50,6 +50,7 @@ class Random
     };
 
     static lin_alg::Vector<3> RandomUnitVector();
+    static lin_alg::Vector<3> CosineHemisphereVector(lin_alg::Vector<3> normal);
 
     static unsigned Seed()
     {
