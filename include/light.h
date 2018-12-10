@@ -48,6 +48,15 @@ class Light
         return std::vector<PhotonPathRay>();
     };
 
+    virtual std::vector<PhotonPathRay> GeneratePhotonRays(unsigned number_of_photons, SceneObject *obj_ptr) const
+    {
+        (void) number_of_photons;
+        (void) obj_ptr;
+
+        // Does nothing to allow no overriding
+        return std::vector<PhotonPathRay>();
+    };
+
     lin_alg::Vector<3> intensity;
 };
 

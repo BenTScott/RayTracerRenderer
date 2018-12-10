@@ -51,7 +51,11 @@ class Random
 
     static lin_alg::Vector<3> RandomUnitVector();
     static lin_alg::Vector<3> CosineHemisphereVector(lin_alg::Vector<3> normal);
-
+    static lin_alg::Vector<3> PhongSpecularDirection(lin_alg::Vector<3> normal, unsigned spectular_dist);
+    static lin_alg::Vector<3> PhongDiffuseDirection(lin_alg::Vector<3> normal);
+    static double Uniform(double min = 0.0, double max = 1.0);
+    std::vector<double> Uniform(double min, double max, unsigned count);
+    
     static unsigned Seed()
     {
         return factory.seed;

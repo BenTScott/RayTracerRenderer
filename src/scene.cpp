@@ -118,6 +118,20 @@ lin_alg::Vector<3> Scene::GetColour(const Ray &ray, unsigned depth) const
     return closest ? CalculateColourAtIntersect(*closest, depth).Bound() : background;
 };
 
+std::shared_ptr<RayIntersect> Scene::GetRayIntersect(Ray ray)
+{
+    std::shared_ptr<RayIntersect> closest = nullptr;
+    for (const auto &obj : objects)
+    {
+        std::shared_ptr<RayIntersect> intersect = obj->Intersect(ray);
+        if (intersect && (!closest || intersect->t < closest->t))
+        {
+            closest = intersect;
+        };
+    }
+    return closest;
+};
+
 void Scene::AddMonitoring()
 {
     this->monitor = new TaskMonitor();

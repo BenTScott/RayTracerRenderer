@@ -17,7 +17,7 @@ std::vector<Ray> AreaLight::GetLightRays(lin_alg::Vector<3> pos, unsigned sample
     for (const SurfacePoint &surface_point : points)
     {
         lin_alg::Vector<3> diff = surface_point.GetCorrectedPoint() - pos;
-        rays.push_back(Ray(pos, diff.Normalise(), diff.Magnitude()-0.1));
+        rays.push_back(Ray(pos, diff.Normalise(), diff.Magnitude() - 0.1));
     }
 
     return rays;
@@ -29,24 +29,32 @@ std::vector<PhotonPathRay> AreaLight::GeneratePhotonRays(unsigned number_of_phot
     rays.reserve(number_of_photons);
 
     std::vector<SurfacePoint> points = base_object->GetRandomPoints(number_of_photons);
-    std::uniform_real_distribution<> distribution(-1.0, 1.0);
 
     for (const SurfacePoint &surface_point : points)
     {
-        // TODO: DO I NEED REJECTION SAMPLING
-        // lin_alg::Vector<3> direction = Random::RandomUnitVector();
-
-        // if (direction.DotProduct(surface_point.normal) < 0)
-        // {
-        //     direction = direction.Scale(-1);
-        // }
-        // direction.Normalise();
 
         Ray ray(surface_point.GetCorrectedPoint(), Random::CosineHemisphereVector(surface_point.normal));
         rays.push_back(PhotonPathRay(ray, intensity));
     }
 
     return rays;
+};
+
+std::vector<PhotonPathRay> AreaLight::GeneratePhotonRays(unsigned number_of_photons, SceneObject *obj_ptr) const
+{
+    std::vector<PhotonPathRay> photon_rays;
+    photon_rays.reserve(number_of_photons);
+    std::vector<SurfacePoint> light_points = base_object->GetRandomPoints(number_of_photons);
+    std::vector<SurfacePoint> obj_points = obj_ptr->GetRandomPoints(number_of_photons);
+
+    for (unsigned i = 0; i < number_of_photons; ++i)
+    {
+        lin_alg::Vector<3> direction = obj_points[i].point - light_points[i].point;
+        Ray ray(light_points[i].GetCorrectedPoint(), direction);
+        photon_rays.push_back(PhotonPathRay(ray, this->intensity));
+    }
+
+    return photon_rays;
 };
 
 //Scene Object overrides

@@ -100,7 +100,7 @@ class Material
         absorbed = 1 - reflected - k_r - k_t;
         if (k_r != 0 || k_t != 0)
         {
-            transmitted_refracted = k_r;
+            transmitted_refracted = k_t;
         }
 
         // assert(absorbed >= 0 && reflected >= 0 && absorbed + reflected <= 1);

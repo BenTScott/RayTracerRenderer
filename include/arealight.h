@@ -14,6 +14,7 @@ class AreaLight : public Light, public SceneObject
     virtual Ray GetLightRay(lin_alg::Vector<3> pos) const override;
     virtual std::vector<Ray> GetLightRays(lin_alg::Vector<3> pos, unsigned sample_rate) const override;
     virtual std::vector<PhotonPathRay> GeneratePhotonRays(unsigned number_of_photons) const override;
+    virtual std::vector<PhotonPathRay> GeneratePhotonRays(unsigned number_of_photons, SceneObject* obj_ptr) const override;
 
     // Scene Object overrides
     virtual std::vector<SurfacePoint> GetRandomPoints(unsigned samples) const override;

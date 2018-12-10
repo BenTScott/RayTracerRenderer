@@ -1,3 +1,6 @@
+#define _USE_MATH_DEFINES
+
+#include <cmath>
 #include "phonglightingmodel.h"
 #include "sceneobject.h"
 #include <iostream>
@@ -15,7 +18,7 @@ lin_alg::Vector<3> PhongLightingModel::GetSpecularLighting(const Light &light, c
     //Bling-Phong Specular Term
     lin_alg::Vector<3> h = (intersect.ray.direction.Scale(-1) + lightray.direction).Normalise();
 
-    lin_alg::Vector<3> scale = light.intensity.Scale(intersect.material.GetSpecularConstant() * std::pow(h.DotProduct(intersect.normal), specular_dist)).Bound();
+    lin_alg::Vector<3> scale = light.intensity.Scale(intersect.material.GetSpecularConstant() * (specular_dist + 2.0) * 0.5 * M_1_PI * std::pow(h.DotProduct(intersect.normal), specular_dist)).Bound();
 
     return lin_alg::Vector<3>({1, 1, 1}).PointwiseMultiply(scale);
 };
@@ -23,24 +26,37 @@ lin_alg::Vector<3> PhongLightingModel::GetSpecularLighting(const Light &light, c
 lin_alg::Vector<3> PhongLightingModel::GetDiffuseLighting(const Light &light, const RayIntersect &intersect)
 {
     Ray lightray = light.GetLightRay(intersect.GetCorrectedPosition());
-    lin_alg::Vector<3> scale = light.intensity.Scale(lightray.direction.DotProduct(intersect.normal)).Bound();
+    lin_alg::Vector<3> scale = light.intensity.Scale(lightray.direction.DotProduct(intersect.normal) * M_1_PI).Bound();
 
     return intersect.material.GetDiffuseConstant().PointwiseMultiply(scale);
 };
 
 PhotonPathRay PhongLightingModel::GetRandomPhotonReflection(std::shared_ptr<RayIntersect> intersect, PhotonPathRay incident)
 {
-    // Can I pull this out to a BRDF fucntion for ease.
-    // Generate random reflection ray
-    lin_alg::Vector<3> reflected = Random::RandomUnitVector();
+    lin_alg::Vector<3> reflected; // = Random::CosineHemisphereVector(intersect->normal);
 
-    if (reflected.DotProduct(intersect->normal) < 0)
+    double ran = Random::Uniform(0.0, intersect->material.GetReflectionProbablity());
+
+    lin_alg::Vector<3> reflected_intensity;
+
+    if (ran < intersect->material.GetSpecularConstant())
     {
-        reflected = reflected * -1;
+        reflected = Random::PhongSpecularDirection(intersect->normal, 10);
+        reflected_intensity = incident.intensity.Scale(intersect->material.GetSpecularConstant())
+                                  .Scale(1.0 / intersect->material.GetReflectionProbablity());
+    }
+    else
+    {
+        reflected = Random::PhongDiffuseDirection(intersect->normal);
+        reflected_intensity = incident.intensity
+                                  .PointwiseMultiply(intersect->material.GetDiffuseConstant())
+                                  .Scale(1.0 / intersect->material.GetReflectionProbablity());
     }
 
-    //TODO: Verfiy photon won't get more energy
-    lin_alg::Vector<3> reflected_intensity = incident.intensity.PointwiseMultiply(BRDF(incident.ray.direction, reflected, *intersect));
+    // //TODO: Verfiy photon won't get more energy
+    // lin_alg::Vector<3> reflected_intensity = incident.intensity
+    //                                              .PointwiseMultiply(BRDF(incident.ray.direction, reflected, *intersect))
+    //                                              .Scale(1.0 / intersect->material.GetReflectionProbablity());
 
     return PhotonPathRay(Ray(intersect->GetCorrectedPosition(), reflected), reflected_intensity);
 };
@@ -78,12 +94,11 @@ lin_alg::Vector<3> PhongLightingModel::BRDF(lin_alg::Vector<3> incident, lin_alg
 {
     lin_alg::Vector<3> specular_direction = incident - intersect.normal.Scale(2.0 * incident.DotProduct(intersect.normal));
 
-    lin_alg::Vector<3> diffuse = intersect.material.GetDiffuseConstant() * intersect.normal.DotProduct(reflected);
+    lin_alg::Vector<3> diffuse = intersect.material.GetDiffuseConstant() * intersect.normal.DotProduct(reflected) * M_1_PI;
 
     // Specular highlights are treated as white
-    // TODO: Verify this is correct behaviour
     lin_alg::Vector<3> specular({1, 1, 1});
-    specular = specular.Scale(intersect.material.GetSpecularConstant() * std::pow(specular_direction.DotProduct(reflected), specular_dist));
+    specular = specular.Scale(intersect.material.GetSpecularConstant() * (specular_dist + 2.0) * 0.5 * M_1_PI * std::pow(specular_direction.DotProduct(reflected), specular_dist));
 
     return specular + diffuse;
 };

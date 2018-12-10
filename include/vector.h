@@ -174,7 +174,7 @@ class Vector
         return max;
     }
 
-    double Average()
+    double Average() const
     {
         double sum = 0;
         for (std::size_t i = 0; i < N; ++i)

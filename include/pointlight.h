@@ -36,12 +36,24 @@ class PointLight : public Light
     {
         std::vector<PhotonPathRay> photon_rays;
         photon_rays.reserve(number_of_photons);
-        lin_alg::Vector<3> photon_intensity = this->intensity.Scale(1.0/number_of_photons);
-        std::uniform_real_distribution<> distribution(-1.0, 1.0);
         for (unsigned i = 0; i < number_of_photons; ++i)
         {
             Ray ray(point, Random::RandomUnitVector());
-            photon_rays.push_back(PhotonPathRay(ray, photon_intensity));
+            photon_rays.push_back(PhotonPathRay(ray, this->intensity));
+        }
+
+        return photon_rays;
+    };
+
+    virtual std::vector<PhotonPathRay> GeneratePhotonRays(unsigned number_of_photons, SceneObject* obj_ptr) const override
+    {
+        std::vector<PhotonPathRay> photon_rays;
+        photon_rays.reserve(number_of_photons);
+        std::vector<SurfacePoint> points = obj_ptr->GetRandomPoints(number_of_photons);
+        for (const SurfacePoint &obj_point : points)
+        {
+            Ray ray(point, obj_point.point - point);
+            photon_rays.push_back(PhotonPathRay(ray, this->intensity));
         }
 
         return photon_rays;
