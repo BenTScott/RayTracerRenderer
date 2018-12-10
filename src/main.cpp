@@ -287,11 +287,13 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
 
     mesh->LoadObjectModel(".\\data\\cube.obj");
     mesh->AddRotation(lin_alg::y, 35);
-    mesh->AddTranslation(1, -0.3, -1.5);
+    mesh->AddRotation(lin_alg::x, 45);
+    mesh->AddTranslation(1, 0.5, -1.5);
     mesh->ExecuteTransformation();
     mesh->RecalculateNormals();
-    mesh->SetColour({1, 1, 1});
-    mesh->material.IntialiseRussianRoulette();
+    mesh->SetColour({0, 0, 0});
+    mesh->material.SetSpecularConstant(0.05).AddTransparency(0.95, 1.5).IntialiseRussianRoulette();
+    //mesh->material.IntialiseRussianRoulette();
 
     lin_alg::Vector<3> centre = {0, 1.999, -0.8};
     Rectangle *light_rec = new Rectangle(centre + lin_alg::Vector<3>({-0.4, 0, 0.4}), centre + lin_alg::Vector<3>({-0.4, 0, -0.4}), centre + lin_alg::Vector<3>({0.4, 0, -0.4}), {1, 0, 0});
@@ -303,7 +305,7 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
 
     LightingModel *model = new PhongLightingModel(0.1, 200);
 
-    std::unique_ptr<Scene> scene(new PhotonMappedScene(cam, {0, 0, 0}, 100000, {0, 0.6, -1.5}, 6));
+    std::unique_ptr<Scene> scene(new PhotonMappedScene(cam, {0, 0, 0}, 100000, max_thread, 20));
     //std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 100, SampledScene::Jitter, max_thread));
 
     //LightingModel *model = new AmbientOcclusionLightingModel(0.1, 200, 0.3, 50, *scene);
@@ -317,7 +319,7 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
     scene->AddObject(camera_wall);
     scene->AddObject(floor);
     scene->AddObject(ceiling);
-    scene->AddObject(sphere);
+    //scene->AddObject(sphere);
     scene->AddObject(area_light);
 
     return scene;
@@ -337,9 +339,9 @@ int main(int argc, char *argv[])
     //auto scene4 = Bunny(max_thread);
     auto scene5 = CornellBox(max_thread);
 
-    //scene3->AddMonitoring();
+    scene5->AddMonitoring();
 
     const char *filename = (".\\out\\render2.png");
-    scene5->Render(filename, 100, 100);
+    scene5->Render(filename, 500, 500);
     //scene3->Render(filename, 1920, 1080);
 };

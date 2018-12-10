@@ -54,8 +54,7 @@ lin_alg::Vector<3> Scene::CalculateColourAtIntersect(const RayIntersect &interse
             }
         }
         
-        //TODO: Put global lighting back!!
-        //colour += lighting_model->GetGlobalLighting(intersect);
+        colour += lighting_model->GetGlobalLighting(intersect);
     }
 
     if (intersect.material.GetReflectionConstant() > 0 && depth < max_reflection_depth)
@@ -105,20 +104,12 @@ RGBImage *Scene::GetImage(unsigned resolution_width, unsigned resolution_height)
 
 lin_alg::Vector<3> Scene::GetColour(const Ray &ray, unsigned depth) const
 {
-    std::shared_ptr<RayIntersect> closest = nullptr;
-    for (const auto &obj : objects)
-    {
-        std::shared_ptr<RayIntersect> intersect = obj->Intersect(ray);
-        if (intersect && (!closest || intersect->t < closest->t))
-        {
-            closest = intersect;
-        };
-    }
+    std::shared_ptr<RayIntersect> closest = GetRayIntersect(ray);
 
     return closest ? CalculateColourAtIntersect(*closest, depth).Bound() : background;
 };
 
-std::shared_ptr<RayIntersect> Scene::GetRayIntersect(Ray ray)
+std::shared_ptr<RayIntersect> Scene::GetRayIntersect(Ray ray) const
 {
     std::shared_ptr<RayIntersect> closest = nullptr;
     for (const auto &obj : objects)
@@ -129,6 +120,12 @@ std::shared_ptr<RayIntersect> Scene::GetRayIntersect(Ray ray)
             closest = intersect;
         };
     }
+
+    if (closest->normal.DotProduct(ray.direction) > 0)
+    {
+        closest->normal = closest->normal * -1;
+    }
+
     return closest;
 };
 

@@ -70,6 +70,12 @@ Ray PhongLightingModel::GetReflectionRay(const RayIntersect &intersect)
 Ray PhongLightingModel::GetRefractionRay(const RayIntersect &intersect)
 {
     double ratio = intersect.ray.medium_refractive_index / intersect.material.GetRefractiveIndex();
+    if (intersect.ray.medium_refractive_index == intersect.material.GetRefractiveIndex())
+    {
+        ratio = intersect.material.GetRefractiveIndex();
+    }
+
+    //double ratio = intersect.ray.medium_refractive_index / intersect.material.GetRefractiveIndex();
     double cos_theta_1 = intersect.ray.direction.DotProduct(intersect.normal);
     double cos_theta_2_sqr = 1 - std::pow(ratio, 2) * (1 - (std::pow(cos_theta_1, 2)));
 

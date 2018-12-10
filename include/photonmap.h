@@ -11,6 +11,15 @@ class PhotonMap
     PhotonMap(std::vector<Photon *> &photons) : photons(photons), root(photons)
     {
     };
+
+    PhotonMap(const PhotonMap& obj)
+    {
+      for(Photon* photon_ptr : obj.photons)
+      {
+        this->photons.push_back(new Photon(*photon_ptr));
+      }
+      this->root = Node(photons);
+    }
     
     ~PhotonMap()
     {
@@ -30,6 +39,7 @@ class PhotonMap
     {
       public:
         Node(std::vector<Photon *> &photons);
+        Node() : median(nullptr) {};
 
         void LocatePhotons(std::vector<Photon *> &nearest, lin_alg::Vector<3> &x, unsigned max, double &r);
 

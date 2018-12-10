@@ -5,6 +5,7 @@
 #include "vector.h"
 #include "ray.h"
 #include "photonpathray.h"
+#include "sceneobject.h"
 
 class Light
 {

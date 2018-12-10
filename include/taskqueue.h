@@ -1,6 +1,7 @@
 #ifndef INCLUDE_TASKQUEUE_H_
 #define INCLUDE_TASKQUEUE_H_
 
+#include <queue>
 #include "taskmonitor.h"
 
 // A thread safe job queue for feeding parallel threads.

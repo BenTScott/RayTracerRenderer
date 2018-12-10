@@ -35,8 +35,14 @@ std::vector<Ray> Camera::GetRandomRaySamples(unsigned pixel_x, unsigned pixel_y,
 std::vector<Ray> Camera::GetJitterRaySamples(unsigned pixel_x, unsigned pixel_y, unsigned sampling_rate)
 {
     unsigned grid_size = sqrt((double)sampling_rate);
-    double grid_width_height = (1.0/(double) grid_size);
+    double grid_width_height = (1.0 / (double)grid_size);
     std::vector<Ray> rays;
+
+    if (sampling_rate == 1)
+    {
+        rays.push_back(GetRay(pixel_x, pixel_y));
+        return rays;
+    }
 
     std::uniform_real_distribution<double> dis;
 
@@ -44,8 +50,8 @@ std::vector<Ray> Camera::GetJitterRaySamples(unsigned pixel_x, unsigned pixel_y,
     {
         for (unsigned j = 0; j < grid_size; ++j)
         {
-            double distance_x = grid_width_height * (double) i + dis(Random::Generator());
-            double distance_y = grid_width_height * (double) j + dis(Random::Generator());
+            double distance_x = grid_width_height * (double)i + dis(Random::Generator());
+            double distance_y = grid_width_height * (double)j + dis(Random::Generator());
             rays.push_back(GetRay(pixel_x, pixel_y, distance_x, distance_y));
         }
     }
