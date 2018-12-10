@@ -212,7 +212,7 @@ void PhotonMappedScene::GetPhotonOutcome(std::vector<Photon *> &photons, const P
 RGBImage *PhotonMappedScene::GetImage(unsigned resolution_width, unsigned resolution_height)
 {
     PhotonMap *global_map = GetGlobalPhotonMap(global_photons);
-    PhotonMap *caustic_map = GetCausticPhotonMap(20000);
+    PhotonMap *caustic_map = GetCausticPhotonMap(100000);
 
     auto image = new RGBImage(resolution_width, resolution_height);
     auto global = new RGBImage(resolution_width, resolution_height);
@@ -292,7 +292,7 @@ RGBImage *PhotonMappedScene::GetImage(unsigned resolution_width, unsigned resolu
             }
             
             indirect_estimate = indirect_estimate * (50.0 / (M_PI * std::pow(radius, 2.0)));
-            caustic_estimate = caustic_estimate * (5.0 / (M_PI * std::pow(radius, 2.0)));
+            caustic_estimate = caustic_estimate * (5.0 / (M_PI * std::pow(caustic_radius, 2.0)));
 
             image->SetPixel(i, j, (CalculateColourAtIntersect(*closest) + indirect_estimate + caustic_estimate).Bound());
             global->SetPixel(i, j, indirect_estimate.Bound());
