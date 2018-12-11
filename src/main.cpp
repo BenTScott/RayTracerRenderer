@@ -348,6 +348,6 @@ int main(int argc, char *argv[])
     scene5->AddMonitoring();
 
     const char *filename = (".\\out\\render.png");
-    scene5->Render(filename, 50, 50);
+    scene5->Render(filename, 500, 500);
     //scene3->Render(filename, 1920, 1080);
 };
