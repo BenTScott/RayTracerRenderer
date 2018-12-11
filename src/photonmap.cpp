@@ -1,7 +1,15 @@
+#include <math.h>
 #include "photonmap.h"
+
+#define M_PI 3.14159265358979323846
 
 PhotonMap::Node::Node(std::vector<Photon *> &photons)
 {
+    if (photons.size() == 0)
+    {
+        return;
+    }
+    
     if (photons.size() > 1)
     {
         lin_alg::Vector<3> min({INFINITY, INFINITY, INFINITY});
@@ -142,4 +150,41 @@ void PhotonMap::ScalePhotons(double scalar)
     {
         photon_ptr->intensity = photon_ptr->intensity.Scale(scalar);
     }
+}
+
+lin_alg::Vector<3> PhotonMap::GetIrradianceEsitimate(const RayIntersect& intersect, lin_alg::Vector<3> view_dir, unsigned N, bool cone_filter, LightingModel* lighting_model)
+{
+    lin_alg::Vector<3> estimate;
+
+    if (photons.size() == 0)
+    {
+        return estimate;
+    }
+
+    double radius;
+    lin_alg::Vector<3> pos =intersect.GetCorrectedPosition();
+    std::vector<Photon *> closest_photons = LocatePhotons(pos, N, radius);
+
+    for (Photon *photon_ptr : closest_photons)
+    {
+        if (photon_ptr->direction.DotProduct(intersect.normal) < 0.0)
+        {
+            lin_alg::Vector<3> photon_radiance = lighting_model->EstimatedPhotonRadiance(*photon_ptr, intersect, view_dir);
+            if (cone_filter)
+            {
+                double filter = std::max(0.0, 1 - (photon_ptr->position - pos).Magnitude() / radius);
+                photon_radiance = photon_radiance * filter;
+            }
+            estimate += photon_radiance;
+        }
+    }
+
+    estimate = estimate * (1.0 / (M_PI * std::pow(radius, 2.0)));
+
+    if (cone_filter)
+    {
+        estimate = estimate * 3.0;
+    }
+
+    return estimate;
 }

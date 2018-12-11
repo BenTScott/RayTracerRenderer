@@ -28,20 +28,22 @@ lin_alg::Vector<3> PhotonMappedScene::CalculateColourAtIntersect(const RayInters
     }
 
     // TODO: Implement final gathering - this will only work on diffuse surfaces.
-    lin_alg::Vector<3> indirect_estimate;
-    double radius;
-    std::vector<Photon *> closest_photons = photon_map->LocatePhotons(pos, 4000, radius);
+    colour += photon_map->GetIrradianceEsitimate(intersect, cam.camera_focalpoint - pos, 3000, true, lighting_model) * 40.0;
 
-    for (Photon *photon_ptr : closest_photons)
-    {
-        if (photon_ptr->direction.DotProduct(intersect.normal) < 0.0)
-        {
-            double filter = std::max(0.0, 1 - (photon_ptr->position - pos).Magnitude() / radius);
-            indirect_estimate += lighting_model->EstimatedPhotonRadiance(*photon_ptr, intersect, cam.camera_focalpoint - pos) * filter;
-        }
-    }
+    // lin_alg::Vector<3> indirect_estimate;
+    // double radius;
+    // std::vector<Photon *> closest_photons = photon_map->LocatePhotons(pos, 4000, radius);
 
-    colour += indirect_estimate * (50.0 / (M_PI * std::pow(radius, 2.0)));
+    // for (Photon *photon_ptr : closest_photons)
+    // {
+    //     if (photon_ptr->direction.DotProduct(intersect.normal) < 0.0)
+    //     {
+    //         double filter = std::max(0.0, 1 - (photon_ptr->position - pos).Magnitude() / radius);
+    //         indirect_estimate += lighting_model->EstimatedPhotonRadiance(*photon_ptr, intersect, cam.camera_focalpoint - pos) * filter;
+    //     }
+    // }
+
+    // colour += indirect_estimate * (70.0 / (M_PI * std::pow(radius, 2.0)));
 
     if (intersect.material.GetReflectionConstant() > 0 && depth < max_reflection_depth)
     {
@@ -63,7 +65,7 @@ lin_alg::Vector<3> PhotonMappedScene::CalculateColourAtIntersect(const RayInters
         //colour += GetColour(lighting_model->GetRefractionRay(intersect), depth + 1).Scale(intersect.material.GetRefractionConstant());
     }
 
-    return colour;
+    return colour.Bound();
 };
 
 #pragma region Photon Mapping Methods
@@ -143,7 +145,7 @@ std::vector<Photon *> PhotonMappedScene::TraceLightRays(std::vector<PhotonPathRa
 {
     std::vector<Photon *> photons;
 
-    //TODO: Parallise
+    // TODO: Parallise (probs not necessary??)
     for (const PhotonPathRay &photon_ray : photon_rays)
     {
         std::vector<std::shared_ptr<RayIntersect>> all_intersects;
@@ -172,18 +174,6 @@ std::vector<Photon *> PhotonMappedScene::TraceLightRays(std::vector<PhotonPathRa
             }
 
             GetPhotonOutcome(photons, photon_ray, all_intersects[0], true);
-
-            // if (photon)
-            // {
-            //     // if ((photon->position - sphere_bound_centre).Magnitude() < sphere_bound_radius)
-            //     // {
-            //     photons.push_back(photon);
-            //     // }
-            //     // else
-            //     // {
-            //     //     delete photon;
-            //     // }
-            // }
         }
     }
 
@@ -283,14 +273,6 @@ RGBImage *PhotonMappedScene::GetImage(unsigned resolution_width, unsigned resolu
 {
     PhotonMap *global_map = GetGlobalPhotonMap(global_photons);
     PhotonMap *caustic_map = GetCausticPhotonMap(100000);
-
-    //auto image = new RGBImage(resolution_width, resolution_height);
-    //auto global = new RGBImage(resolution_width, resolution_height);
-    //auto caustic = new RGBImage(resolution_width, resolution_height);
-
-    // monitor->Initialise(resolution_height * resolution_width);
-    //std::vector<Photon *> photons_rendered;
-    //TODO: Parallise and make photon map thread safe
 
     ThreadSafeImage *image = new ThreadSafeImage(resolution_width, resolution_height);
 
@@ -429,29 +411,11 @@ void PhotonMappedScene::PixelThreadTask(TaskQueue<PixelTask> &queue, ThreadSafeI
         for (Ray &ray : rays)
         {
             std::shared_ptr<RayIntersect> closest = GetRayIntersect(ray);
-            auto pos = closest->GetCorrectedPosition();
-
-            double caustic_radius;
-
-            // TODO: Move to photon map getting the irradiance estimate.
-            std::vector<Photon *> caustic_photons = caustic_map.LocatePhotons(pos, 3000, caustic_radius);
-
-            lin_alg::Vector<3> caustic_estimate;
-
-            for (Photon *photon_ptr : caustic_photons)
-            {
-                if (photon_ptr->direction.DotProduct(closest->normal) < 0.0)
-                {
-                    double filter = std::max(0.0, 1 - (photon_ptr->position - pos).Magnitude() / caustic_radius);
-                    caustic_estimate += lighting_model->EstimatedPhotonRadiance(*photon_ptr, *closest, cam.camera_focalpoint - pos) * filter;
-                }
-            }
-
-            colour += caustic_estimate * (5.0 / (M_PI * std::pow(caustic_radius, 2.0)));
+            colour += caustic_map.GetIrradianceEsitimate(*closest, cam.camera_focalpoint - closest->GetCorrectedPosition(), 3000, true, lighting_model) * 3.0;
             colour += CalculateColourAtIntersect(*closest, &global_map);
         }
 
-        image->SetPixel(task.x, task.y, colour.Scale(1.0 / rays.size()));
+        image->SetPixel(task.x, task.y, colour.Scale(1.0 / rays.size()).Bound());
     }
 }
 

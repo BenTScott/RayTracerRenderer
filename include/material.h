@@ -157,7 +157,7 @@ class Material
 
     double GetTransmittedProbablity()
     {
-        return 1 - absorbed - reflected;
+        return 1.0 - absorbed - reflected;
     }
 
 #pragma endregion

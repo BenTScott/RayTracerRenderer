@@ -23,6 +23,8 @@ MeshOctree::MeshOctree(Mesh *contained_mesh, unsigned max_faces_per_octant) : co
     node = Node(min, max - min);
     node.faces = contained_mesh->faces;
     node.Fragment(max_faces_per_octant);
+
+    this->material = contained_mesh->material;
 };
 
 std::shared_ptr<RayIntersect> MeshOctree::Intersect(Ray ray)

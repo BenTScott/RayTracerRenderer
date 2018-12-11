@@ -2,28 +2,11 @@
 #define _INCLUDE_UTILITIES_H_
 
 #define _USE_MATH_DEFINES
- 
+
 #include <cmath>
 #include <random>
 #include <ctime>
 #include "vector.h"
-
-// Credited to https://stackoverflow.com/a/6943003
-template <typename I>
-I RandomElement(I begin, I end)
-{
-    const unsigned long n = std::distance(begin, end);
-    const unsigned long divisor = (RAND_MAX + 1) / n;
-
-    unsigned long k;
-    do
-    {
-        k = std::rand() / divisor;
-    } while (k >= n);
-
-    std::advance(begin, k);
-    return begin;
-};
 
 class MerseneTwisterFactory
 {
@@ -54,8 +37,16 @@ class Random
     static lin_alg::Vector<3> PhongSpecularDirection(lin_alg::Vector<3> normal, unsigned spectular_dist);
     static lin_alg::Vector<3> PhongDiffuseDirection(lin_alg::Vector<3> normal);
     static double Uniform(double min = 0.0, double max = 1.0);
+
+    template <class T = int>
+    static T Uniform(T min, T max)
+    {
+        std::uniform_int_distribution<T> distribution(min, max);
+        return distribution(factory.generator);
+    };
+
     std::vector<double> Uniform(double min, double max, unsigned count);
-    
+
     static unsigned Seed()
     {
         return factory.seed;
@@ -64,5 +55,16 @@ class Random
   private:
     static MerseneTwisterFactory factory;
 };
+
+// Adapted from https://stackoverflow.com/a/6943003
+template <typename I>
+I RandomElement(I begin, I end)
+{
+    const unsigned long n = std::distance(begin, end);
+    unsigned long k = Random::Uniform<unsigned long>(0, n-1);
+    std::advance(begin, k);
+    return begin;
+};
+
 
 #endif

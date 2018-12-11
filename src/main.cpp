@@ -260,24 +260,24 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
 {
     lin_alg::Vector<3> cam_up({0, 1, 0});
     lin_alg::Vector<3> cam_forward({0, 0, -1});
-    lin_alg::Vector<3> cam_focal({0, 0.7, 1});
+    lin_alg::Vector<3> cam_focal({0, 1, 4});
 
-    Camera cam(cam_up, cam_forward, cam_focal, 0.8);
+    Camera cam(cam_up, cam_forward, cam_focal, 1.8);
     cam.InitialiseScreenSize(2, 2);
 
-    Plane *right_wall = new Plane({-1, 0, 0}, {2, 0, 0}, {0, 0.6, 0});
+    Plane *right_wall = new Plane({-2, 0, 0}, {2, 0, 0}, {0, 0.6, 0});
     right_wall->material.IntialiseRussianRoulette();
 
-    Plane *left_wall = new Plane({1, 0, 0}, {-2, 0, 0}, {0.8, 0, 0});
+    Plane *left_wall = new Plane({2, 0, 0}, {-2, 0, 0}, {0.8, 0, 0});
     left_wall->material.IntialiseRussianRoulette();
 
     Plane *floor = new Plane({0, 1, 0}, {0, -0.8, 0}, {1, 1, 1});
     floor->material.IntialiseRussianRoulette();
 
-    Plane *ceiling = new Plane({0, -1, 0}, {0, 2, 0}, {1, 1, 1});
+    Plane *ceiling = new Plane({0, -1, 0}, {0, 3, 0}, {1, 1, 1});
     ceiling->material.IntialiseRussianRoulette();
 
-    Plane *back_wall = new Plane({0, 0, 1}, {0, 0, -2.5}, {1, 1, 1});
+    Plane *back_wall = new Plane({0, 0, 1}, {0, 0, -3}, {1, 1, 1});
     back_wall->material.IntialiseRussianRoulette();
 
     Plane *camera_wall = new Plane({0, 0, -1}, {0, 0, 5}, {0, 0, 0.7});
@@ -285,44 +285,46 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
 
     Mesh *mesh = new Mesh();
 
-    mesh->LoadObjectModel(".\\data\\cube.obj");
-    mesh->AddRotation(lin_alg::y, 35);
-    mesh->AddRotation(lin_alg::x, 45);
-    mesh->AddTranslation(1, 0.5, -1.5);
-    mesh->ExecuteTransformation();
-    mesh->RecalculateNormals();
-    mesh->SetColour({0, 0, 0});
-    mesh->material.SetSpecularConstant(0.05).AddTransparency(0.95, 1.5).IntialiseRussianRoulette();
+    // mesh->LoadObjectModel(".\\data\\cube.obj");
+    // mesh->AddRotation(lin_alg::y, 35);
+    // mesh->AddRotation(lin_alg::x, 45);
+    // mesh->AddTranslation(0.5, 0.5, -2);
+    // mesh->ExecuteTransformation();
+    // mesh->RecalculateNormals();
+    // mesh->SetColour({0, 0, 0});
+    // mesh->material.SetSpecularConstant(0.05).AddTransparency(0.95, 1.5).IntialiseRussianRoulette();
     //mesh->material.IntialiseRussianRoulette();
 
-    lin_alg::Vector<3> centre = {0, 1.999, -0.8};
-    Rectangle *light_rec = new Rectangle(centre + lin_alg::Vector<3>({-0.4, 0, 0.4}), centre + lin_alg::Vector<3>({-0.4, 0, -0.4}), centre + lin_alg::Vector<3>({0.4, 0, -0.4}), {1, 0, 0});
-    AreaLight *area_light = new AreaLight(light_rec, {1, 1, 0.8});
+    lin_alg::Vector<3> centre = {0, 2.999, -1.5};
+    Rectangle *light_rec = new Rectangle(centre + lin_alg::Vector<3>({-0.5, 0, 0.5}), centre + lin_alg::Vector<3>({-0.5, 0, -0.5}), centre + lin_alg::Vector<3>({0.5, 0, -0.5}), {1, 0, 0});
+    AreaLight *area_light = new AreaLight(light_rec, {1, 1, 1});
 
     Sphere *sphere = new Sphere({-0.4, -0.15, -1, 1}, 0.6, {0, 0, 0});
     //sphere->material.SetSpecularConstant(0.05).IntialiseRussianRoulette();
-    sphere->material.SetSpecularConstant(0.05).AddTransparency(0.95, 1.5).IntialiseRussianRoulette();
+    sphere->material.SetSpecularConstant(0.03).AddTransparency(0.90, 2).AddReflection(0.07).IntialiseRussianRoulette();
+
+    mesh->LoadObjectModel(".\\data\\bunny_with_normals.obj");
+    mesh->AddTranslation(0, -0.46, -1.5);
+    mesh->ExecuteTransformation();
+    mesh->material.SetSpecularConstant(0.03).AddTransparency(0.90, 1/5).AddReflection(0.07).IntialiseRussianRoulette();
+    MeshOctree *meshbound = new MeshOctree(mesh, 50);
 
     LightingModel *model = new PhongLightingModel(0.1, 200);
+    PhotonMappedScene* pm_scene = new PhotonMappedScene(cam, {0, 0, 0}, 100000, max_thread, 1);
 
-    std::unique_ptr<Scene> scene(new PhotonMappedScene(cam, {0, 0, 0}, 100000, max_thread, 20));
-    //std::unique_ptr<Scene> scene(new MultithreadedScene(cam, {0, 0, 0}, 100, SampledScene::Jitter, max_thread));
-
-    //LightingModel *model = new AmbientOcclusionLightingModel(0.1, 200, 0.3, 50, *scene);
-
-    scene->SetLightingModel(model);
-    scene->AddLightSource(area_light);
-    scene->AddObject(right_wall);
-    scene->AddObject(mesh);
-    scene->AddObject(left_wall);
-    scene->AddObject(back_wall);
-    scene->AddObject(camera_wall);
-    scene->AddObject(floor);
-    scene->AddObject(ceiling);
+    pm_scene->SetLightingModel(model);
+    pm_scene->AddLightSource(area_light);
+    pm_scene->AddObject(right_wall);
+    //pm_scene->AddObject(meshbound);
+    pm_scene->AddObject(left_wall);
+    pm_scene->AddObject(back_wall);
+    pm_scene->AddObject(camera_wall);
+    pm_scene->AddObject(floor);
+    pm_scene->AddObject(ceiling);
     //scene->AddObject(sphere);
-    scene->AddObject(area_light);
+    pm_scene->AddObject(area_light);
 
-    return scene;
+    return std::unique_ptr<Scene>(pm_scene);;
 }
 
 int main(int argc, char *argv[])
@@ -341,7 +343,7 @@ int main(int argc, char *argv[])
 
     scene5->AddMonitoring();
 
-    const char *filename = (".\\out\\render2.png");
-    scene5->Render(filename, 500, 500);
+    const char *filename = (".\\out\\render.png");
+    scene5->Render(filename, 50, 50);
     //scene3->Render(filename, 1920, 1080);
 };

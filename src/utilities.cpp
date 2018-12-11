@@ -72,6 +72,6 @@ std::vector<double> Random::Uniform(double min, double max, unsigned count)
     std::vector<double> v(count);
     std::generate(v.begin(), v.end(), [&]() { return distribution(factory.generator); });
     return v;
-}
+};
 
 MerseneTwisterFactory Random::factory = MerseneTwisterFactory();
