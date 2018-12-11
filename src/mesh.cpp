@@ -219,6 +219,16 @@ void Mesh::AddTranslation(double x, double y, double z)
     Matrix<4> product = *trans_matrix * transformation_queue;
 
     transformation_queue = product;
+};
+
+void Mesh::AddScale(double scale)
+{
+    Matrix<4> trans_matrix(scale);
+    trans_matrix(3, 3) = 1;
+
+    Matrix<4> product = trans_matrix * transformation_queue;
+
+    transformation_queue = product;
 }
 
 std::shared_ptr<RayIntersect> Mesh::Intersect(Ray ray)

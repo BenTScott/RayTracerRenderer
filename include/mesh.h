@@ -23,6 +23,7 @@ public:
   void Rotate(lin_alg::Axis3D a, double angle);
   void AddRotation(lin_alg::Axis3D a, double angle);
   void AddTranslation(double x, double y, double z);
+  void AddScale(double scale);
 
   void SetColour(lin_alg::Vector<3> colour);
 

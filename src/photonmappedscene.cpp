@@ -202,11 +202,11 @@ void PhotonMappedScene::GetCausticPhotonOutcome(std::vector<Photon *> &photons, 
         if (outcome == Material::Refracted)
         {
             //TODO: Move initialisation to lighting model
-            next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity.Scale(intersect->material.GetRefractionConstant() / intersect->material.GetTransmittedProbablity()));
+            next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity.Scale(1.0/(intersect->material.GetRefractionConstant())));
         }
         else
         {
-            next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity.Scale(intersect->material.GetReflectionConstant() / intersect->material.GetTransmittedProbablity()));
+            next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity.Scale(1.0/(intersect->material.GetReflectionConstant())));
         }
     }
 
@@ -251,11 +251,11 @@ void PhotonMappedScene::GetPhotonOutcome(std::vector<Photon *> &photons, const P
         if (outcome == Material::Refracted)
         {
             //TODO: Move initialisation to lighting model
-            next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity.Scale(intersect->material.GetRefractionConstant() / intersect->material.GetTransmittedProbablity()));
+            next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity.Scale(1.0/ intersect->material.GetRefractionConstant()));
         }
         else
         {
-            next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity.Scale(intersect->material.GetReflectionConstant() / intersect->material.GetTransmittedProbablity()));
+            next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity.Scale(1.0 / intersect->material.GetReflectionConstant()));
         }
     }
 
@@ -272,7 +272,7 @@ void PhotonMappedScene::GetPhotonOutcome(std::vector<Photon *> &photons, const P
 RGBImage *PhotonMappedScene::GetImage(unsigned resolution_width, unsigned resolution_height)
 {
     PhotonMap *global_map = GetGlobalPhotonMap(global_photons);
-    PhotonMap *caustic_map = GetCausticPhotonMap(100000);
+    PhotonMap *caustic_map = GetCausticPhotonMap(500000);
 
     ThreadSafeImage *image = new ThreadSafeImage(resolution_width, resolution_height);
 
@@ -411,7 +411,7 @@ void PhotonMappedScene::PixelThreadTask(TaskQueue<PixelTask> &queue, ThreadSafeI
         for (Ray &ray : rays)
         {
             std::shared_ptr<RayIntersect> closest = GetRayIntersect(ray);
-            colour += caustic_map.GetIrradianceEsitimate(*closest, cam.camera_focalpoint - closest->GetCorrectedPosition(), 3000, true, lighting_model) * 3.0;
+            colour += caustic_map.GetIrradianceEsitimate(*closest, cam.camera_focalpoint - closest->GetCorrectedPosition(), 200, true, lighting_model) * 8.0;
             colour += CalculateColourAtIntersect(*closest, &global_map);
         }
 
