@@ -260,24 +260,24 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
 {
     lin_alg::Vector<3> cam_up({0, 1, 0});
     lin_alg::Vector<3> cam_forward({0, 0, -1});
-    lin_alg::Vector<3> cam_focal({0, 1, 4});
+    lin_alg::Vector<3> cam_focal({0, 1.5, 2});
 
     Camera cam(cam_up, cam_forward, cam_focal, 1.8);
     cam.InitialiseScreenSize(2, 2);
 
-    Plane *right_wall = new Plane({-2, 0, 0}, {2, 0, 0}, {0, 0.6, 0});
+    Plane *right_wall = new Plane({-1, 0, 0}, {2, 0, 0}, {0, 0.6, 0});
     right_wall->material.IntialiseRussianRoulette();
 
-    Plane *left_wall = new Plane({2, 0, 0}, {-2, 0, 0}, {0.8, 0, 0});
+    Plane *left_wall = new Plane({1, 0, 0}, {-2, 0, 0}, {0.8, 0, 0});
     left_wall->material.IntialiseRussianRoulette();
 
-    Plane *floor = new Plane({0, 1, 0}, {0, -0.8, 0}, {1, 1, 1});
+    Plane *floor = new Plane({0, 1, 0}, {0, 0, 0}, {1, 1, 1});
     floor->material.IntialiseRussianRoulette();
 
     Plane *ceiling = new Plane({0, -1, 0}, {0, 3, 0}, {1, 1, 1});
     ceiling->material.IntialiseRussianRoulette();
 
-    Plane *back_wall = new Plane({0, 0, 1}, {0, 0, -3}, {1, 1, 1});
+    Plane *back_wall = new Plane({0, 0, 1}, {0, 0, -2.5}, {1, 1, 1});
     back_wall->material.IntialiseRussianRoulette();
 
     Plane *camera_wall = new Plane({0, 0, -1}, {0, 0, 5}, {0, 0, 0.7});
