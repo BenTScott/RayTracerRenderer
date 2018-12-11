@@ -28,7 +28,7 @@ lin_alg::Vector<3> PhotonMappedScene::CalculateColourAtIntersect(const RayInters
     }
 
     // TODO: Implement final gathering - this will only work on diffuse surfaces.
-    colour += photon_map->GetIrradianceEsitimate(intersect, cam.camera_focalpoint - pos, 3000, true, lighting_model) * 40.0;
+    colour += photon_map->GetIrradianceEsitimate(intersect, cam.camera_focalpoint - pos, 3000, true, lighting_model)* 30.0;
 
     // lin_alg::Vector<3> indirect_estimate;
     // double radius;
@@ -137,7 +137,7 @@ PhotonMap *PhotonMappedScene::GetCausticPhotonMap(unsigned number_of_photons_per
 
     std::cout << traced_photons.size() << " caustic photons stored\n";
     PhotonMap *pm = new PhotonMap(traced_photons);
-    pm->ScalePhotons(1.0 / number_of_photons_per_object * ((double)emmitted_rays.size() / traced_photons.size()));
+    pm->ScalePhotons(1.0 / emmitted_rays.size());
     return pm;
 };
 
@@ -202,11 +202,13 @@ void PhotonMappedScene::GetCausticPhotonOutcome(std::vector<Photon *> &photons, 
         if (outcome == Material::Refracted)
         {
             //TODO: Move initialisation to lighting model
-            next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity.Scale(1.0/(intersect->material.GetRefractionConstant())));
+            //next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity.Scale(1.0/(intersect->material.GetRefractionConstant())));
+            next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity);
         }
         else
         {
-            next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity.Scale(1.0/(intersect->material.GetReflectionConstant())));
+            //next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity.Scale(1.0/(intersect->material.GetReflectionConstant())));
+            next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity);
         }
     }
 
@@ -251,11 +253,13 @@ void PhotonMappedScene::GetPhotonOutcome(std::vector<Photon *> &photons, const P
         if (outcome == Material::Refracted)
         {
             //TODO: Move initialisation to lighting model
-            next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity.Scale(1.0/ intersect->material.GetRefractionConstant()));
+            //next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity.Scale(1.0/(intersect->material.GetRefractionConstant())));
+            next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity);
         }
         else
         {
-            next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity.Scale(1.0 / intersect->material.GetReflectionConstant()));
+            //next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity.Scale(1.0/(intersect->material.GetReflectionConstant())));
+            next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity);
         }
     }
 
@@ -411,7 +415,7 @@ void PhotonMappedScene::PixelThreadTask(TaskQueue<PixelTask> &queue, ThreadSafeI
         for (Ray &ray : rays)
         {
             std::shared_ptr<RayIntersect> closest = GetRayIntersect(ray);
-            colour += caustic_map.GetIrradianceEsitimate(*closest, cam.camera_focalpoint - closest->GetCorrectedPosition(), 200, true, lighting_model) * 8.0;
+            colour += caustic_map.GetIrradianceEsitimate(*closest, cam.camera_focalpoint - closest->GetCorrectedPosition(), 100, true, lighting_model)* 8.0;
             colour += CalculateColourAtIntersect(*closest, &global_map);
         }
 
