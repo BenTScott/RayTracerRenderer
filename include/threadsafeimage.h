@@ -6,7 +6,7 @@
 
 class ThreadSafeImage : public RGBImage
 {
-public:
+  public:
     ThreadSafeImage(unsigned width, unsigned height) : RGBImage(width, height) {}
 
     ThreadSafeImage(RGBImage &img)
@@ -15,6 +15,8 @@ public:
         this->height = img.height;
         this->width = img.width;
     }
+
+    ThreadSafeImage(const char *filename, unsigned width, unsigned height) : RGBImage(filename, width, height){};
 
     ~ThreadSafeImage(){};
 
@@ -25,7 +27,7 @@ public:
         RGBImage::SetPixel(x, y, colour);
     };
 
-protected:
+  protected:
     std::mutex m;
 };
 

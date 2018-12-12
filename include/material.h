@@ -51,12 +51,19 @@ class Material
 
     Material &AddTransparency(double k_t, double refractive_index)
     {
+        this->k_t = {k_t, k_t, k_t};
+        this->refractive_index = refractive_index;
+        return *this;
+    };
+
+    Material &AddTransparency(lin_alg::Vector<3> k_t, double refractive_index)
+    {
         this->k_t = k_t;
         this->refractive_index = refractive_index;
         return *this;
     };
 
-    const double &GetRefractionConstant() const
+    const lin_alg::Vector<3> &GetRefractionConstant() const
     {
         return k_t;
     };
@@ -97,10 +104,10 @@ class Material
     Material &IntialiseRussianRoulette()
     {
         reflected = this->k_d.Average() + k_s;
-        absorbed = 1 - reflected - k_r - k_t;
-        if (k_r != 0 || k_t != 0)
+        absorbed = 1 - reflected - k_r - k_t.Average();
+        if (k_r != 0 || k_t.Magnitude() != 0)
         {
-            transmitted_refracted = k_t;
+            transmitted_refracted = k_t.Average();
         }
 
         // assert(absorbed >= 0 && reflected >= 0 && absorbed + reflected <= 1);
@@ -164,7 +171,7 @@ class Material
 
   protected:
     // Diffuse constants
-    lin_alg::Vector<3> k_d = lin_alg::Vector<3>({1, 1, 1});
+    lin_alg::Vector<3> k_d;
 
     // Specular constant
     double k_s = 0;
@@ -174,7 +181,7 @@ class Material
     double k_r = 0;
 
     // Refraction constant
-    double k_t = 0;
+    lin_alg::Vector<3> k_t;
     double refractive_index = 1;
 
     bool is_emitter = false;;

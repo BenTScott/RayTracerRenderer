@@ -24,6 +24,7 @@ class RGBImage
         height = obj.height;
         image = obj.image;
     };
+    RGBImage(const char *filename, unsigned width, unsigned height);
 
     virtual ~RGBImage(){};
 

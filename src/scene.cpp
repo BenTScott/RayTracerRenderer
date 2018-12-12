@@ -62,9 +62,9 @@ lin_alg::Vector<3> Scene::CalculateColourAtIntersect(const RayIntersect &interse
         colour += GetColour(lighting_model->GetReflectionRay(intersect), depth + 1).Scale(intersect.material.GetReflectionConstant());
     }
 
-    if (intersect.material.GetRefractionConstant() > 0 && depth < max_reflection_depth)
+    if (intersect.material.GetRefractionConstant().Magnitude() > 0 && depth < max_reflection_depth)
     {
-        colour += GetColour(lighting_model->GetRefractionRay(intersect), depth + 1).Scale(intersect.material.GetRefractionConstant());
+        colour += GetColour(lighting_model->GetRefractionRay(intersect), depth + 1).PointwiseMultiply(intersect.material.GetRefractionConstant());
     }
 
     return colour;
