@@ -13,22 +13,22 @@ lin_alg::Vector<3> PhotonMappedScene::CalculateColourAtIntersect(const RayInters
 
     lin_alg::Vector<3> pos = intersect.GetCorrectedPosition();
 
+    // TODO: Implement final gathering - this will only work on diffuse surfaces.
+    bool use_shadow_rays;
+    colour += photon_map->GetIrradianceEsitimate(intersect, cam.camera_focalpoint - pos, 2000, true, lighting_model, use_shadow_rays) * 20.0;
+
     for (const auto &light : light_sources)
     {
         std::vector<Ray> lightrays = light->GetLightRays(pos, 50);
-
         for (Ray &ray : lightrays)
         {
-            if (!InShadow(ray))
+            if (!use_shadow_rays || !InShadow(ray))
             {
                 colour += lighting_model->GetDiffuseLighting(*light, intersect).Scale(1.0 / lightrays.size());
                 colour += lighting_model->GetSpecularLighting(*light, intersect).Scale(1.0 / lightrays.size());
             }
         }
     }
-
-    // TODO: Implement final gathering - this will only work on diffuse surfaces.
-    colour += photon_map->GetIrradianceEsitimate(intersect, cam.camera_focalpoint - pos, 3000, true, lighting_model) * 30.0;
 
     if (intersect.material.GetReflectionConstant() > 0 && depth < max_reflection_depth)
     {
@@ -150,10 +150,7 @@ std::vector<Photon *> PhotonMappedScene::TraceLightRays(std::vector<PhotonPathRa
             //TODO: Add shadow photons
             for (unsigned i = 1; i < all_intersects.size(); ++i)
             {
-                // if ((all_intersects[i]->GetCorrectedPosition() - sphere_bound_centre).Magnitude() < sphere_bound_radius)
-                // {
-                //     //photons.push_back(new Photon(all_intersects[i]->GetCorrectedPosition(), photon_ray.ray.direction, {0, 0, 0}, Photon::Shadow));
-                // }
+                photons.push_back(new Photon(all_intersects[i]->GetCorrectedPosition(), photon_ray.ray.direction, {0, 0, 0}, Photon::Shadow));
             }
 
             GetPhotonOutcome(photons, photon_ray, all_intersects[0], true);
@@ -219,6 +216,10 @@ void PhotonMappedScene::GetPhotonOutcome(std::vector<Photon *> &photons, const P
         {
             photons.push_back(new Photon(intersect->GetCorrectedPosition(), photon_ray.ray.direction, photon_ray.intensity, Photon::Indirect));
         }
+        // else
+        // {
+        //     photons.push_back(new Photon(intersect->GetCorrectedPosition(), photon_ray.ray.direction, photon_ray.intensity, Photon::Direct));
+        // }
 
         if (outcome == Material::Absorbed)
         {
@@ -254,7 +255,7 @@ void PhotonMappedScene::GetPhotonOutcome(std::vector<Photon *> &photons, const P
 
 RGBImage *PhotonMappedScene::GetImage(unsigned resolution_width, unsigned resolution_height)
 {
-    PhotonMap *global_map = GetGlobalPhotonMap(global_photons);
+    PhotonMap *global_map = GetGlobalPhotonMap(50000);
     PhotonMap *caustic_map = GetCausticPhotonMap(500000);
 
     ThreadSafeImage *image = new ThreadSafeImage(resolution_width, resolution_height);
@@ -336,7 +337,8 @@ void PhotonMappedScene::PixelThreadTask(TaskQueue<PixelTask> &queue, ThreadSafeI
         for (Ray &ray : rays)
         {
             std::shared_ptr<RayIntersect> closest = GetRayIntersect(ray);
-            colour += caustic_map.GetIrradianceEsitimate(*closest, cam.camera_focalpoint - closest->GetCorrectedPosition(), 1000, true, lighting_model) * 8.0;
+            bool use_shadow_rays;
+            colour += caustic_map.GetIrradianceEsitimate(*closest, cam.camera_focalpoint - closest->GetCorrectedPosition(), 800, true, lighting_model, use_shadow_rays) * 8.0;
             colour += CalculateColourAtIntersect(*closest, &global_map);
         }
 

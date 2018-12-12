@@ -307,7 +307,7 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
     mesh->AddScale(0.7);
     mesh->AddTranslation(0.3, 0.2382, -0.5);
     mesh->ExecuteTransformation();
-    mesh->material.SetSpecularConstant(0.03).AddTransparency(GetColourVector(230, 120, 255), 1.5).AddReflection(0.07).IntialiseRussianRoulette();
+    mesh->material.SetSpecularConstant(0.03).AddTransparency(GetColourVector(255, 150, 255), 1.5).AddReflection(0.07).IntialiseRussianRoulette();
     MeshOctree *meshbound = new MeshOctree(mesh, 50);
 
     auto p1 = meshbound->node.p1;
@@ -330,7 +330,7 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
 
     pm_scene->AddMonitoring();
 
-    pm_scene->AddSampling(".\\out\\render.png", 500, 500, 100);
+    //pm_scene->AddSampling(".\\out\\render.png", 500, 500, 100);
 
     return std::unique_ptr<Scene>(pm_scene);;
 }
@@ -350,6 +350,6 @@ int main(int argc, char *argv[])
     auto scene5 = CornellBox(max_thread);
 
     const char *filename = (".\\out\\render.png");
-    //scene5->Render(filename, 500, 500);
+    scene5->Render(filename, 500, 500);
     //scene3->Render(filename, 1920, 1080);
 };

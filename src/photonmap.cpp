@@ -152,7 +152,7 @@ void PhotonMap::ScalePhotons(double scalar)
     }
 }
 
-lin_alg::Vector<3> PhotonMap::GetIrradianceEsitimate(const RayIntersect& intersect, lin_alg::Vector<3> view_dir, unsigned N, bool cone_filter, LightingModel* lighting_model)
+lin_alg::Vector<3> PhotonMap::GetIrradianceEsitimate(const RayIntersect& intersect, lin_alg::Vector<3> view_dir, unsigned N, bool cone_filter, LightingModel* lighting_model, bool &use_shadow_rays)
 {
     lin_alg::Vector<3> estimate;
 
@@ -164,10 +164,11 @@ lin_alg::Vector<3> PhotonMap::GetIrradianceEsitimate(const RayIntersect& interse
     double radius;
     lin_alg::Vector<3> pos =intersect.GetCorrectedPosition();
     std::vector<Photon *> closest_photons = LocatePhotons(pos, N, radius);
+    use_shadow_rays = false;
 
     for (Photon *photon_ptr : closest_photons)
     {
-        if (photon_ptr->direction.DotProduct(intersect.normal) < 0.0)
+        if (photon_ptr->direction.DotProduct(intersect.normal) < 0.0 && photon_ptr->type == Photon::Indirect)
         {
             lin_alg::Vector<3> photon_radiance = lighting_model->EstimatedPhotonRadiance(*photon_ptr, intersect, view_dir);
             if (cone_filter)
@@ -176,6 +177,10 @@ lin_alg::Vector<3> PhotonMap::GetIrradianceEsitimate(const RayIntersect& interse
                 photon_radiance = photon_radiance * filter;
             }
             estimate += photon_radiance;
+        }
+        if (photon_ptr->type == Photon::Shadow)
+        {
+            use_shadow_rays = true;
         }
     }
 

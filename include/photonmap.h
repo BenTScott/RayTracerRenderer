@@ -31,7 +31,7 @@ public:
   };
 
   std::vector<Photon *> LocatePhotons(lin_alg::Vector<3> point, unsigned max, double &radius);
-  lin_alg::Vector<3> GetIrradianceEsitimate(const RayIntersect &intersect, lin_alg::Vector<3> view_dir, unsigned N, bool cone_filter, LightingModel *lighting_model);
+  lin_alg::Vector<3> GetIrradianceEsitimate(const RayIntersect &intersect, lin_alg::Vector<3> view_dir, unsigned N, bool cone_filter, LightingModel *lighting_model, bool &use_shadow_rays);
   void ScalePhotons(double scale);
   std::vector<Photon *> photons;
 
