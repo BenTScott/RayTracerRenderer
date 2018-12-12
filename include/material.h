@@ -91,24 +91,30 @@ class Material
     enum PhotonOutcome
     {
         Absorbed,
-        Reflected,
+        Reflected_Diffuse,
+        Reflected_Phong_Specular,
+        Reflected_Perfect_Specular,
         Transmitted
     };
 
-    enum TransmissionOutcome
-    {
-        Refracted,
-        MirrorReflection
-    };
+    // enum TransmissionOutcome
+    // {
+    //     Refracted,
+    //     MirrorReflection
+    // };
 
     Material &IntialiseRussianRoulette()
     {
-        reflected = this->k_d.Average() + k_s;
-        absorbed = 1 - reflected - k_r - k_t.Average();
-        if (k_r != 0 || k_t.Magnitude() != 0)
-        {
-            transmitted_refracted = k_t.Average();
-        }
+        reflected_diffuse = this->k_d.Average(); // + k_s;
+        reflected_phong_specular = this->k_s;
+        reflected_specular = this->k_r;
+        transmitted =   k_t.Average();
+        absorbed = 1 - reflected_diffuse - reflected_specular - k_t.Average() - reflected_phong_specular;
+
+        // if (k_r != 0 || k_t.Magnitude() != 0)
+        // {
+        //     transmitted_refracted = k_t.Average();
+        // }
 
         // assert(absorbed >= 0 && reflected >= 0 && absorbed + reflected <= 1);
         // this->absorbed = absorbed;
@@ -125,46 +131,63 @@ class Material
 
     Material::PhotonOutcome GetPhotonOutcome()
     {
-        std::uniform_real_distribution<> distribution = std::uniform_real_distribution<>(0.0, 1.0);
-        double val = distribution(Random::Generator());
-        if (val < absorbed)
+        //std::uniform_real_distribution<> distribution = std::uniform_real_distribution<>(0.0, 1.0);
+        double val = Random::Uniform(0.0, 1.0);
+        if (val < reflected_diffuse)
         {
-            return Absorbed;
+            return Reflected_Diffuse;
         }
-        else if (val < absorbed + reflected)
+        else if (val < reflected_diffuse + reflected_phong_specular)
         {
-            return Reflected;
+            return Reflected_Phong_Specular;
         }
-
-        return Transmitted;
+        else if (val < reflected_diffuse + reflected_specular + reflected_phong_specular)
+        {
+            return Reflected_Perfect_Specular;
+        }
+        else if (val < reflected_diffuse + reflected_specular + transmitted + reflected_phong_specular)
+        {
+            return Transmitted;
+        }
+        return Absorbed;
     };
 
-    Material::TransmissionOutcome GetTransmissionOutcome()
-    {
-        double val = distribution(Random::Generator());
-        if (val < transmitted_refracted)
-        {
-            return Refracted;
-        }
-        else
-        {
-            return MirrorReflection;
-        }
-    };
+    // Material::TransmissionOutcome GetTransmissionOutcome()
+    // {
+    //     double val = distribution(Random::Generator());
+    //     if (val < transmitted_refracted)
+    //     {
+    //         return Refracted;
+    //     }
+    //     else
+    //     {
+    //         return MirrorReflection;
+    //     }
+    // };
 
-    double GetAbsorptionProbablity()
+    double GetAbsorptionProbability() const
     {
         return absorbed;
     };
 
-    double GetReflectionProbablity()
+    double GetDiffuseReflectionProbability() const
     {
-        return reflected;
+        return reflected_diffuse;
     };
 
-    double GetTransmittedProbablity()
+    double GetSpecularReflectionProbability() const
     {
-        return 1.0 - absorbed - reflected;
+        return reflected_specular;
+    }
+
+    double GetTransmittedProbablity() const
+    {
+        return transmitted;
+    }
+
+    double GetPhongSpecularReflection() const
+    {
+        return reflected_phong_specular;
     }
 
 #pragma endregion
@@ -188,9 +211,12 @@ class Material
 
     // Photon Mapping members
     double absorbed = 1;
-    double reflected = 0;
-    double transmitted_refracted = 1;
-    std::uniform_real_distribution<> distribution = std::uniform_real_distribution<>(0.0, 1.0);
+    double reflected_diffuse = 0;
+    double reflected_specular = 0;
+    double reflected_phong_specular = 0;
+    double transmitted = 0;
+
+    //std::uniform_real_distribution<> distribution = std::uniform_real_distribution<>(0.0, 1.0);
 };
 
 #endif

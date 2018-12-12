@@ -96,7 +96,7 @@ PhotonMap *PhotonMappedScene::GetCausticPhotonMap(unsigned number_of_photons_per
     {
         for (Light *light : light_sources)
         {
-            if (obj_ptr->material.GetTransmittedProbablity() > 0)
+            if (obj_ptr->material.GetTransmittedProbablity() > 0 || obj_ptr->material.GetSpecularReflectionProbability() > 0)
             {
                 unsigned light_photon_count = std::round((light->intensity.Magnitude() / intensity_sum) * number_of_photons_per_object);
                 std::vector<PhotonPathRay> rays = light->GeneratePhotonRays(light_photon_count, obj_ptr);
@@ -171,24 +171,13 @@ void PhotonMappedScene::GetCausticPhotonOutcome(std::vector<Photon *> &photons, 
 
     PhotonPathRay next_ray;
 
-    if (outcome == Material::Absorbed || outcome == Material::Reflected)
+    if (outcome == Material::Absorbed || outcome == Material::Reflected_Diffuse)
     {
         photons.push_back(new Photon(intersect->GetCorrectedPosition(), photon_ray.ray.direction, photon_ray.intensity, Photon::Indirect));
         return;
     }
-    else
-    {
-        Material::TransmissionOutcome outcome = intersect->material.GetTransmissionOutcome();
-        if (outcome == Material::Refracted)
-        {
-            //TODO: Move initialisation to lighting model
-            next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity.PointwiseMultiply(intersect->material.GetRefractionConstant().Scale(1.0 / intersect->material.GetRefractionConstant().Average())));
-        }
-        else
-        {
-            next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity);
-        }
-    }
+
+    next_ray = lighting_model->GetRandomPhotonReflection(intersect, photon_ray, outcome);
 
     std::shared_ptr<RayIntersect> closest = GetRayIntersect(next_ray.ray);
 
@@ -210,16 +199,13 @@ void PhotonMappedScene::GetPhotonOutcome(std::vector<Photon *> &photons, const P
     PhotonPathRay next_ray;
     bool next_ray_direct = is_direct;
 
-    if (outcome == Material::Absorbed || outcome == Material::Reflected)
+    if (outcome == Material::Absorbed || outcome == Material::Reflected_Diffuse)
     {
+        // Since no final gathering step is used no direct photons are stored
         if (!is_direct)
         {
             photons.push_back(new Photon(intersect->GetCorrectedPosition(), photon_ray.ray.direction, photon_ray.intensity, Photon::Indirect));
         }
-        // else
-        // {
-        //     photons.push_back(new Photon(intersect->GetCorrectedPosition(), photon_ray.ray.direction, photon_ray.intensity, Photon::Direct));
-        // }
 
         if (outcome == Material::Absorbed)
         {
@@ -227,21 +213,9 @@ void PhotonMappedScene::GetPhotonOutcome(std::vector<Photon *> &photons, const P
         }
 
         next_ray_direct = false;
-        next_ray = lighting_model->GetRandomPhotonReflection(intersect, photon_ray);
     }
-    else
-    {
-        Material::TransmissionOutcome outcome = intersect->material.GetTransmissionOutcome();
-        if (outcome == Material::Refracted)
-        {
-            //TODO: Move initialisation to lighting model
-            next_ray = PhotonPathRay(lighting_model->GetRefractionRay(*intersect), photon_ray.intensity.PointwiseMultiply(intersect->material.GetRefractionConstant().Scale(1.0 / intersect->material.GetRefractionConstant().Average())));
-        }
-        else
-        {
-            next_ray = PhotonPathRay(lighting_model->GetReflectionRay(*intersect), photon_ray.intensity);
-        }
-    }
+
+    next_ray = lighting_model->GetRandomPhotonReflection(intersect, photon_ray, outcome);
 
     std::shared_ptr<RayIntersect> closest = GetRayIntersect(next_ray.ray);
 

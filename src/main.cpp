@@ -160,7 +160,7 @@ std::unique_ptr<Scene> Reflections_Refractions(unsigned max_thread)
     Sphere *sphere4 = new Sphere({-4, 1.2, -6.5, 1}, 2, GetColourVector(209, 252, 55));
 
     Sphere *mirror_ball = new Sphere({-1.6, 1, -4.5, 1}, 0.95, {0, 0, 0});
-    mirror_ball->material.AddReflection(1).SetSpecularConstant(1);
+    //mirror_ball->material.AddReflection(1).SetSpecularConstant(1);
 
     sphere2->material.AddTransparency(0.95, 1.3);
 
@@ -271,8 +271,8 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
     Plane *left_wall = new Plane({1, 0, 0}, {-2, 0, 0}, {0.8, 0, 0});
     left_wall->material.IntialiseRussianRoulette();
 
-    Plane *floor = new Plane({0, 1, 0}, {0, 0, 0}, {1, 1, 1});
-    floor->material.IntialiseRussianRoulette();
+    Plane *floor = new Plane({0, 1, 0}, {0, 0, 0}, {0.8, 0.8, 0.8});
+    floor->material.AddReflection(0.2).IntialiseRussianRoulette();
 
     Plane *ceiling = new Plane({0, -1, 0}, {0, 3, 0}, {1, 1, 1});
     ceiling->material.IntialiseRussianRoulette();
@@ -299,15 +299,15 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
     Rectangle *light_rec = new Rectangle(centre + lin_alg::Vector<3>({-0.5, 0, 0.5}), centre + lin_alg::Vector<3>({-0.5, 0, -0.5}), centre + lin_alg::Vector<3>({0.5, 0, -0.5}), {1, 0, 0});
     AreaLight *area_light = new AreaLight(light_rec, {1, 1, 1});
 
-    Sphere *sphere = new Sphere({-0.4, -0.15, -1, 1}, 0.6, {0, 0, 0});
+    //Sphere *sphere = new Sphere({-0.4, -0.15, -1, 1}, 0.6, {0, 0, 0});
     //sphere->material.SetSpecularConstant(0.05).IntialiseRussianRoulette();
-    sphere->material.SetSpecularConstant(0.03).AddTransparency(0.90, 2).AddReflection(0.07).IntialiseRussianRoulette();
+    //sphere->material.SetSpecularConstant(0.03).AddTransparency(0.90, 2).AddReflection(0.07).IntialiseRussianRoulette();
 
     mesh->LoadObjectModel(".\\data\\bunny_with_normals_original.obj");
     mesh->AddScale(0.7);
     mesh->AddTranslation(0.3, 0.2382, -0.5);
     mesh->ExecuteTransformation();
-    mesh->material.SetSpecularConstant(0.03).AddTransparency(GetColourVector(255, 150, 255), 1.5).AddReflection(0.07).IntialiseRussianRoulette();
+    mesh->material.AddTransparency(GetColourVector(255, 150, 255), 1.5).AddReflection(0.1).IntialiseRussianRoulette();
     MeshOctree *meshbound = new MeshOctree(mesh, 50);
 
     auto p1 = meshbound->node.p1;
@@ -350,6 +350,6 @@ int main(int argc, char *argv[])
     auto scene5 = CornellBox(max_thread);
 
     const char *filename = (".\\out\\render.png");
-    scene5->Render(filename, 500, 500);
+    scene5->Render(filename, 300, 300);
     //scene3->Render(filename, 1920, 1080);
 };

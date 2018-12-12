@@ -19,7 +19,7 @@ class PhongLightingModel : public LightingModel
     virtual Ray GetReflectionRay(const RayIntersect &intersect) override;
     virtual Ray GetRefractionRay(const RayIntersect &intersect) override;
 
-    virtual PhotonPathRay GetRandomPhotonReflection(std::shared_ptr<RayIntersect> intersect, PhotonPathRay incident) override;
+    virtual PhotonPathRay GetRandomPhotonReflection(std::shared_ptr<RayIntersect> intersect, PhotonPathRay incident, Material::PhotonOutcome outcome) override;
 
     lin_alg::Vector<3> BRDF(lin_alg::Vector<3> incident, lin_alg::Vector<3> reflected, const RayIntersect &intersect);
 

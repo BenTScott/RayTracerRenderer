@@ -31,29 +31,38 @@ lin_alg::Vector<3> PhongLightingModel::GetDiffuseLighting(const Light &light, co
     return intersect.material.GetDiffuseConstant().PointwiseMultiply(scale);
 };
 
-PhotonPathRay PhongLightingModel::GetRandomPhotonReflection(std::shared_ptr<RayIntersect> intersect, PhotonPathRay incident)
+PhotonPathRay PhongLightingModel::GetRandomPhotonReflection(std::shared_ptr<RayIntersect> intersect, PhotonPathRay incident, Material::PhotonOutcome outcome)
 {
     lin_alg::Vector<3> reflected; // = Random::CosineHemisphereVector(intersect->normal);
-
-    double ran = Random::Uniform(0.0, intersect->material.GetReflectionProbablity());
-
     lin_alg::Vector<3> reflected_intensity;
 
-    if (ran < intersect->material.GetSpecularConstant())
+    if (outcome == Material::Reflected_Phong_Specular)
     {
         reflected = Random::PhongSpecularDirection(intersect->normal, 10);
-        reflected_intensity = incident.intensity.Scale(intersect->material.GetSpecularConstant())
-                                  .Scale(1.0 / intersect->material.GetReflectionProbablity());
+        reflected_intensity = incident.intensity;
     }
-    else
+    else if (outcome == Material::Reflected_Diffuse)
     {
         reflected = Random::PhongDiffuseDirection(intersect->normal);
         reflected_intensity = incident.intensity
                                   .PointwiseMultiply(intersect->material.GetDiffuseConstant())
-                                  .Scale(1.0 / intersect->material.GetReflectionProbablity());
+                                  .Scale(1.0 / intersect->material.GetDiffuseReflectionProbability());
+    }
+    else if (outcome == Material::Transmitted)
+    {
+        reflected = GetRefractionRay(*intersect).direction;
+        reflected_intensity =
+         incident.intensity
+         .PointwiseMultiply(intersect->material.GetRefractionConstant()
+         .Scale(1.0 / intersect->material.GetRefractionConstant().Average()));
+    }
+    else
+    {
+        reflected = GetReflectionRay(*intersect).direction;
+        reflected_intensity = incident.intensity;
     }
 
-    // //TODO: Verfiy photon won't get more energy
+    //TODO: Verfiy photon won't get more energy
     // lin_alg::Vector<3> reflected_intensity = incident.intensity
     //                                              .PointwiseMultiply(BRDF(incident.ray.direction, reflected, *intersect))
     //                                              .Scale(1.0 / intersect->material.GetReflectionProbablity());
