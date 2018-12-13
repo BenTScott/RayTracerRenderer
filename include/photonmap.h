@@ -30,9 +30,13 @@ public:
     photons.clear();
   };
 
+  PhotonMap(const char *filename);
+
   std::vector<Photon *> LocatePhotons(lin_alg::Vector<3> point, unsigned max, double &radius);
-  lin_alg::Vector<3> GetIrradianceEsitimate(const RayIntersect &intersect, lin_alg::Vector<3> view_dir, unsigned N, bool cone_filter, LightingModel *lighting_model, bool &use_shadow_rays);
+  lin_alg::Vector<3> GetIrradianceEsitimate(const RayIntersect &intersect, unsigned N, bool cone_filter, LightingModel *lighting_model, bool &use_shadow_rays);
   void ScalePhotons(double scale);
+  void WriteToFile(const char *filename);
+
   std::vector<Photon *> photons;
 
 protected:

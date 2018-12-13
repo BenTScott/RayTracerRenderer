@@ -9,7 +9,7 @@ PhotonMap::Node::Node(std::vector<Photon *> &photons)
     {
         return;
     }
-    
+
     if (photons.size() > 1)
     {
         lin_alg::Vector<3> min({INFINITY, INFINITY, INFINITY});
@@ -152,7 +152,7 @@ void PhotonMap::ScalePhotons(double scalar)
     }
 }
 
-lin_alg::Vector<3> PhotonMap::GetIrradianceEsitimate(const RayIntersect& intersect, lin_alg::Vector<3> view_dir, unsigned N, bool cone_filter, LightingModel* lighting_model, bool &use_shadow_rays)
+lin_alg::Vector<3> PhotonMap::GetIrradianceEsitimate(const RayIntersect &intersect, unsigned N, bool cone_filter, LightingModel *lighting_model, bool &use_shadow_rays)
 {
     lin_alg::Vector<3> estimate;
 
@@ -162,7 +162,7 @@ lin_alg::Vector<3> PhotonMap::GetIrradianceEsitimate(const RayIntersect& interse
     }
 
     double radius;
-    lin_alg::Vector<3> pos =intersect.GetCorrectedPosition();
+    lin_alg::Vector<3> pos = intersect.GetCorrectedPosition();
     std::vector<Photon *> closest_photons = LocatePhotons(pos, N, radius);
     use_shadow_rays = false;
 
@@ -170,7 +170,7 @@ lin_alg::Vector<3> PhotonMap::GetIrradianceEsitimate(const RayIntersect& interse
     {
         if (photon_ptr->direction.DotProduct(intersect.normal) < 0.0 && photon_ptr->type == Photon::Indirect)
         {
-            lin_alg::Vector<3> photon_radiance = lighting_model->EstimatedPhotonRadiance(*photon_ptr, intersect, view_dir);
+            lin_alg::Vector<3> photon_radiance = lighting_model->EstimatedPhotonRadiance(*photon_ptr, intersect);
             if (cone_filter)
             {
                 double filter = std::max(0.0, 1 - (photon_ptr->position - pos).Magnitude() / radius);
@@ -192,4 +192,79 @@ lin_alg::Vector<3> PhotonMap::GetIrradianceEsitimate(const RayIntersect& interse
     }
 
     return estimate;
+}
+
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+
+void PhotonMap::WriteToFile(const char *filename)
+{
+    std::_Ios_Openmode openmode = std::ofstream::out | std::ofstream::trunc;
+    std::ofstream out(filename, openmode);
+    out << std::fixed << std::setprecision(9);
+    for (const auto &p_ptr : photons)
+    {
+        out << "p "
+            << p_ptr->type << " "
+            << p_ptr->intensity[0] << " "
+            << p_ptr->intensity[1] << " "
+            << p_ptr->intensity[2] << " "
+            << p_ptr->normal[0] << " "
+            << p_ptr->normal[1] << " "
+            << p_ptr->normal[2] << " "
+            << p_ptr->position[0] << " "
+            << p_ptr->position[1] << " "
+            << p_ptr->position[2] << " "
+            << p_ptr->direction[0] << " "
+            << p_ptr->direction[1] << " "
+            << p_ptr->direction[2] << "\n";
+    }
+
+    out.close();
+}
+
+PhotonMap::PhotonMap(const char *filename)
+{
+    std::ifstream in(filename, std::ifstream::in);
+    if (!in)
+    {
+        std::cerr << "Cannot open " << filename << "\n";
+        exit(1);
+    }
+
+    std::string line;
+
+    while (getline(in, line))
+    {
+        // check for photon
+        if (line.substr(0, 2) == "p ")
+        {
+            lin_alg::Vector<3> position;
+            lin_alg::Vector<3> direction;
+            lin_alg::Vector<3> intensity;
+            lin_alg::Vector<3> normal;
+            unsigned int type;
+            
+            std::istringstream v(line.substr(2));
+            v >> type;
+            v >> intensity[0];
+            v >> intensity[1];
+            v >> intensity[2];
+            v >> normal[0];
+            v >> normal[1];
+            v >> normal[2];
+            v >> position[0];
+            v >> position[1];
+            v >> position[2];
+            v >> direction[0];
+            v >> direction[1];
+            v >> direction[2];
+            photons.push_back(new Photon(position, direction, intensity, static_cast<Photon::Type>(type)));
+        }
+    }
+
+    in.close();
+
+    root = Node(photons);
 }

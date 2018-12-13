@@ -15,7 +15,7 @@ lin_alg::Vector<3> PhotonMappedScene::CalculateColourAtIntersect(const RayInters
 
     // TODO: Implement final gathering - this will only work on diffuse surfaces.
     bool use_shadow_rays;
-    colour += photon_map->GetIrradianceEsitimate(intersect, cam.camera_focalpoint - pos, 2000, true, lighting_model, use_shadow_rays) * 20.0;
+    colour += photon_map->GetIrradianceEsitimate(intersect, 2000, true, lighting_model, use_shadow_rays) * 20.0;
 
     for (const auto &light : light_sources)
     {
@@ -162,7 +162,7 @@ std::vector<Photon *> PhotonMappedScene::TraceLightRays(std::vector<PhotonPathRa
 
 void PhotonMappedScene::GetCausticPhotonOutcome(std::vector<Photon *> &photons, const PhotonPathRay &photon_ray, std::shared_ptr<RayIntersect> intersect, int depth)
 {
-    if (photon_ray.intensity.Magnitude() == 0 || depth > 100 || intersect->material.IsEmmitter())
+    if (photon_ray.intensity.Magnitude() == 0 || depth > 20 || intersect->material.IsEmmitter())
     {
         return;
     }
@@ -229,8 +229,16 @@ void PhotonMappedScene::GetPhotonOutcome(std::vector<Photon *> &photons, const P
 
 RGBImage *PhotonMappedScene::GetImage(unsigned resolution_width, unsigned resolution_height)
 {
-    PhotonMap *global_map = GetGlobalPhotonMap(50000);
-    PhotonMap *caustic_map = GetCausticPhotonMap(500000);
+    if (!global_map)
+    {
+        global_map = GetGlobalPhotonMap(50000);
+        global_map->WriteToFile(".\\data\\global.dat");
+    }
+    if (!caustic_map)
+    {
+        caustic_map = GetCausticPhotonMap(500000);
+        caustic_map->WriteToFile(".\\data\\caustic.dat");
+    }
 
     ThreadSafeImage *image = new ThreadSafeImage(resolution_width, resolution_height);
 
@@ -280,8 +288,16 @@ void PhotonMappedScene::AddSampling(const char *filename, unsigned resolution_wi
 
     queue.InitailiseMonitor(*monitor);
 
-    PhotonMap *global_map = GetGlobalPhotonMap(global_photons);
-    PhotonMap *caustic_map = GetCausticPhotonMap(500000);
+    if (!global_map)
+    {
+        global_map = GetGlobalPhotonMap(50000);
+        global_map->WriteToFile(".\\data\\global.dat");
+    }
+    if (!caustic_map)
+    {
+        caustic_map = GetCausticPhotonMap(500000);
+        caustic_map->WriteToFile(".\\data\\caustic.dat");
+    }
 
     for (unsigned i = 0; i < max_thread; ++i)
     {
@@ -312,7 +328,7 @@ void PhotonMappedScene::PixelThreadTask(TaskQueue<PixelTask> &queue, ThreadSafeI
         {
             std::shared_ptr<RayIntersect> closest = GetRayIntersect(ray);
             bool use_shadow_rays;
-            colour += caustic_map.GetIrradianceEsitimate(*closest, cam.camera_focalpoint - closest->GetCorrectedPosition(), 800, true, lighting_model, use_shadow_rays) * 8.0;
+            colour += caustic_map.GetIrradianceEsitimate(*closest, 800, true, lighting_model, use_shadow_rays) * 10.0;
             colour += CalculateColourAtIntersect(*closest, &global_map);
         }
 

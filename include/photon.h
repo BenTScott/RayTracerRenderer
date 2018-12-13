@@ -23,9 +23,7 @@ class Photon
     lin_alg::Vector<3> position;
     lin_alg::Vector<3> direction;
     lin_alg::Vector<3> intensity;
-
     lin_alg::Vector<3> normal;
-    
     Photon::Type type;
 };
 

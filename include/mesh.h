@@ -24,6 +24,7 @@ public:
   void AddRotation(lin_alg::Axis3D a, double angle);
   void AddTranslation(double x, double y, double z);
   void AddScale(double scale);
+  void MinMax(lin_alg::Vector<3> &min, lin_alg::Vector<3> &max);
 
   void SetColour(lin_alg::Vector<3> colour);
 

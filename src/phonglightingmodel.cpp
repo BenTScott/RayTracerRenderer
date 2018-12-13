@@ -40,6 +40,7 @@ PhotonPathRay PhongLightingModel::GetRandomPhotonReflection(std::shared_ptr<RayI
     {
         reflected = Random::PhongSpecularDirection(intersect->normal, 10);
         reflected_intensity = incident.intensity;
+        return PhotonPathRay(Ray(intersect->GetCorrectedPosition(), reflected), reflected_intensity);
     }
     else if (outcome == Material::Reflected_Diffuse)
     {
@@ -47,28 +48,21 @@ PhotonPathRay PhongLightingModel::GetRandomPhotonReflection(std::shared_ptr<RayI
         reflected_intensity = incident.intensity
                                   .PointwiseMultiply(intersect->material.GetDiffuseConstant())
                                   .Scale(1.0 / intersect->material.GetDiffuseReflectionProbability());
+
+        return PhotonPathRay(Ray(intersect->GetCorrectedPosition(), reflected), reflected_intensity);
     }
     else if (outcome == Material::Transmitted)
     {
-        reflected = GetRefractionRay(*intersect).direction;
-        reflected_intensity =
-         incident.intensity
-         .PointwiseMultiply(intersect->material.GetRefractionConstant()
-         .Scale(1.0 / intersect->material.GetRefractionConstant().Average()));
+        reflected_intensity = incident.intensity.PointwiseMultiply(intersect->material.GetRefractionConstant().Scale(1.0 / intersect->material.GetRefractionConstant().Average()));
+
+        return PhotonPathRay(GetRefractionRay(*intersect), reflected_intensity);
     }
     else
     {
-        reflected = GetReflectionRay(*intersect).direction;
         reflected_intensity = incident.intensity;
+        return PhotonPathRay(GetReflectionRay(*intersect), reflected_intensity);
     }
-
-    //TODO: Verfiy photon won't get more energy
-    // lin_alg::Vector<3> reflected_intensity = incident.intensity
-    //                                              .PointwiseMultiply(BRDF(incident.ray.direction, reflected, *intersect))
-    //                                              .Scale(1.0 / intersect->material.GetReflectionProbablity());
-
-    return PhotonPathRay(Ray(intersect->GetCorrectedPosition(), reflected), reflected_intensity);
-};
+}
 
 Ray PhongLightingModel::GetReflectionRay(const RayIntersect &intersect)
 {
@@ -118,7 +112,7 @@ lin_alg::Vector<3> PhongLightingModel::BRDF(lin_alg::Vector<3> incident, lin_alg
     return specular + diffuse;
 };
 
-lin_alg::Vector<3> PhongLightingModel::EstimatedPhotonRadiance(Photon photon, const RayIntersect &intersect, lin_alg::Vector<3> view_dir)
+lin_alg::Vector<3> PhongLightingModel::EstimatedPhotonRadiance(Photon photon, const RayIntersect &intersect)
 {
-    return BRDF(photon.direction, view_dir.Normalise(), intersect).PointwiseMultiply(photon.intensity);
+    return BRDF(photon.direction, intersect.ray.direction.Scale(-1), intersect).PointwiseMultiply(photon.intensity);
 };

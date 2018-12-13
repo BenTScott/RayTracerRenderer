@@ -271,8 +271,8 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
     Plane *left_wall = new Plane({1, 0, 0}, {-2, 0, 0}, {0.8, 0, 0});
     left_wall->material.IntialiseRussianRoulette();
 
-    Plane *floor = new Plane({0, 1, 0}, {0, 0, 0}, {0.8, 0.8, 0.8});
-    floor->material.AddReflection(0.2).IntialiseRussianRoulette();
+    Plane *floor = new Plane({0, 1, 0}, {0, 0, 0}, {1, 1, 1});
+    floor->material.IntialiseRussianRoulette();
 
     Plane *ceiling = new Plane({0, -1, 0}, {0, 3, 0}, {1, 1, 1});
     ceiling->material.IntialiseRussianRoulette();
@@ -285,36 +285,44 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
 
     Mesh *mesh = new Mesh();
 
-    // mesh->LoadObjectModel(".\\data\\cube.obj");
-    // mesh->AddRotation(lin_alg::y, 35);
-    // mesh->AddRotation(lin_alg::x, 45);
-    // mesh->AddTranslation(0.5, 0.5, -2);
-    // mesh->ExecuteTransformation();
-    // mesh->RecalculateNormals();
-    // mesh->SetColour({0, 0, 0});
-    // mesh->material.SetSpecularConstant(0.05).AddTransparency(0.95, 1.5).IntialiseRussianRoulette();
-    //mesh->material.IntialiseRussianRoulette();
-
     lin_alg::Vector<3> centre = {0, 2.999, -1.5};
     Rectangle *light_rec = new Rectangle(centre + lin_alg::Vector<3>({-0.5, 0, 0.5}), centre + lin_alg::Vector<3>({-0.5, 0, -0.5}), centre + lin_alg::Vector<3>({0.5, 0, -0.5}), {1, 0, 0});
     AreaLight *area_light = new AreaLight(light_rec, {1, 1, 1});
 
-    //Sphere *sphere = new Sphere({-0.4, -0.15, -1, 1}, 0.6, {0, 0, 0});
-    //sphere->material.SetSpecularConstant(0.05).IntialiseRussianRoulette();
-    //sphere->material.SetSpecularConstant(0.03).AddTransparency(0.90, 2).AddReflection(0.07).IntialiseRussianRoulette();
-
     mesh->LoadObjectModel(".\\data\\bunny_with_normals_original.obj");
-    mesh->AddScale(0.7);
-    mesh->AddTranslation(0.3, 0.2382, -0.5);
+    mesh->AddScale(0.6);
+    mesh->AddTranslation(-0.2, 0.2041512, -0.2);
     mesh->ExecuteTransformation();
+    //(255, 233, 173)
     mesh->material.AddTransparency(GetColourVector(255, 150, 255), 1.5).AddReflection(0.1).IntialiseRussianRoulette();
     MeshOctree *meshbound = new MeshOctree(mesh, 50);
 
-    auto p1 = meshbound->node.p1;
-    auto p2 = meshbound->node.p2;
+    Mesh *table = new Mesh();
+    table->LoadObjectModel(".\\data\\table.obj");
+    table->AddScale(0.6);
+    table->AddTranslation(0.81, 0.75292139999999996, -1.4);
+    table->ExecuteTransformation();
+    table->SetColour({1, 1, 1});
+    table->material.IntialiseRussianRoulette();
+    BoundingSphere *table_bound = new BoundingSphere(table);
+
+
+    Mesh *teapot = new Mesh();
+    teapot->LoadObjectModel(".\\data\\teapot.obj");
+    teapot->material.SetSpecularConstant(0.05).AddReflection(0.95).IntialiseRussianRoulette();
+    teapot->AddScale(0.25);
+    teapot->AddTranslation(0.81, 0.8020121, -1.4);
+    teapot->ExecuteTransformation();
+    MeshOctree *teapot_bound = new MeshOctree(teapot, 50);
+
+    auto p1 = teapot_bound->node.p1;
+    auto p2 = teapot_bound->node.p2;
+    lin_alg::Vector<3> min;
+    lin_alg::Vector<3> max;
+    table->MinMax(min, max);
 
     LightingModel *model = new PhongLightingModel(0.1, 200);
-    PhotonMappedScene* pm_scene = new PhotonMappedScene(cam, {0, 0, 0}, 100000, max_thread, 1);
+    PhotonMappedScene *pm_scene = new PhotonMappedScene(cam, {0, 0, 0}, 100000, max_thread, 1);
 
     pm_scene->SetLightingModel(model);
     pm_scene->AddLightSource(area_light);
@@ -325,12 +333,17 @@ std::unique_ptr<Scene> CornellBox(unsigned max_thread)
     pm_scene->AddObject(camera_wall);
     pm_scene->AddObject(floor);
     pm_scene->AddObject(ceiling);
-    //scene->AddObject(sphere);
+    pm_scene->AddObject(table_bound);
+    pm_scene->AddObject(teapot_bound);
     pm_scene->AddObject(area_light);
 
     pm_scene->AddMonitoring();
 
-    //pm_scene->AddSampling(".\\out\\render.png", 500, 500, 100);
+    pm_scene->global_map = new PhotonMap(".\\data\\global.dat");
+
+    pm_scene->caustic_map = new PhotonMap(".\\data\\caustic.dat");
+
+    //pm_scene->AddSampling(".\\out\\render.png", 1000, 1000, 50);
 
     return std::unique_ptr<Scene>(pm_scene);;
 }
@@ -349,7 +362,7 @@ int main(int argc, char *argv[])
     //auto scene4 = Bunny(max_thread);
     auto scene5 = CornellBox(max_thread);
 
-    const char *filename = (".\\out\\render.png");
-    scene5->Render(filename, 300, 300);
+    const char *filename = (".\\out\\render2.png");
+    scene5->Render(filename, 1000, 1000);
     //scene3->Render(filename, 1920, 1080);
 };

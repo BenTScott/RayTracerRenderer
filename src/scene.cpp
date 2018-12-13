@@ -121,7 +121,7 @@ std::shared_ptr<RayIntersect> Scene::GetRayIntersect(Ray ray) const
         };
     }
 
-    if (closest->normal.DotProduct(ray.direction) > 0)
+    if (closest && closest->normal.DotProduct(ray.direction) > 0)
     {
         closest->normal = closest->normal * -1;
     }

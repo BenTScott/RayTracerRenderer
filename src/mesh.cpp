@@ -62,7 +62,7 @@ void Mesh::LoadObjectModel(const char *filename)
                 {
                     normals_defined = true;
                     v[i] = std::stoi(s.substr(0, pos));
-                    n[i] = std::stoi(s.substr(pos + delimiter.length(), s.length()-(pos + delimiter.length())));;
+                    n[i] = std::stoi(s.substr(pos + delimiter.length(), s.length() - (pos + delimiter.length())));
                 }
             }
 
@@ -77,7 +77,7 @@ void Mesh::LoadObjectModel(const char *filename)
             }
 
             faces.push_back(face);
-            int face_index = faces.size()-1;
+            int face_index = faces.size() - 1;
             vertices[v[1] - 1].faces.push_back(&faces[face_index]);
             vertices[v[2] - 1].faces.push_back(&faces[face_index]);
             vertices[v[0] - 1].faces.push_back(&faces[face_index]);
@@ -279,5 +279,25 @@ std::vector<SurfacePoint> Mesh::GetRandomPoints(unsigned samples) const
         points[i] = RandomElement(faces.begin(), faces.end())->GetRandomPoints(1).front();
     }
     return points;
-    
+};
+
+void Mesh::MinMax(lin_alg::Vector<3> &min, lin_alg::Vector<3> &max)
+{
+    min = lin_alg::Vector<3>({INFINITY, INFINITY, INFINITY});
+    max = lin_alg::Vector<3>({-INFINITY, -INFINITY, -INFINITY});
+
+    for (const auto &vertex : vertices)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (vertex.pos[i] > max[i])
+            {
+                max[i] = vertex.pos[i];
+            }
+            if (vertex.pos[i] < min[i])
+            {
+                min[i] = vertex.pos[i];
+            }
+        }
+    }
 };

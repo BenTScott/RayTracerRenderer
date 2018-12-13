@@ -22,6 +22,9 @@ public:
   PhotonMap *GetGlobalPhotonMap(unsigned number_of_photons);
   PhotonMap *GetCausticPhotonMap(unsigned number_of_photons);
 
+  PhotonMap *global_map = nullptr;
+  PhotonMap *caustic_map = nullptr;
+
 protected:
   struct PixelTask
   {
@@ -47,8 +50,6 @@ protected:
   unsigned global_photons;
   unsigned max_thread;
   unsigned sample_rate;
-  // PhotonMap *global_map = nullptr;
-  // PhotonMap *caustic_map = nullptr;
 };
 
 #endif
