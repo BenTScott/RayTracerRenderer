@@ -15,7 +15,6 @@ class SceneObject
 
     virtual ~SceneObject(){};
 
-    // TODO: Change to return RayIntersect and then pass around by ref
     virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) = 0;
     virtual std::vector<SurfacePoint> GetRandomPoints(unsigned samples) const = 0;
 

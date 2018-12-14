@@ -97,37 +97,15 @@ class Material
         Transmitted
     };
 
-    // enum TransmissionOutcome
-    // {
-    //     Refracted,
-    //     MirrorReflection
-    // };
-
     Material &IntialiseRussianRoulette()
     {
         reflected_diffuse = this->k_d.Average(); // + k_s;
         reflected_phong_specular = this->k_s;
         reflected_specular = this->k_r;
-        transmitted =   k_t.Average();
+        transmitted = k_t.Average();
         absorbed = 1 - reflected_diffuse - reflected_specular - k_t.Average() - reflected_phong_specular;
-
-        // if (k_r != 0 || k_t.Magnitude() != 0)
-        // {
-        //     transmitted_refracted = k_t.Average();
-        // }
-
-        // assert(absorbed >= 0 && reflected >= 0 && absorbed + reflected <= 1);
-        // this->absorbed = absorbed;
-        // this->reflected = reflected;
         return *this;
     }
-
-    // Material &InitialiseTransmission(double transmitted_refracted)
-    // {
-    //     assert(transmitted_refracted >= 0 and transmitted_refracted <= 1);
-    //     this->transmitted_refracted = transmitted_refracted;
-    //     return *this;
-    // }
 
     Material::PhotonOutcome GetPhotonOutcome()
     {
@@ -152,43 +130,12 @@ class Material
         return Absorbed;
     };
 
-    // Material::TransmissionOutcome GetTransmissionOutcome()
-    // {
-    //     double val = distribution(Random::Generator());
-    //     if (val < transmitted_refracted)
-    //     {
-    //         return Refracted;
-    //     }
-    //     else
-    //     {
-    //         return MirrorReflection;
-    //     }
-    // };
-
-    double GetAbsorptionProbability() const
-    {
-        return absorbed;
-    };
-
-    double GetDiffuseReflectionProbability() const
-    {
-        return reflected_diffuse;
-    };
-
-    double GetSpecularReflectionProbability() const
-    {
-        return reflected_specular;
-    }
-
-    double GetTransmittedProbablity() const
-    {
-        return transmitted;
-    }
-
-    double GetPhongSpecularReflection() const
-    {
-        return reflected_phong_specular;
-    }
+    // Photon Mapping probabilities
+    double absorbed = 1;
+    double reflected_diffuse = 0;
+    double reflected_specular = 0;
+    double reflected_phong_specular = 0;
+    double transmitted = 0;
 
 #pragma endregion
 
@@ -199,7 +146,6 @@ class Material
     // Specular constant
     double k_s = 0;
 
-    //TODO: Allowed coloured glass and mirrors
     // Reflection constant
     double k_r = 0;
 
@@ -207,16 +153,7 @@ class Material
     lin_alg::Vector<3> k_t;
     double refractive_index = 1;
 
-    bool is_emitter = false;;
-
-    // Photon Mapping members
-    double absorbed = 1;
-    double reflected_diffuse = 0;
-    double reflected_specular = 0;
-    double reflected_phong_specular = 0;
-    double transmitted = 0;
-
-    //std::uniform_real_distribution<> distribution = std::uniform_real_distribution<>(0.0, 1.0);
+    bool is_emitter = false;
 };
 
 #endif

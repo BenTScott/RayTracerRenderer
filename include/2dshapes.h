@@ -31,7 +31,6 @@ class Circle : SceneObject
   public:
     Circle(lin_alg::Vector<3> centre, double radius, lin_alg::Vector<3> normal, lin_alg::Vector<3> colour) : SceneObject(colour), centre(centre), radius(radius), normal(normal){};
     Circle() : SceneObject(Material({1, 1, 1})), centre({0, 0, 0}), radius(1.0), normal({0, 1, 0}){};
-   // Circle(Circle &obj) : centre(obj.centre), radius(obj.radius), normal(obj.normal), colour(obj.colour) {};
     virtual ~Circle(){};
 
     virtual std::shared_ptr<RayIntersect> Intersect(Ray ray) override;
@@ -41,7 +40,6 @@ class Circle : SceneObject
     lin_alg::Vector<3> centre;
     double radius;
     lin_alg::Vector<3> normal;
-    //lin_alg::Vector<3> colour;
 };
 
 #endif

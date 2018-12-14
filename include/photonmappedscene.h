@@ -35,7 +35,7 @@ protected:
     unsigned sample_rate;
   };
 
-  lin_alg::Vector<3> CalculateColourAtIntersect(const RayIntersect &intersect, PhotonMap *photon_map, unsigned depth = 0) const;
+  lin_alg::Vector<3> CalculateColourAtIntersect(const RayIntersect &intersect, PhotonMap *photon_map, PhotonMap *caustic_map, unsigned depth = 0) const;
 
   virtual RGBImage *GetImage(unsigned resolution_width, unsigned resolution_height);
 

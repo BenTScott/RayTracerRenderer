@@ -5,7 +5,6 @@
 #include "taskmonitor.h"
 
 // A thread safe job queue for feeding parallel threads.
-
 template <typename T>
 class TaskQueue
 {

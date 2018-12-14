@@ -8,10 +8,9 @@ class Photon
   public:
     enum Type
     {
+        // No final gathering implemented so direct photons are not stored.
         Shadow,
-        Direct,
-        Indirect,
-        Source
+        Indirect
     };
 
     Photon(){};

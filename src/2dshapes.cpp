@@ -1,5 +1,4 @@
 #include "2dshapes.h"
-
 #include "plane.h"
 
 void Rectangle::Initialise(lin_alg::Vector<3> p1, lin_alg::Vector<3> p2, lin_alg::Vector<3> p3, lin_alg::Vector<3> colour)

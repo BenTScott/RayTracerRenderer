@@ -6,17 +6,9 @@ lin_alg::Vector<3> AmbientOcclusionLightingModel::GetGlobalLighting(const RayInt
     lin_alg::Vector<3> pos = intersect.GetCorrectedPosition();
     double ambient_count = 0;
 
-    //TODO: Performance increase by factoring out
-    std::uniform_real_distribution<> distribution(-1.0, 1.0);
     for (unsigned i = 0; i < sample_rate; ++i)
     {
-        lin_alg::Vector<3> dir = Random::RandomUnitVector();
-        if (dir.DotProduct(intersect.normal) < 0)
-        {
-            dir = dir.Scale(-1);
-        }
-
-        Ray sample_ray(pos, dir, length);
+        Ray sample_ray(pos, Random::CosineHemisphereVector(intersect.normal), length);
         
         if (!scene.InShadow(sample_ray))
         {

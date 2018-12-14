@@ -2,7 +2,7 @@
 #include "threadsafeimage.h"
 #include <thread>
 
-lin_alg::Vector<3> PhotonMappedScene::CalculateColourAtIntersect(const RayIntersect &intersect, PhotonMap *photon_map, unsigned depth) const
+lin_alg::Vector<3> PhotonMappedScene::CalculateColourAtIntersect(const RayIntersect &intersect, PhotonMap *photon_map, PhotonMap *caustic_map, unsigned depth) const
 {
     lin_alg::Vector<3> colour;
 
@@ -13,7 +13,6 @@ lin_alg::Vector<3> PhotonMappedScene::CalculateColourAtIntersect(const RayInters
 
     lin_alg::Vector<3> pos = intersect.GetCorrectedPosition();
 
-    // TODO: Implement final gathering - this will only work on diffuse surfaces.
     bool use_shadow_rays;
     colour += photon_map->GetIrradianceEsitimate(intersect, 2000, true, lighting_model, use_shadow_rays) * 20.0;
 
@@ -30,12 +29,14 @@ lin_alg::Vector<3> PhotonMappedScene::CalculateColourAtIntersect(const RayInters
         }
     }
 
+    colour += caustic_map->GetIrradianceEsitimate(intersect, 1000, true, lighting_model, use_shadow_rays) * 10.0;
+
     if (intersect.material.GetReflectionConstant() > 0 && depth < max_reflection_depth)
     {
         auto reflection_intersect = GetRayIntersect(lighting_model->GetReflectionRay(intersect));
         if (reflection_intersect)
         {
-            colour += CalculateColourAtIntersect(*reflection_intersect, photon_map, depth + 1).Scale(intersect.material.GetReflectionConstant());
+            colour += CalculateColourAtIntersect(*reflection_intersect, photon_map, caustic_map, depth + 1).Scale(intersect.material.GetReflectionConstant());
         }
     }
 
@@ -44,7 +45,7 @@ lin_alg::Vector<3> PhotonMappedScene::CalculateColourAtIntersect(const RayInters
         auto refraction_intersect = GetRayIntersect(lighting_model->GetRefractionRay(intersect));
         if (refraction_intersect)
         {
-            colour += CalculateColourAtIntersect(*refraction_intersect, photon_map, depth + 1).PointwiseMultiply(intersect.material.GetRefractionConstant());
+            colour += CalculateColourAtIntersect(*refraction_intersect, photon_map, caustic_map, depth + 1).PointwiseMultiply(intersect.material.GetRefractionConstant());
         }
     }
 
@@ -96,7 +97,7 @@ PhotonMap *PhotonMappedScene::GetCausticPhotonMap(unsigned number_of_photons_per
     {
         for (Light *light : light_sources)
         {
-            if (obj_ptr->material.GetTransmittedProbablity() > 0 || obj_ptr->material.GetSpecularReflectionProbability() > 0)
+            if (obj_ptr->material.transmitted > 0 || obj_ptr->material.reflected_specular > 0)
             {
                 unsigned light_photon_count = std::round((light->intensity.Magnitude() / intensity_sum) * number_of_photons_per_object);
                 std::vector<PhotonPathRay> rays = light->GeneratePhotonRays(light_photon_count, obj_ptr);
@@ -199,17 +200,16 @@ void PhotonMappedScene::GetPhotonOutcome(std::vector<Photon *> &photons, const P
     PhotonPathRay next_ray;
     bool next_ray_direct = is_direct;
 
-    if (outcome == Material::Absorbed || outcome == Material::Reflected_Diffuse)
+    if (outcome == Material::Absorbed)
+    {
+        return;
+    }
+    else if (outcome == Material::Reflected_Diffuse)
     {
         // Since no final gathering step is used no direct photons are stored
         if (!is_direct)
         {
             photons.push_back(new Photon(intersect->GetCorrectedPosition(), photon_ray.ray.direction, photon_ray.intensity, Photon::Indirect));
-        }
-
-        if (outcome == Material::Absorbed)
-        {
-            return;
         }
 
         next_ray_direct = false;
@@ -327,9 +327,7 @@ void PhotonMappedScene::PixelThreadTask(TaskQueue<PixelTask> &queue, ThreadSafeI
         for (Ray &ray : rays)
         {
             std::shared_ptr<RayIntersect> closest = GetRayIntersect(ray);
-            bool use_shadow_rays;
-            colour += caustic_map.GetIrradianceEsitimate(*closest, 800, true, lighting_model, use_shadow_rays) * 10.0;
-            colour += CalculateColourAtIntersect(*closest, &global_map);
+            colour += CalculateColourAtIntersect(*closest, &global_map, &caustic_map);
         }
 
         image->SetPixel(task.x, task.y, colour.Scale(1.0 / rays.size()).Bound());

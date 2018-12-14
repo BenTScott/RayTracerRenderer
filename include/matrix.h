@@ -87,6 +87,7 @@ class Matrix
         return C;
     };
 
+    // Multiplies pointwise. Used in applying image kernels
     template<class T>
     T Apply(const T (&rhs)[N][N])
     {

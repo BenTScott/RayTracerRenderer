@@ -23,7 +23,6 @@ class ThreadSafeImage : public RGBImage
     virtual void SetPixel(unsigned x, unsigned y, lin_alg::Vector<3> colour) override
     {
         std::lock_guard<std::mutex> lock(m);
-        //std::cout << x << " " << y << " - " << colour[0] << " " << colour[1] << " " << colour[2] << "\n";
         RGBImage::SetPixel(x, y, colour);
     };
 

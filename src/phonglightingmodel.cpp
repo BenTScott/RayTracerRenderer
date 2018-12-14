@@ -33,7 +33,7 @@ lin_alg::Vector<3> PhongLightingModel::GetDiffuseLighting(const Light &light, co
 
 PhotonPathRay PhongLightingModel::GetRandomPhotonReflection(std::shared_ptr<RayIntersect> intersect, PhotonPathRay incident, Material::PhotonOutcome outcome)
 {
-    lin_alg::Vector<3> reflected; // = Random::CosineHemisphereVector(intersect->normal);
+    lin_alg::Vector<3> reflected;
     lin_alg::Vector<3> reflected_intensity;
 
     if (outcome == Material::Reflected_Phong_Specular)
@@ -47,7 +47,7 @@ PhotonPathRay PhongLightingModel::GetRandomPhotonReflection(std::shared_ptr<RayI
         reflected = Random::PhongDiffuseDirection(intersect->normal);
         reflected_intensity = incident.intensity
                                   .PointwiseMultiply(intersect->material.GetDiffuseConstant())
-                                  .Scale(1.0 / intersect->material.GetDiffuseReflectionProbability());
+                                  .Scale(1.0 / intersect->material.reflected_diffuse);
 
         return PhotonPathRay(Ray(intersect->GetCorrectedPosition(), reflected), reflected_intensity);
     }
@@ -75,10 +75,10 @@ Ray PhongLightingModel::GetRefractionRay(const RayIntersect &intersect)
     double ratio = intersect.ray.medium_refractive_index / intersect.material.GetRefractiveIndex();
     if (intersect.ray.medium_refractive_index == intersect.material.GetRefractiveIndex())
     {
+        // Assume we are leaving the object
         ratio = intersect.material.GetRefractiveIndex();
     }
 
-    //double ratio = intersect.ray.medium_refractive_index / intersect.material.GetRefractiveIndex();
     double cos_theta_1 = intersect.ray.direction.DotProduct(intersect.normal);
     double cos_theta_2_sqr = 1 - std::pow(ratio, 2) * (1 - (std::pow(cos_theta_1, 2)));
 
@@ -105,7 +105,6 @@ lin_alg::Vector<3> PhongLightingModel::BRDF(lin_alg::Vector<3> incident, lin_alg
 
     lin_alg::Vector<3> diffuse = intersect.material.GetDiffuseConstant() * intersect.normal.DotProduct(reflected) * M_1_PI;
 
-    // Specular highlights are treated as white
     lin_alg::Vector<3> specular({1, 1, 1});
     specular = specular.Scale(intersect.material.GetSpecularConstant() * (specular_dist + 2.0) * 0.5 * M_1_PI * std::pow(specular_direction.DotProduct(reflected), specular_dist));
 

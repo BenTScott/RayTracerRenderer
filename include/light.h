@@ -41,6 +41,8 @@ class Light
         return rays;
     };
 
+
+    //Added to implement photon mapping. Not useful in directional lighting
     virtual std::vector<PhotonPathRay> GeneratePhotonRays(unsigned number_of_photons) const
     {
         (void) number_of_photons;
@@ -49,6 +51,7 @@ class Light
         return std::vector<PhotonPathRay>();
     };
 
+    //Added to implement photon mapping. Not useful in directional lighting
     virtual std::vector<PhotonPathRay> GeneratePhotonRays(unsigned number_of_photons, SceneObject *obj_ptr) const
     {
         (void) number_of_photons;

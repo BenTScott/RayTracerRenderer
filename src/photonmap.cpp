@@ -1,3 +1,6 @@
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <math.h>
 #include "photonmap.h"
 
@@ -47,8 +50,6 @@ PhotonMap::Node::Node(std::vector<Photon *> &photons)
 
         std::vector<Photon *> s1;
         std::vector<Photon *> s2;
-        auto test1 = photons.size();
-        auto test = photons.size() / 2;
         s1.reserve(photons.size() / 2);
         s2.reserve(photons.size() / 2);
 
@@ -65,7 +66,7 @@ PhotonMap::Node::Node(std::vector<Photon *> &photons)
         }
 
         median = photons[photons.size() / 2];
-        double debug = median->position[0];
+
         if (s1.size() >= 1)
         {
             left = new Node(s1);
@@ -77,14 +78,12 @@ PhotonMap::Node::Node(std::vector<Photon *> &photons)
     }
     else
     {
-        //double debug = photons[0]->position[0];
         median = photons[0];
     }
 };
 
 void PhotonMap::Node::LocatePhotons(std::vector<Photon *> &nearest, lin_alg::Vector<3> &x, unsigned max, double &r)
 {
-    //double debug = median->position[0];
     if (split_dim >= 0)
     {
         double plane_distance = x[split_dim] - median->position[split_dim];
@@ -193,10 +192,6 @@ lin_alg::Vector<3> PhotonMap::GetIrradianceEsitimate(const RayIntersect &interse
 
     return estimate;
 }
-
-#include <fstream>
-#include <iomanip>
-#include <iostream>
 
 void PhotonMap::WriteToFile(const char *filename)
 {
